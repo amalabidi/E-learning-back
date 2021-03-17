@@ -2,12 +2,22 @@ var createError = require('http-errors');
 var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
+
 var logger = require('morgan');
+var mongoose = require('mongoose') ; 
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 var app = express();
+
+
+// database connection 
+mongoose.connect("mongodb+srv://E-learning-Project:E-learning-Project@cluster0.gq6ri.mongodb.net/test",{ useNewUrlParser: true,useUnifiedTopology: true})
+.then(()=> console.log("connected to db ...."))
+.catch(err => console.error('could not connect to MongoDb',err)) ; 
+const passport = require('passport');
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -22,6 +32,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
+
+
+
+
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   next(createError(404));
@@ -35,7 +49,7 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.render('error');
+  //res.render('');
 });
 
 module.exports = app;
