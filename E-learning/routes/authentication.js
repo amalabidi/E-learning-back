@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const {User} = require("../modules/user");
+const {User} = require("../models/user");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
@@ -11,13 +11,15 @@ router.post('/', async (req, res) => {
         let user = await User.findOne({email: req.body.email});
         
         if (!user) {
+            
             res.send({"error":"invalid mail or password"});
             return null;
         }else{
         if (await bcrypt.compare(req.body.password, user.hashedPassword)) {
-             token = user.generateToken();
+            token = user.generateToken();
             res.header("x-auth-token", token).send(user);
         } else {
+           
             res.send({"error":"invalid mail or password"});
         }}
     } catch (e) {
@@ -25,4 +27,6 @@ router.post('/', async (req, res) => {
         res.send(e);
     }
 })
+
+
 module.exports = router;

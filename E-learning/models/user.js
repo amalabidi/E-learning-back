@@ -36,14 +36,20 @@ const userSchema = new mongoose.Schema({
 
     }, 
      habilitation : {
-        type : [String] 
+        type : String ,
+        required : true
     }
     , 
     permissions : {
-        type:[String]
+        type:[String],
+        enum : ["","","",""]
     }, 
     secondaryPermissions : {
         type:[String]
+    },
+    users : {
+        type:[String] , 
+         
     },
       authorisedConnection : {
            type : Boolean
@@ -52,10 +58,10 @@ const userSchema = new mongoose.Schema({
          type:[String]
      }})
 
-const User = mongoose.model('User',userSchema) ; 
+     userSchema.methods.generateToken = function () {
+        return jwt.sign({_id: this._id, name: this.name, email: this.email, lastname: this.lastname}, "jwtPrivateKey");
+    }
 
-userSchema.methods.generateToken = function () {
-    return jwt.sign({_id: this._id, name: this.name, email: this.email, lastname: this.lastname}, "jwtPrivateKey");
-}
+const User = mongoose.model('User',userSchema) ; 
 
 exports.User=User ; 
