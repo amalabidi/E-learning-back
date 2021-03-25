@@ -3,6 +3,7 @@ const { Workshop } = require("../modules/workshop");
 
 router.post("/", async (req, res) => {
   const {
+    certification,
     coutCertification,
     prestataireCertification,
     intituleCertification,
@@ -27,10 +28,11 @@ router.post("/", async (req, res) => {
     Url_formation,
     prestataire_Elearning,
     cout_Elearning,
+    date_modif,
   } = req.body;
-
   try {
     const workshop = new Workshop({
+      certification: certification,
       intitule: intitule,
       CoutCertification: coutCertification,
       PrestataireCertification: prestataireCertification,
@@ -47,18 +49,18 @@ router.post("/", async (req, res) => {
       type: type,
       tarif: tarif,
       designation: designation,
-      referance: referance,
+      reference: referance,
       nombre_Heures: nombre_Heures,
       code_tarif: code_tarif,
       code_BFP: code_BFP,
-      Url_formation: Url_formation,
+      Url_Formation: Url_formation,
       environment: environment,
       prestataire_Elearning: prestataire_Elearning,
       Cout_Elearning: cout_Elearning,
+      date_modif:date_modif,
     });
-
+    console.log("workshop",workshop)
     const results = await workshop.save();
-
     res.send(results);
   } catch (ex) {
     res.send(ex);
@@ -81,6 +83,7 @@ router.delete("/:id", async (req, res) => {
 router.put("/", async (req, res) => {
   try {
     const {
+      certification,
       coutCertification,
       prestataireCertification,
       intituleCertification,
@@ -105,10 +108,12 @@ router.put("/", async (req, res) => {
       Url_formation,
       prestataire_Elearning,
       cout_Elearning,
+      date_modif,
     } = req.body;
-    const filter = { _id: req.body.id };
-
+    const filter = { _id: req.body._id };
+    console.log('filter',req.body.nombre_Heures)
     const update = {
+      certification,
       coutCertification,
       prestataireCertification,
       intituleCertification,
@@ -133,12 +138,13 @@ router.put("/", async (req, res) => {
       Url_formation,
       prestataire_Elearning,
       cout_Elearning,
+      date_modif
     };
-
+    
     let workshops = await Workshop.findByIdAndUpdate(filter, update, {
       new: true,
     });
-
+    console.log("update",workshops.tarif)
     res.send(workshops);
   } catch (ex) {
     res.send(ex);
@@ -146,7 +152,16 @@ router.put("/", async (req, res) => {
 });
 router.get("/etat", async (req, res) => {
   try {
-    const results = await Workshop.find({ etat: true });
+    const results = await Workshop.find({ "etat": true });
+    res.send(results);
+  } catch (ex) {
+    res.send(ex);
+  }
+});
+router.get("/:id", async (req, res) => {
+  const {id}=req.params;
+  try {
+    const results = await Workshop.find({ "_id":id });
     res.send(results);
   } catch (ex) {
     res.send(ex);

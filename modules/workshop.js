@@ -25,7 +25,7 @@ const WorkshopSchema = new mongoose.Schema({
   reference: {
     type: String,
   },
-  nombres_Heures: {
+  nombre_Heures: {
     type: Number,
   },
   tarif: {
@@ -82,10 +82,16 @@ const WorkshopSchema = new mongoose.Schema({
   public: {
     type: String,
   },
+  certification: {
+    type: String,
+  },
   contenu: {
     type: String,
     maxlength: 4000,
   },
+  date_modif: {
+    type: Date,
+  }
 });
 
 // Creating a model from a Schema

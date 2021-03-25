@@ -25,7 +25,7 @@ router.get("/", async (req, res) => {
 });
 router.get("/etat", async (req, res) => {
   try {
-    const results = await Type.find({ actif: true });
+    const results = await Environment.find({ actif: true });
     res.send(results);
   } catch (ex) {
     res.send(ex);
@@ -35,7 +35,7 @@ router.get("/etat", async (req, res) => {
 router.put("/", async (req, res) => {
   try {
     const { actif, environment } = req.body;
-    const filter = { _id: req.body.id };
+    const filter = { _id: req.body._id };
 
     const update = {
       actif,
@@ -63,6 +63,10 @@ router.get("/search/:search", async (req, res) => {
   } else {
     res.send("no environment");
   }
+});
+router.delete("/:id", async (req, res) => {
+  const environments = await Environment.findByIdAndDelete(req.params.id).exec();
+  res.send("success");
 });
 
 module.exports = router;
