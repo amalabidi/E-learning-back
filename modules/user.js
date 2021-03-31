@@ -36,13 +36,15 @@ const userSchema = new mongoose.Schema({
 
     }, 
      habilitation : {
-        type : String ,
+        type : [String] ,
         required : true
-    }
-    , 
+    },
+    token : {
+        type : String ,
+    }, 
     permissions : {
         type:[String],
-        enum : ["","","",""]
+        /*enum : ["","","",""]*/
     }, 
     secondaryPermissions : {
         type:[String]
@@ -54,7 +56,7 @@ const userSchema = new mongoose.Schema({
       authorisedConnection : {
            type : Boolean
      } , 
-     groupredActions : { 
+     groupedAction : { 
          type:[String]
      }})
 

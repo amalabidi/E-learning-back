@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-const {User} = require('../models/user'); 
+const {User} = require('../modules/user'); 
 const bcrypt = require("bcrypt");
 
 /* GET users listing. */
@@ -54,7 +54,7 @@ router.post('/', async function(req,res,next){
     secondaryPermissions,
     authorisedConnection,users,
     groupedAction } = req.body ;
-
+      console.log(req.body)
       try {  
             const oldUser = await User.find({email:email});
             if(oldUser.length!=0){
@@ -63,7 +63,9 @@ router.post('/', async function(req,res,next){
               const hashedPassword = await bcrypt.hash(password, 10); 
         const user = new User({name,lastname,email,hashedPassword,mobile,company,habilitation,users,permissions,secondaryPermissions,authorisedConnection,groupedAction}) ; 
         // Saving the user in the database
+        console.log("user",user)
         const results = await user.save();
+        console.log("results",results)
         token = user.generateToken();
         res.header("x-auth-token", token).send(results);
       }
