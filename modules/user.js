@@ -49,6 +49,9 @@ const userSchema = new mongoose.Schema({
     secondaryPermissions : {
         type:[String]
     },
+    provenances : {
+        type:[String]
+    },
     users : {
         type:[String] , 
          

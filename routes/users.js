@@ -52,6 +52,7 @@ router.post('/', async function(req,res,next){
     habilitation,
     permissions,
     secondaryPermissions,
+    provenances,
     authorisedConnection,users,
     groupedAction } = req.body ;
       console.log(req.body)
@@ -61,7 +62,7 @@ router.post('/', async function(req,res,next){
               res.send({error:"adresse already exist"}) ;      
             }else{
               const hashedPassword = await bcrypt.hash(password, 10); 
-        const user = new User({name,lastname,email,hashedPassword,mobile,company,habilitation,users,permissions,secondaryPermissions,authorisedConnection,groupedAction}) ; 
+        const user = new User({name,lastname,email,hashedPassword,mobile,company,habilitation,provenances,users,permissions,secondaryPermissions,authorisedConnection,groupedAction}) ; 
         // Saving the user in the database
         console.log("user",user)
         const results = await user.save();
@@ -117,7 +118,7 @@ router.put('/',/*auth,  admin],*/ async (req, res) => {
         res.send({error:error["message"]}) ; 
       }else{ 
 
-        const {name, email,lastname,mobile,company,habilitation,permissions,secondaryPermissions,users,authorisedConnection,groupedAction} = req.body;
+        const {name, email,lastname,mobile,company,habilitation,permissions,secondaryPermissions,provenances,users,authorisedConnection,groupedAction} = req.body;
         
         let olduser = await User.findOne({email: email});
         if (!olduser) {
@@ -127,7 +128,7 @@ router.put('/',/*auth,  admin],*/ async (req, res) => {
       }else{
        const hashedPassword=olduser.hashedPassword;
     // verifying if the new email is an admin email or not 
-      const filter = {"_id": olduser.id};
+      const filter = {"_id": olduser._id};
       const update = {
       name,
       lastname,
@@ -137,11 +138,12 @@ router.put('/',/*auth,  admin],*/ async (req, res) => {
       habilitation,
       permissions,
       secondaryPermissions,
+      provenances,
       authorisedConnection,users,
       groupedAction
       };
       let user = await User.findOneAndUpdate(filter, update, {new: true})
-      
+      console.log(usrer)
       newtoken = user.generateToken();
       res.header("x-auth-token", newtoken).send(user);
   }}} 
