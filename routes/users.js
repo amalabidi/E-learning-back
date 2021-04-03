@@ -39,11 +39,21 @@ router.get('/permissions', async function (req, res, next) {
   }
 });
 
-
+router.get("/:id", async (req, res) => {
+  const {id}=req.params;
+  try {
+    const results = await User.find({ "_id":id });
+    res.send(results);
+  } catch (ex) {
+    res.send(ex);
+  }
+});
 
 /* User ADD */
 router.post('/', async function (req, res, next) {
-  const { name,
+  const { 
+    admin,
+    name,
     lastname,
     password,
     email,
@@ -55,18 +65,15 @@ router.post('/', async function (req, res, next) {
     provenances,
     authorisedConnection, users,
     groupedAction } = req.body;
-  console.log(req.body)
   try {
     const oldUser = await User.find({ email: email });
     if (oldUser.length != 0) {
       res.send({ error: "adresse already exist" });
     } else {
       const hashedPassword = await bcrypt.hash(password, 10);
-      const user = new User({ name, lastname, email, hashedPassword, mobile, company, habilitation, provenances, users, permissions, secondaryPermissions, authorisedConnection, groupedAction });
+      const user = new User({ admin, name, lastname, email, hashedPassword, mobile, company, habilitation, provenances, users, permissions, secondaryPermissions, authorisedConnection, groupedAction });
       // Saving the user in the database
-      console.log("user", user)
       const results = await user.save();
-      console.log("results", results)
       token = user.generateToken();
       res.header("x-auth-token", token).send(results);
     }
@@ -148,7 +155,6 @@ router.put('/',/*auth,  admin],*/ async (req, res) => {
           groupedAction
         };
         let user = await User.findOneAndUpdate(filter, update, { new: true })
-        console.log(usrer)
         newtoken = user.generateToken();
         res.header("x-auth-token", newtoken).send(user);
       }

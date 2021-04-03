@@ -4,7 +4,9 @@ const {JsonWebTokenError} = require('jsonwebtoken');
 const jwt = require('jsonwebtoken');
 
 const userSchema = new mongoose.Schema({
-
+    admin : {
+        type : Boolean
+  } , 
     name: {
         type : String , 
         required : true 
