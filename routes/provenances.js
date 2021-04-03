@@ -53,9 +53,9 @@ router.put("/", async (req, res) => {
 });
 
 router.delete("/:id", async (req, res) => {
-  console.log("1");
+
   const provenance = await Provenance.findByIdAndDelete(req.params.id).exec();
-  console.log("2");
+
   res.send("success");
 });
 
