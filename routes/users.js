@@ -15,6 +15,20 @@ router.get('/', async function (req, res, next) {
 });
 
 
+/* GET same type users you need to pass habilitation . */
+router.get('/filter/', async function (req, res, next) {
+  try {
+    const {habilitation}=req.body;
+    // Find all Users in the database
+    const results = await User.find({"habilitation":habilitation});
+    console.log(results) ; 
+    res.send(results);
+  } catch (ex) {
+    res.send(ex);
+  }
+});
+
+
 /*Get user permissions */
 
 router.get('/permissions', async function (req, res, next) {
@@ -64,14 +78,22 @@ router.post('/', async function (req, res, next) {
     secondaryPermissions,
     provenances,
     authorisedConnection, users,
-    groupedAction } = req.body;
+    groupedAction 
+} = req.body;
+     
+   let {tarif , 
+    typeTarif} = req.body;
+    if(!(habilitation=="Coachs")||(habilitation=="Vendeur")){
+       tarif=0 ; 
+       typeTarif="";}
+
   try {
     const oldUser = await User.find({ email: email });
     if (oldUser.length != 0) {
       res.send({ error: "adresse already exist" });
     } else {
       const hashedPassword = await bcrypt.hash(password, 10);
-      const user = new User({ admin, name, lastname, email, hashedPassword, mobile, company, habilitation, provenances, users, permissions, secondaryPermissions, authorisedConnection, groupedAction });
+      const user = new User({ admin, name, lastname, email, hashedPassword, mobile, company, habilitation, provenances, users, permissions, secondaryPermissions, authorisedConnection, groupedAction,tarif,typeTarif });
       // Saving the user in the database
       const results = await user.save();
       token = user.generateToken();
@@ -103,9 +125,11 @@ router.post('/duplicate', async function (req, res, next) {
         permissions,
         secondaryPermissions,
         authorisedConnection,
-        groupedAction, users } = oldUser;
+        groupedAction, users,tarif, typeTarif } = oldUser;
 
-      const user = new User({ name, lastname, email, hashedPassword, mobile, company, users, habilitation, permissions, secondaryPermissions, authorisedConnection, groupedAction });
+
+
+      const user = new User({ name, lastname, email, hashedPassword, mobile, company, users, habilitation, permissions, secondaryPermissions, authorisedConnection, groupedAction,tarif,typeTarif });
       // Saving the user in the database
       const results = await user.save();
       res.send(results);
@@ -152,8 +176,9 @@ router.put('/',/*auth,  admin],*/ async (req, res) => {
           secondaryPermissions,
           provenances,
           authorisedConnection, users,
-          groupedAction
+          groupedAction,tarif,typeTarif
         };
+
         let user = await User.findOneAndUpdate(filter, update, { new: true })
         newtoken = user.generateToken();
         res.header("x-auth-token", newtoken).send(user);
@@ -165,6 +190,7 @@ router.put('/',/*auth,  admin],*/ async (req, res) => {
     res.send(ex);
   }
 })
+
 
 
 

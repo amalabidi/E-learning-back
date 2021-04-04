@@ -38,7 +38,7 @@ const userSchema = new mongoose.Schema({
 
     }, 
      habilitation : {
-        type : [String] ,
+        type : String ,
         required : true
     },
     token : {
@@ -63,7 +63,14 @@ const userSchema = new mongoose.Schema({
      } , 
      groupedAction : { 
          type:[String]
-     }})
+     },
+    tarif : {
+        type:Number
+    } , 
+    typeTarif:{
+        type:String 
+    }
+    })
 
      userSchema.methods.generateToken = function () {
         return jwt.sign({_id: this._id, name: this.name, email: this.email, lastname: this.lastname}, "jwtPrivateKey");
