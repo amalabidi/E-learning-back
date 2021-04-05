@@ -39,7 +39,7 @@ const dossierSchema = new mongoose.Schema({
     } ,
      client : {
         type : String , 
-        required : true 
+       // required : true 
     } , 
     confidentialObservation : {
         type : String
@@ -49,6 +49,42 @@ const dossierSchema = new mongoose.Schema({
     } , 
     tracking : {
         type : [String]
+    } , 
+    idWorkshop : {
+         type : String 
+    } ,
+    priseEnCharge : {
+        type : String , 
+        required : true , 
+        default : "CPF"
+    } , 
+    remise : {
+        type : String 
+    } , 
+    workshopBeginDate : {
+        type :String 
+    } , 
+    workshopEndDate : {
+        type : String
+    } , 
+    description : { // la formation a été 
+        type : String 
+    } , 
+    coaching :{
+        type : Boolean , 
+        default : false
+    },
+    coach : {
+        type : String 
+    } , 
+    certification : {
+      type : Boolean 
+    } , 
+    certificationId : {
+        type : String 
+    }, 
+    certificationPassword : {
+        type : String 
     }
     })    
 

@@ -6,6 +6,7 @@ const types = require("./routes/types");
 const workshops = require("./routes/workshops");
 const provenances = require("./routes/provenances");
 const users = require("./routes/users");
+const dossiers = require("./routes/dossiers") ; 
 const auth = require("./routes/authentication");
 const app = express();
 app.use(express.json());
@@ -31,6 +32,7 @@ app.use("/workshop", workshops);
 app.use("/provenance", provenances);
 app.use("/user", users);
 app.use("/auth", auth);
+app.use("/dossier" , dossiers) ; 
 //choose the backend port
 const port = process.env.PORT || 3001;
 
