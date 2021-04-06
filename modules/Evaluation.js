@@ -1,32 +1,32 @@
 const mongoose = require("mongoose");
 
 const EvaluationSchema = new mongoose.Schema({
-  Attentes: {
+  attentes: {
     type: [String],
   },
   duree: {
     type: String,
   },
-  ProchainesAttentes: {
+  prochainesAttentes: {
     type: String,
   },
   autorisation: {
     type: Boolean,
     default: false,
   },
-  Estimation: {
+  estimation: {
     type: String,
   },
-  QuestionsRestées: {
+  questionsRestées: {
     type: Boolean,
   },
-  AvisPasserelle: {
+  avisPasserelle: {
     type: String,
   },
-  AvisExplication: {
+  avisExplication: {
     type: String,
   },
-  Suggestions: {
+  suggestions: {
     type: String,
   },
 });

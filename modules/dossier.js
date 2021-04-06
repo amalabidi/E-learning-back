@@ -39,7 +39,7 @@ const dossierSchema = new mongoose.Schema({
     } ,
      client : {
         type : String , 
-       // required : true 
+        required : true 
     } , 
     confidentialObservation : {
         type : String
@@ -62,12 +62,12 @@ const dossierSchema = new mongoose.Schema({
         type : String 
     } , 
     workshopBeginDate : {
-        type :String 
+        type :Date
     } , 
     workshopEndDate : {
-        type : String
+        type : Date
     } , 
-    description : { // la formation a été 
+    workshopDescription : { // la formation a été 
         type : String 
     } , 
     coaching :{
@@ -81,11 +81,38 @@ const dossierSchema = new mongoose.Schema({
       type : Boolean 
     } , 
     certificationId : {
-        type : String 
+        type : String  , 
+        default : false
     }, 
     certificationPassword : {
         type : String 
+    } , 
+    appointments : {
+        type : [Date],
+        maxlength : 4
+    } , 
+    performedAppointments : {
+        type:[Boolean] , 
+        required: function() {
+            return this.performedAppointments.length < 3;
+          }
+    } , 
+    appointmentsObservation:{
+        type:[String]
+    } ,
+     preEvaluation : {
+        type : String 
+    },
+    evaluation : {
+          type :String 
+    },
+    crCoach : {
+        type : String
+    } , 
+    facturation : {
+        type : String 
     }
+    
     })    
 
 const Dossier = mongoose.model('Dossier',dossierSchema) ; 

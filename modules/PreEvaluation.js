@@ -8,16 +8,16 @@ const PreEvaluationSchema = new mongoose.Schema({
   niveau: {
     type: String,
   },
-  NiveauEstimation: {
+  niveauEstimation: {
     type: String,
   },
   note: {
     type: String,
   },
-  Grammaire: {
+  grammaire: {
     type: [String],
   },
-  Vocabulaire: {
+  vocabulaire: {
     type: [String],
   },
   comprehensionOrale: {

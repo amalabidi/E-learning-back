@@ -1,23 +1,23 @@
 const mongoose = require("mongoose");
 
 const CRCoachSchema = new mongoose.Schema({
-  Connaissance: {
+  connaissance: {
     type: Boolean,
     default: false,
   },
-  CorrespondanceFormation: {
+  correspondanceFormation: {
     type: Boolean,
   },
-  ImplicationStagiaire: {
+  implicationStagiaire: {
     type: Boolean,
   },
-  CompteRenduFormation: {
+  compteRenduFormation: {
     type: String,
   },
-  ProgrammeVu: {
+  programmeVu: {
     type: Boolean,
   },
-  ProgressionStagiaire: {
+  progressionStagiaire: {
     type: Boolean,
   },
 });
