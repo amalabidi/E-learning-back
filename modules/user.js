@@ -4,7 +4,10 @@ const {JsonWebTokenError} = require('jsonwebtoken');
 const jwt = require('jsonwebtoken');
 
 const userSchema = new mongoose.Schema({
-
+    admin : {
+        type : Boolean , 
+        default : false
+  } , 
     name: {
         type : String , 
         required : true 
@@ -38,13 +41,18 @@ const userSchema = new mongoose.Schema({
      habilitation : {
         type : String ,
         required : true
-    }
-    , 
+    },
+    token : {
+        type : String ,
+    }, 
     permissions : {
         type:[String],
-        enum : ["","","",""]
+        /*enum : ["","","",""]*/
     }, 
     secondaryPermissions : {
+        type:[String]
+    },
+    provenances : {
         type:[String]
     },
     users : {
@@ -54,9 +62,16 @@ const userSchema = new mongoose.Schema({
       authorisedConnection : {
            type : Boolean
      } , 
-     groupredActions : { 
+     groupedAction : { 
          type:[String]
-     }})
+     },
+    tarif : {
+        type:Number
+    } , 
+    typeTarif:{
+        type:String 
+    }
+    })
 
      userSchema.methods.generateToken = function () {
         return jwt.sign({_id: this._id, name: this.name, email: this.email, lastname: this.lastname}, "jwtPrivateKey");

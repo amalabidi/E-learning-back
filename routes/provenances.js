@@ -37,17 +37,15 @@ router.get("/etat", async (req, res) => {
 router.put("/", async (req, res) => {
   try {
     const { actif, provenance } = req.body;
-    const filter = { _id: req.body.id };
+    const filter = { _id: req.body._id };
 
     const update = {
       actif,
       provenance,
     };
-
     let provenances = await Provenance.findByIdAndUpdate(filter, update, {
       new: true,
     });
-
     res.send(provenances);
   } catch (ex) {
     res.send(ex);
@@ -55,9 +53,9 @@ router.put("/", async (req, res) => {
 });
 
 router.delete("/:id", async (req, res) => {
-  console.log("1");
+
   const provenance = await Provenance.findByIdAndDelete(req.params.id).exec();
-  console.log("2");
+
   res.send("success");
 });
 

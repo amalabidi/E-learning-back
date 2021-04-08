@@ -23,6 +23,7 @@ router.get("/", async (req, res) => {
     res.send(ex);
   }
 });
+
 router.get("/etat", async (req, res) => {
   try {
     const results = await Environment.find({ actif: true });
@@ -30,7 +31,8 @@ router.get("/etat", async (req, res) => {
   } catch (ex) {
     res.send(ex);
   }
-});
+ });
+
 
 router.put("/", async (req, res) => {
   try {

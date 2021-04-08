@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const {User} = require("../models/user");
+const {User} = require("../modules/user");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 
@@ -17,6 +17,7 @@ router.post('/', async (req, res) => {
         }else{
         if (await bcrypt.compare(req.body.password, user.hashedPassword)) {
             token = user.generateToken();
+            user.token=token
             res.header("x-auth-token", token).send(user);
         } else {
            
