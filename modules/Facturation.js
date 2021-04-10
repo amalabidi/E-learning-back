@@ -64,15 +64,19 @@ const FacturationSchema = new mongoose.Schema({
   },
   NFacturation: {
     type: String,
+    default: null,
   },
   DateFacturation: {
-    type: String,
+    type: Date,
+    default: Date.now,
   },
   NAvoir: {
     type: String,
+    default: null,
   },
   DateAvoir: {
-    type: String,
+    type: Date,
+    default: Date.now,
   },
 });
 const Facturation = mongoose.model("Facturation", FacturationSchema);
