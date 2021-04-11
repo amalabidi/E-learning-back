@@ -14,13 +14,17 @@
     "cloudinary": "^1.23.0",
     "config": "^3.3.3",
     "cors": "^2.8.5",
+    "docusign-esign": "^5.8.1",
     "dotenv": "^8.2.0",
     "express": "^4.17.1",
+    "fs-extra": "^9.1.0",
     "joi": "^17.3.0",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.11.1",
     "morgan": "^1.10.0",
     "nodemon": "^2.0.6",
-    "passport": "^0.4.1"
+    "passport": "^0.4.1",
+    "signrequest-client": "^1.1.1",
+    "validator": "^13.5.2"
   }
 }

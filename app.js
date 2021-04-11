@@ -9,6 +9,7 @@ const users = require("./routes/users");
 const dossiers = require("./routes/dossiers") ; 
 const auth = require("./routes/authentication");
 const app = express();
+const egg = require('./routes/embededSignature') ; 
 app.use(express.json());
 app.use(cors( {origin: 'http://localhost:4200'}));
 
@@ -33,6 +34,7 @@ app.use("/provenance", provenances);
 app.use("/user", users);
 app.use("/auth", auth);
 app.use("/dossier" , dossiers) ; 
+app.use('/signature',egg) ; 
 //choose the backend port
 const port = process.env.PORT || 3001;
 
