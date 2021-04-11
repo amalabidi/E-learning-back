@@ -86,12 +86,6 @@ apiInstance.documentsRead(uuid, callback);
 
 
 
-
-
-
-
-
-
 // create a document by giving it's url in the cloud  
 //it returns a document object that contains the url of the document  in the api 
 
