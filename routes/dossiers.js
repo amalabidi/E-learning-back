@@ -279,14 +279,22 @@ router.post("/", async (req, res) => {
 });
 
 router.post("/email", async (req, res) => {
-  const { subject, receivermail, message, path, filename } = req.body;
+  const {
+    subject,
+    receivermail,
+    message,
+    path,
+    senderEmail,
+    senderpassword,
+    filename,
+  } = req.body;
   var transport = nodemailer.createTransport({
-    /* host: "smtp-mail.gmail.com",
-    secureConnection: false,*/
-    service: "gmail",
+    host: "smtp.facacademy.fr",
+    secure: false,
+
     auth: {
-      user: "amalabidi111a b@gmail.com",
-      pass: "53816959",
+      user: senderEmail,
+      pass: senderpassword,
     },
     tls: {
       ciphers: "SSLv3",
@@ -294,7 +302,7 @@ router.post("/email", async (req, res) => {
     },
   });
   var mailOptions = {
-    from: "amalabidi111ab@gmail.com",
+    from: senderEmail,
     to: receivermail,
     subject: subject,
     text: message,

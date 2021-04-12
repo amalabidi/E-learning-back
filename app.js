@@ -6,12 +6,24 @@ const types = require("./routes/types");
 const workshops = require("./routes/workshops");
 const provenances = require("./routes/provenances");
 const users = require("./routes/users");
-const dossiers = require("./routes/dossiers") ; 
+const bodyParser = require("body-parser");
+const dossiers = require("./routes/dossiers");
 const auth = require("./routes/authentication");
+const uploads = require("./routes/uploads");
 const app = express();
 const egg = require('./routes/embededSignature') ; 
-app.use(express.json());
-app.use(cors( {origin: 'http://localhost:4200'}));
+
+
+/*app.use(express.json());*/
+app.use(
+  bodyParser.urlencoded({
+    limit: "50mb",
+    extended: true,
+    parameterLimit: 50000,
+  })
+);
+app.use(express.static("public"));
+app.use(cors({ origin: "http://localhost:4200" }));
 
 // connecting to mongodb
 
@@ -33,8 +45,13 @@ app.use("/workshop", workshops);
 app.use("/provenance", provenances);
 app.use("/user", users);
 app.use("/auth", auth);
+<<<<<<< HEAD
 app.use("/dossier" , dossiers) ; 
 app.use('/signature',egg) ; 
+=======
+app.use("/dossier", dossiers);
+app.use("/uploads", uploads);
+>>>>>>> sprint2/upload
 //choose the backend port
 const port = process.env.PORT || 3001;
 
