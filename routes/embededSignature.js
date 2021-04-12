@@ -30,6 +30,45 @@ router.get('/documents',async(req,res)=>{
     apiInstance.documentsList(opts, callback); 
 })
 
+// this route  returns  documents that  haave at least one signer with  a "need_to_sign" true  and
+// he didn't sign yet  .  it returns documents which are missing required signatures
+
+router.get('/documents/notsigned',async(req,res)=>{
+ 
+  var apiInstance = new SignrequestClient.DocumentsApi();
+  var list=new Array() ;
+  var opts = {
+    'page': 1,
+    'limit': 20000
+  };
+  
+  var callback = function(error, data, response)  {
+    if (error) {
+      console.error(error);
+    } else {
+      console.log('API called successfully. Returned data: ' + data);
+      var tab=JSON.parse(response["text"])["results"] ;
+
+      tab.forEach((element)=>{
+       
+        var signers = element["signrequest"]["signers"] ;
+           
+           for(i=0 ; i<signers.length ; i++){
+            
+              if(signers[i]["needs_to_sign"]&&(!signers[i]["signed"])){
+            
+                list.push(element) ;
+                 break ;
+               }
+          }
+
+          }) ;          
+        
+
+        res.send(list); }}
+  apiInstance.documentsList(opts, callback); 
+})
+
 
 // retrieve created documents   and return their uuids  
 
@@ -55,6 +94,7 @@ router.get('/documents/uuid',async(req,res)=>{
         res.send(list);
       }
     };
+
     apiInstance.documentsList(opts, callback); 
 })
 
@@ -124,13 +164,14 @@ router.post('/req' , async(req,res)=>{
 
 var data2 = new SignrequestClient.SignRequest();
 var apiInstance = new SignrequestClient.SignrequestsApi();
-var {file_url,signers , from_email} = req.body ;
+var {file_url,signers , from_email,send_reminders} = req.body ;
  
 
 
 data2.document = file_url;
 data2.signers = signers ; 
 data2.from_email = from_email;
+data2.send_reminders=send_reminders ; 
   
   var callback = function(error, data2, response) {
     if (error) {
@@ -159,12 +200,13 @@ router.post('/quickReq' , async(req,res)=>{
 
  var apiInstance = new SignrequestClient.SignrequestQuickCreateApi();
 var data = new SignrequestClient.SignRequestQuickCreate();
-var {file_from_url,signers , from_email} = req.body ;
+var {file_from_url,signers , from_email,send_reminders} = req.body ;
 
 data.signers = signers ;
 
 data.file_from_url = file_from_url;
 data.from_email = from_email;
+data.send_reminders=send_reminders ; 
 
 var callback = function(error, data, response) {
   if (error) {
