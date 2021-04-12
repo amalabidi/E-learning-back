@@ -44,14 +44,10 @@ app.use("/type", types);
 app.use("/workshop", workshops);
 app.use("/provenance", provenances);
 app.use("/user", users);
-app.use("/auth", auth);
-<<<<<<< HEAD
-app.use("/dossier" , dossiers) ; 
+app.use("/auth", auth); 
 app.use('/signature',egg) ; 
-=======
 app.use("/dossier", dossiers);
 app.use("/uploads", uploads);
->>>>>>> sprint2/upload
 //choose the backend port
 const port = process.env.PORT || 3001;
 
