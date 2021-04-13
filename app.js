@@ -10,6 +10,7 @@ const bodyParser = require("body-parser");
 const dossiers = require("./routes/dossiers");
 const auth = require("./routes/authentication");
 const uploads = require("./routes/uploads");
+const downloads = require("./routes/downloads");
 const app = express();
 /*app.use(express.json());*/
 app.use(
@@ -44,6 +45,7 @@ app.use("/user", users);
 app.use("/auth", auth);
 app.use("/dossier", dossiers);
 app.use("/uploads", uploads);
+app.use("/downloads", downloads);
 //choose the backend port
 const port = process.env.PORT || 3001;
 

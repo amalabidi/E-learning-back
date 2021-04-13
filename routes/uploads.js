@@ -31,6 +31,7 @@ router.post("/", upload.single("avatar"), async (req, res) => {
       },
       { $push: { files: avatar } }
     );
+
     console.log(result);
     res.send(result);
   } catch (ex) {
