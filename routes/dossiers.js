@@ -8,9 +8,19 @@ const { CRCoach } = require("../modules/CRCoach");
 const { Facturation } = require("../modules/Facturation");
 const nodemailer = require("nodemailer");
 
+
+
+router.post('/test',async function (req,res) {
+  
+console.log(req.body);
+res.send("hell") ; 
+
+})
+
 /* créer un nouveau dossier  */
 
 router.post("/", async (req, res) => {
+  console.log(req.body);
   var clientId = "";
   var preEvaluationId = "";
   var evaluationId = "";
@@ -329,6 +339,11 @@ router.get("/", async (req, res) => {
     res.send(ex);
   }
 });
+
+
+
+
+
 router.put("/", async (req, res) => {
   try {
     const {

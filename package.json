@@ -29,8 +29,8 @@
     "nodemailer": "^6.5.0",
     "nodemon": "^2.0.6",
     "passport": "^0.4.1",
+    "path": "^0.12.7",
     "signrequest-client": "^1.1.1",
-    "validator": "^13.5.2",
-    "path": "^0.12.7"
+    "validator": "^13.5.2"
   }
 }
