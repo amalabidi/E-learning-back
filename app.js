@@ -12,7 +12,7 @@ const auth = require("./routes/authentication");
 const uploads = require("./routes/uploads");
 const downloads = require("./routes/downloads");
 const app = express();
-/*app.use(express.json());*/
+app.use(express.json());
 app.use(
   bodyParser.urlencoded({
     limit: "50mb",

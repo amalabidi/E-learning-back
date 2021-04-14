@@ -329,6 +329,169 @@ router.get("/", async (req, res) => {
     res.send(ex);
   }
 });
+
+router.put("/coutElearning", async (req, res) => {
+  const { _id, cout } = req.body;
+
+  try {
+    console.log(_id);
+    console.log(cout);
+    let dossier = await Dossier.findById(_id);
+    console.log(dossier);
+    let idfacture = dossier["facturation"];
+    let a = await Facturation.findById(idfacture);
+    console.log(idfacture);
+
+    var result = await Facturation.findByIdAndUpdate(
+      { _id: idfacture },
+      {
+        CoutElearning: cout,
+      },
+      { new: true }
+    );
+    res.send(result);
+
+    console.log("done");
+    console.log(a);
+  } catch (e) {
+    res.send(e);
+  }
+});
+router.put("/coutCertification", async (req, res) => {
+  const { _id, cout } = req.body;
+
+  try {
+    let dossier = await Dossier.findById(_id);
+
+    let idfacture = dossier["facturation"];
+    var result = await Facturation.findByIdAndUpdate(
+      { _id: idfacture },
+      {
+        CoutCertification: cout,
+      },
+      { new: true }
+    );
+    res.send(result);
+  } catch (e) {
+    res.send(e);
+  }
+});
+router.put("/coutVendeur", async (req, res) => {
+  const { _id, cout } = req.body;
+
+  try {
+    let dossier = await Dossier.findById(_id);
+    let idfacture = dossier["facturation"];
+    var result = await Facturation.findByIdAndUpdate(
+      { _id: idfacture },
+      {
+        CoutVendeur: cout,
+      },
+      { new: true }
+    );
+    res.send(result);
+  } catch (e) {
+    res.send(e);
+  }
+});
+router.put("/coutCoach", async (req, res) => {
+  const { _id, cout } = req.body;
+
+  try {
+    let dossier = await Dossier.findById(_id);
+
+    let idfacture = dossier["facturation"];
+
+    var result = await Facturation.findByIdAndUpdate(
+      { _id: idfacture },
+      {
+        CoutCoach: cout,
+      },
+      { new: true }
+    );
+    res.send(result);
+  } catch (e) {
+    res.send(e);
+  }
+});
+router.put("/statut", async (req, res) => {
+  const { _id, statut } = req.body;
+
+  try {
+    var result = await Dossier.findByIdAndUpdate(
+      { _id: _id },
+      {
+        statusCall: statut,
+      },
+      { new: true }
+    );
+    res.send(result);
+  } catch (e) {
+    res.send(e);
+  }
+});
+router.put("/vendeur", async (req, res) => {
+  const { _id, vendeur } = req.body;
+
+  try {
+    var result = await Dossier.findByIdAndUpdate(
+      { _id: _id },
+      {
+        vendeur: vendeur,
+      },
+      { new: true }
+    );
+    res.send(result);
+  } catch (e) {
+    res.send(e);
+  }
+});
+router.put("/provenance", async (req, res) => {
+  const { _id, provenance } = req.body;
+
+  try {
+    var result = await Dossier.findByIdAndUpdate(
+      { _id: _id },
+      {
+        provenance: provenance,
+      },
+      { new: true }
+    );
+    res.send(result);
+  } catch (e) {
+    res.send(e);
+  }
+});
+
+router.get("/search/:search", async (req, res) => {
+  const { search } = req.params;
+
+  var dossiers = [];
+  if (search) {
+    Client.aggregate([
+      { $project: { name: { $concat: ["$firstName", " ", "$lastName"] } } },
+      { $match: { name: { $regex: search, $options: "i" } } },
+    ]).exec(async function (err, results) {
+      console.log(results);
+      for (i = 0; i < results.length; i++) {
+        const clientid = results[i]["_id"];
+        const dossier = await Dossier.find({ client: clientid });
+        for (k = 0; k < dossier.length; k++) {
+          dossiers.push(dossier[k]);
+        }
+      }
+      res.send(dossiers);
+    });
+  } else {
+    res.send("no search");
+  }
+});
+
+router.delete("/:id", async (req, res) => {
+  const types = await Type.findByIdAndDelete(req.params.id).exec();
+  res.send("success");
+});
+
 router.put("/", async (req, res) => {
   try {
     const {
