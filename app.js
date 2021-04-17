@@ -14,14 +14,14 @@ const app = express();
 const egg = require('./routes/embededSignature') ; 
 
 
-/*app.use(express.json());*/
-app.use(
-  bodyParser.urlencoded({
-    limit: "50mb",
-    extended: true,
-    parameterLimit: 50000,
-  })
-);
+app.use(express.json());
+//app.use(
+//  bodyParser.urlencoded({
+//    limit: "50mb",
+//    extended: true,
+//    parameterLimit: 50000,
+//  })
+//);
 app.use(express.static("public"));
 app.use(cors({ origin: "http://localhost:4200" }));
 

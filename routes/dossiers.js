@@ -6,16 +6,202 @@ const { PreEvaluation } = require("../modules/PreEvaluation");
 const { Evaluation } = require("../modules/Evaluation");
 const { CRCoach } = require("../modules/CRCoach");
 const { Facturation } = require("../modules/Facturation");
+const {Provenance} = require("../modules/provenance");
+const  {User} = require("../modules/user");
 const nodemailer = require("nodemailer");
 
 
 
-router.post('/test',async function (req,res) {
+async function  getFactureAmount(id) {
+  try{
+
+    const Facture =  await Facturation.findOne({_id:id}) ; 
+    return Facture.MontantFacture ; 
+
+  } catch (e){
+  }
+}
+
+
+async function getVendeurName(id) {
+  try{
+
+    const user =  await User.findOne({_id:id}) ; 
+    
+    return user.name +" "+ user.lastname ; 
+
+  } catch (e){
+  }
+}
+
+async function getProvenanceName(id) {
+  try{
+
+    const provenance =  await Provenance.findOne({_id:id}) ; 
+    return provenance.provenance ; 
+
+  } catch (e){
+  }
+}
+
+
+router.get('/totalsByStatus',  async function (req,res) {
+  const status = req.body["status"]  ;
+  try{
+  const results = await Dossier.find({status:status}).populate("facturation") ; 
   
-console.log(req.body);
-res.send("hell") ; 
+  var total=0.0  ;
+   
+  for (var i=0 ; i<results.length ; i++){ 
+    if(results[i].facturation){
+     try{
+       total+= results[i].facturation.MontantFacture ;    
+      } catch(e) {
+      res.status(408).send("erreur dans le dossier "+results[i]._id) 
+     }
+     
+    }
+  }  res.send({"total":total}) ; 
+ }catch (e){
+    res.status(409).send("erreur dans le dossier" + e )   }
+})
+
+
+router.get('/totalsByDateVendeur',  async function (req,res) {
+  const beginDate = req.body["beginDate"]  ;
+  const endDate = req.body["endDate"] ; 
+  
+  try{
+    // get all the folders created in  that periode
+  const results = await Dossier.aggregate([
+    {
+      $match : { "createdAt": { $gte: new Date(beginDate), $lte: new Date(endDate) } }
+    } ,
+    {$group:{"_id":"$_id","vendeur":{"$first":"$vendeur"},"facture":{"$first":"$facturation"}}},]);
+         
+     var lt = {}
+     var totalamount2 = 0.0 ;  
+     for (i = 0 ; i< results.length ; i++){
+        const vendeur = results[i]["vendeur"] ;
+        const ammount = await getFactureAmount( results[i]["facture"]);
+        totalamount2+= ammount ;
+        if( lt[vendeur]!=null){
+          
+          lt[vendeur]["nbdossiers"]++ ; 
+          lt[vendeur]["totalamount"]+=ammount;
+        
+        }else{
+         
+          lt[vendeur]={ "vendeur":vendeur,"nbdossiers":1,"totalamount": ammount };
+
+     }}
+
+        for(const j in lt ){  
+          //console.log(await getVendeurName(lt[j]["vendeur"]) ) ;      
+          lt[j]["vendeur"] = await getVendeurName(lt[j]["vendeur"]) ;
+        }  
+          res.send({"result":lt , "finalnbdossier":results.length , "finaltotalamount":totalamount2});     
+}
+  catch(e) {
+
+    res.send(e);
+  }
 
 })
+
+
+
+
+router.get('/totalsByDateProvenance',  async function (req,res) {
+  const beginDate = req.body["beginDate"]  ;
+  const endDate = req.body["endDate"] ; 
+  
+  try{
+    // get all the folders created in  that periode
+  const results = await Dossier.aggregate([
+    {
+      $match : { "createdAt": { $gte: new Date(beginDate), $lte: new Date(endDate) } }
+    } ,
+    {$group:{"_id":"$_id","provenance":{"$first":"$provenance"},"facture":{"$first":"$facturation"}}},]);
+         
+     var lt = {}
+     var totalamount2 = 0.0 ;  
+
+     for (i = 0 ; i< results.length ; i++){ 
+        const provenance = results[i]["provenance"] ;
+        const ammount = await getFactureAmount( results[i]["facture"]);
+        totalamount2+= ammount ;
+        if( lt[provenance]!=null){
+          
+          lt[provenance]["nbdossiers"]++ ; 
+          lt[provenance]["totalamount"]+=ammount;
+        
+        }else{
+         
+          lt[provenance]={"provenance":provenance,"nbdossiers":1,"totalamount": ammount };
+
+     }}
+      
+    for(const j in lt ){       
+      lt[j]["provenance"] = await getProvenanceName(lt[j]["provenance"]) ;
+    } 
+
+          res.send({"result":lt , "finalnbdossier":results.length , "finaltotalamount":totalamount2});     
+}
+  catch(e) {
+
+    res.send(e);
+  }
+
+})
+
+
+
+router.get('/totalsByDateProFor',  async function (req,res) {
+  const beginDate = req.body["beginDate"]  ;
+  const endDate = req.body["endDate"] ; 
+  
+  try{
+    // get all the folders created in  that periode
+  const results = await Dossier.aggregate([
+    {
+      $match : { "createdAt": { $gte: new Date(beginDate), $lte: new Date(endDate) } , "status":"En Formation" }
+    } ,
+    {$group:{"_id":"$_id","provenance":{"$first":"$provenance"},"facture":{"$first":"$facturation"}}},]);
+         
+     var lt = {}
+     var totalamount2 = 0.0 ;  
+
+     for (i = 0 ; i< results.length ; i++){ 
+        const provenance = results[i]["provenance"] ;
+        const ammount = await getFactureAmount( results[i]["facture"]);
+        totalamount2+= ammount ;
+        if( lt[provenance]!=null){
+          
+          lt[provenance]["nbdossiers"]++ ; 
+          lt[provenance]["totalamount"]+=ammount;
+        
+        }else{
+         
+          lt[provenance]={"provenance":provenance,"nbdossiers":1,"totalamount": ammount };
+
+     }}
+      
+    for(const j in lt ){       
+      lt[j]["provenance"] = await getProvenanceName(lt[j]["provenance"]) ;
+    } 
+
+          res.send({"result":lt , "finalnbdossier":results.length , "finaltotalamount":totalamount2});     
+}
+  catch(e) {
+
+    res.send(e);
+  }
+
+})
+
+
+
 
 /* créer un nouveau dossier  */
 

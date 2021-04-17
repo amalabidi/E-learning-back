@@ -1,5 +1,5 @@
 var mongoose = require("mongoose");
-
+var Schema = mongoose.Schema;
 const dossierSchema = new mongoose.Schema({
   status: {
     type: String,
@@ -9,14 +9,17 @@ const dossierSchema = new mongoose.Schema({
     required: true,
   },
   provenance: {
-    type: String,
-    required: true,
+    type: Schema.Types.ObjectId,
+    ref:"Provenance"
   },
   statusCall: {
     type: String,
     required: true,
   },
-  vendeur: { type: String, required: true },
+  vendeur: {  
+    type: Schema.Types.ObjectId,
+    ref:"User",
+     required: true },
   categorie: {
     type: String,
     required: true,
@@ -108,13 +111,14 @@ const dossierSchema = new mongoose.Schema({
     type: String,
   },
   facturation: {
-    type: String,
+   type: Schema.Types.ObjectId,
+   ref:"Facturation"
   },
   files: {
     type: [String],
     default: [],
   },
-});
+},{ timestamps: true });
 
 const Dossier = mongoose.model("Dossier", dossierSchema);
 
