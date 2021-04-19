@@ -813,5 +813,14 @@ router.put("/", async (req, res) => {
     res.status(211).send(e);
   }
 });
+router.get("/uploads/:id", async (req, res) => {
+  try {
+    const dossier = await Dossier.find({ _id: req.params.id });
+    const results = dossier[0]["files"];
+    res.send(results);
+  } catch (ex) {
+    res.send(ex);
+  }
+});
 
 module.exports = router;

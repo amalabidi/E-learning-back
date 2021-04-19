@@ -9,7 +9,7 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     const { originalname } = file;
-    filepath = `./uploads/${originalname}`;
+    filepath = `${originalname}`;
     req.body.avatar = filepath;
     cb(
       null,
