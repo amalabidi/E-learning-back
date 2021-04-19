@@ -37,7 +37,8 @@ const dossierSchema = new mongoose.Schema({
     type: Date,
   },
   client: {
-    type: String,
+    type: Schema.Types.ObjectId,
+     ref:"Client",
     required: true,
   },
   confidentialObservation: {
@@ -51,7 +52,8 @@ const dossierSchema = new mongoose.Schema({
     type: [String],
   },
   idWorkshop: {
-    type: String,
+    type: Schema.Types.ObjectId,
+   ref:"Workshop"
   },
   priseEnCharge: {
     type: String,

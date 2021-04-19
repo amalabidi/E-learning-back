@@ -11,7 +11,8 @@ const dossiers = require("./routes/dossiers");
 const auth = require("./routes/authentication");
 const uploads = require("./routes/uploads");
 const app = express();
-const egg = require('./routes/embededSignature') ; 
+const sig = require('./routes/embededSignature') ; 
+const exp = require('./routes/export'); 
 
 
 app.use(express.json());
@@ -45,13 +46,18 @@ app.use("/workshop", workshops);
 app.use("/provenance", provenances);
 app.use("/user", users);
 app.use("/auth", auth); 
-app.use('/signature',egg) ; 
+app.use('/signature',sig) ; 
 app.use("/dossier", dossiers);
 app.use("/uploads", uploads);
+app.use("/export", exp);
 //choose the backend port
 const port = process.env.PORT || 3001;
+
+app.use("/public",express.static(__dirname+"/public"));
 
 //starting the backend server
 app.listen(port, () => console.log("listening on port:" + port));
 
 module.exports = app;
+
+
