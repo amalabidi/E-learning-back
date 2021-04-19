@@ -11,7 +11,10 @@ const dossiers = require("./routes/dossiers");
 const auth = require("./routes/authentication");
 const uploads = require("./routes/uploads");
 const downloads = require("./routes/downloads");
+const sig = require('./routes/embededSignature') ; 
+const exp = require('./routes/export'); 
 const app = express();
+
 app.use(express.json());
 app.use(
   bodyParser.urlencoded({
@@ -20,6 +23,7 @@ app.use(
     parameterLimit: 50000,
   })
 );
+
 app.use(express.static("public"));
 app.use(cors({ origin: "http://localhost:4200" }));
 
@@ -42,14 +46,23 @@ app.use("/type", types);
 app.use("/workshop", workshops);
 app.use("/provenance", provenances);
 app.use("/user", users);
-app.use("/auth", auth);
+app.use("/auth", auth); 
+app.use('/signature',sig) ; 
 app.use("/dossier", dossiers);
 app.use("/uploads", uploads);
+
 app.use("/downloads", downloads);
+
+app.use("/export", exp);
+
 //choose the backend port
 const port = process.env.PORT || 3001;
+
+app.use("/public",express.static(__dirname+"/public"));
 
 //starting the backend server
 app.listen(port, () => console.log("listening on port:" + port));
 
 module.exports = app;
+
+
