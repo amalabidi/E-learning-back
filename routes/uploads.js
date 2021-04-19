@@ -9,7 +9,7 @@ const storage = multer.diskStorage({
   },
   filename: function (req, file, cb) {
     const { originalname } = file;
-    filepath = `./uploads/${originalname}`;
+    filepath = `${originalname}`;
     req.body.avatar = filepath;
     cb(
       null,
@@ -31,6 +31,7 @@ router.post("/", upload.single("avatar"), async (req, res) => {
       },
       { $push: { files: avatar } }
     );
+
     console.log(result);
     res.send(result);
   } catch (ex) {
