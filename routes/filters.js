@@ -52,7 +52,7 @@ router.post("/", async (req, res) => {
       provenances,
       statusDossier,
     } = req.body;
-
+    console.log(vendeurs);
     const filters = {
       //size: (size) => size === 50 || size === 70,
       //color: (color) => ['blue', 'black'].includes(color.toLowerCase()),
@@ -180,11 +180,10 @@ router.post("/", async (req, res) => {
             return true;
           }
         }
-
         if (workshops == null) {
           return true;
         } else {
-          if (workshops.includes(Workshop.intitule)) return true;
+          if (workshops.includes(workshop.intitule)) return true;
         }
         return false;
       },
@@ -214,17 +213,17 @@ router.post("/", async (req, res) => {
       provenance: (provenance) => {
         if (provenances == null) {
           return true;
-        } else if (provenance.provenance == provenances) {
+        } else if (provenance.provenance.includes(provenances)) {
           return true;
         }
 
         return false;
       },
-      vendeur: (vendeur) => {
+      vendeur: (user) => {
         if (vendeurs == null) {
           return true;
         } else {
-          if (vendeurs.includes(vendeur.name)) {
+          if (vendeurs.includes(user.name)) {
             return true;
           }
         }
