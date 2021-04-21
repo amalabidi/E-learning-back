@@ -31,6 +31,8 @@ router.post("/", async (req, res) => {
     const dossiers = await Dossier.find({})
       .populate("facturation")
       .populate("idWorkshop")
+      .populate("vendeur")
+      .populate("provenance")
       .populate("client");
 
     const {
@@ -191,7 +193,7 @@ router.post("/", async (req, res) => {
       type: (type) => {
         if (types == null) {
           return true;
-        } else if (types == type) {
+        } else if (types.includes(type)) {
           return true;
         }
         return false;
@@ -199,13 +201,13 @@ router.post("/", async (req, res) => {
       statusCall: (statusCall) => {
         if (call == null) {
           return true;
-        } else if (call == statusCall) return true;
+        } else if (call.includes(statusCall)) return true;
         return false;
       },
       status: (status) => {
         if (statusDossier == null) {
           return true;
-        } else if (status == statusDossier) {
+        } else if (statusDossier.includes(status)) {
           return true;
         }
         return false;
