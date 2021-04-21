@@ -151,29 +151,6 @@ router.post("/", async (req, res) => {
           return false;
         }
       },
-      facturation: (facturation) => {
-        if (payementVendeur == null) {
-          if (payementCoach == null) {
-            return true;
-          }
-          if (facturation.CoachPaye == payementCoach) {
-            return true;
-          }
-          return false;
-        } else {
-          if (payementCoach == null) {
-            if (facturation.VendeurPaye == payementVendeur) {
-              return true;
-            }
-          }
-          if (
-            facturation.VendeurPaye == payementVendeur &&
-            facturation.CoachPaye == payementCoach
-          )
-            return true;
-          return false;
-        }
-      },
       idWorkshop: (workshop) => {
         if (Tarifs == null) {
           return true;
@@ -182,18 +159,9 @@ router.post("/", async (req, res) => {
             return true;
           }
         }
-
         return false;
       },
-      idWorkshop: (workshop) => {
-        if (workshops == null) {
-          return true;
-        } else {
-          if (workshop.intitule.includes(workshops)) return true;
-        }
-        return false;
-      },
-
+     
       type: (type) => {
         if (types == null) {
           return true;
@@ -222,7 +190,6 @@ router.post("/", async (req, res) => {
         } else if (provenance.provenance.includes(provenances)) {
           return true;
         }
-
         return false;
       },
       vendeur: (vendeur) => {
@@ -237,20 +204,64 @@ router.post("/", async (req, res) => {
       },
     };
 
+    const filters2 = {
+      idWorkshop: (workshop) => {
+        if (workshops == null) {
+          return true;
+        } else {
+          if (workshop.intitule.includes(workshops)) return true;
+        }
+        return false;
+      },
+      facturation: (facturation) => {
+        if (payementVendeur == null) {
+          if (payementCoach == null) {
+            return true;
+          }
+          if (facturation.CoachPaye == payementCoach) {
+            return true;
+          }
+          return false;
+        } else {
+          if (payementCoach == null) {
+            if (facturation.VendeurPaye == payementVendeur) {
+              return true;
+            }
+          }
+          if (
+            facturation.VendeurPaye == payementVendeur &&
+            facturation.CoachPaye == payementCoach
+          )
+            return true;
+          return false;
+        }
+      },
+    }
+
+
     try {
       const filterKeys = Object.keys(filters);
+
       const result = dossiers.filter((item) => {
         // validates all filter criteria
         return filterKeys.every((key) => {
           // ignores non-function predicates
           if (typeof filters[key] !== "function") return true;
           return filters[key](item[key]);
-        });
-      });
+        });}) ;
+          
+       const filterKeys2 = Object.keys(filters2) ; 
 
-      res.send(result);
-    } catch (e) {
-      res.status(200).send(filtered);
+       const result2 = result.filter((item) => {
+            // validates all filter criteria
+            return filterKeys2.every((key) => {
+              // ignores non-function predicates
+              if (typeof filters2[key] !== "function") return true;
+              return filters2[key](item[key]);
+            });});
+      res.send(result2);
+    }catch (er) {
+      res.status(400).send(er);
     }
   } catch (e) {
     res.status(404).send(e);
