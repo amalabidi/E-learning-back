@@ -182,10 +182,14 @@ router.post("/", async (req, res) => {
             return true;
           }
         }
+
+        return false;
+      },
+      idWorkshop: (workshop) => {
         if (workshops == null) {
           return true;
         } else {
-          if (workshops.includes(workshop.intitule)) return true;
+          if (workshop.intitule.includes(workshops)) return true;
         }
         return false;
       },
@@ -221,11 +225,11 @@ router.post("/", async (req, res) => {
 
         return false;
       },
-      vendeur: (user) => {
+      vendeur: (vendeur) => {
         if (vendeurs == null) {
           return true;
         } else {
-          if (vendeurs.includes(user.name)) {
+          if (vendeurs.includes(vendeur.name)) {
             return true;
           }
         }
