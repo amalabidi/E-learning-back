@@ -30,6 +30,7 @@ var router = express.Router();
 
 
 router.get("/",async (req,res)=>{
+
     try{
         
         const dossiers = await Dossier.find({})
@@ -39,7 +40,7 @@ router.get("/",async (req,res)=>{
       
         const { CreationDateMin , CreationDateMax , workshopBeginDateMin , workshopBeginDateMax,
              workshopEndDateMin, workshopEndDateMax
-            , dateFacturationMax, dateFacturationMin}= req.body; 
+            , dateFacturationMax, dateFacturationMin,payementVendeur,payementCoach,Tarifs}= req.body; 
 
        const filters = {
        //size: (size) => size === 50 || size === 70,
@@ -121,12 +122,43 @@ router.get("/",async (req,res)=>{
                     }
                 }
                 if ((facturation.DateFacturation > new Date(dateFacturationMin))&&(facturation.DateFacturation < new Date(dateFacturationMax)))
-                return true; // case sensitive
-               
-                return false; // case sensitive
-             
+                return true; 
+                return false; 
               }
           },
+         facturation: (facturation) => {
+        
+            if(( payementVendeur ==null)){
+                if((payementCoach==null)){
+                    return true ;
+                }
+                if((facturation.CoachPaye == payementCoach)){
+                    return true ;
+                }
+               return false ;
+            } else {
+                if((payementCoach==null)){
+                    if((facturation.VendeurPaye == payementVendeur)){
+                        return true ;
+                    }
+                }
+                if ((facturation.VendeurPaye == payementVendeur)&&(facturation.CoachPaye == payementCoach))
+                return true; 
+                return false; 
+              }
+          },
+          idWorkshop :(workshop)=>{
+               if(Tarifs==null){
+                return true 
+
+            } else {
+                 if( Tarifs.includes(workshop.code_tarif)){
+                      return true ; }
+        
+                return false ; 
+         } 
+          },
+
     };
 
     try{
@@ -146,6 +178,25 @@ router.get("/",async (req,res)=>{
     } catch(e) {
         res.status(404).send(e) ; 
     }
+})
+
+
+router.get('/test',async(req,res)=>{
+   
+    try{
+    const dossiers = await Dossier.findOne({})
+    .populate("facturation")
+    .populate("idWorkshop")
+    .populate("client").populate("provenance");
+
+     res.status(200).send(dossiers) ; 
+
+    }catch(er){
+
+        res.send(er) ; 
+
+    }
+
 })
 
 
