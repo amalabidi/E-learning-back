@@ -54,7 +54,7 @@ router.post("/", async (req, res) => {
       provenances,
       statusDossier,
     } = req.body;
-    console.log(vendeurs);
+    console.log(provenances);
     const filters = {
       //size: (size) => size === 50 || size === 70,
       //color: (color) => ['blue', 'black'].includes(color.toLowerCase()),
@@ -161,7 +161,7 @@ router.post("/", async (req, res) => {
         }
         return false;
       },
-     
+
       type: (type) => {
         if (types == null) {
           return true;
@@ -236,8 +236,7 @@ router.post("/", async (req, res) => {
           return false;
         }
       },
-    }
-
+    };
 
     try {
       const filterKeys = Object.keys(filters);
@@ -248,19 +247,21 @@ router.post("/", async (req, res) => {
           // ignores non-function predicates
           if (typeof filters[key] !== "function") return true;
           return filters[key](item[key]);
-        });}) ;
-          
-       const filterKeys2 = Object.keys(filters2) ; 
+        });
+      });
 
-       const result2 = result.filter((item) => {
-            // validates all filter criteria
-            return filterKeys2.every((key) => {
-              // ignores non-function predicates
-              if (typeof filters2[key] !== "function") return true;
-              return filters2[key](item[key]);
-            });});
+      const filterKeys2 = Object.keys(filters2);
+
+      const result2 = result.filter((item) => {
+        // validates all filter criteria
+        return filterKeys2.every((key) => {
+          // ignores non-function predicates
+          if (typeof filters2[key] !== "function") return true;
+          return filters2[key](item[key]);
+        });
+      });
       res.send(result2);
-    }catch (er) {
+    } catch (er) {
       res.status(400).send(er);
     }
   } catch (e) {
@@ -274,7 +275,6 @@ router.post("/", async (req, res) => {
       .populate("facturation")
       .populate("idWorkshop")
       .populate("client");
-
     res.status(200).send(dossiers);
   } catch (er) {
     res.send(er);

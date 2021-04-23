@@ -2,6 +2,7 @@ var express = require("express");
 var router = express.Router();
 var { Dossier } = require("../modules/dossier");
 var { Client } = require("../modules/client");
+var { Fichier } = require("../modules/fichier");
 const { PreEvaluation } = require("../modules/PreEvaluation");
 const { Evaluation } = require("../modules/Evaluation");
 const { CRCoach } = require("../modules/CRCoach");
@@ -1025,8 +1026,30 @@ router.put("/", async (req, res) => {
 });
 router.get("/uploads/:id", async (req, res) => {
   try {
-    const dossier = await Dossier.find({ _id: req.params.id });
-    const results = dossier[0]["files"];
+    var dossier = await Dossier.findOne({ _id: req.params.id });
+    console.log(dossier.files);
+    var resultArray = await Fichier.find({ _id: { $in: dossier.files } });
+
+    console.log(resultArray);
+    res.send(resultArray);
+  } catch (ex) {
+    res.send(ex);
+  }
+});
+//delete a file from the uploads
+router.post("/uploads", async (req, res) => {
+  const { file, _id } = req.body;
+
+  try {
+    const fich = await Fichier.findOne({ name: file });
+    const idfichier = fich["_id"];
+    const results = await Dossier.update(
+      {
+        _id,
+      },
+      { $pull: { files: idfichier } }
+    );
+
     res.send(results);
   } catch (ex) {
     res.send(ex);
