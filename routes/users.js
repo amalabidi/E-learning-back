@@ -16,12 +16,11 @@ router.get('/', async function (req, res, next) {
 
 
 /* GET same type users you need to pass habilitation . */
-router.get('/filter/', async function (req, res, next) {
+router.get('/filter/:habilitation/', async function (req, res, next) {
   try {
-    const {habilitation}=req.body;
+    const {habilitation}=req.params;
     // Find all Users in the database
-    const results = await User.find({"habilitation":habilitation});
-    console.log(results) ; 
+    const results = await User.find({"habilitation":habilitation}); 
     res.send(results);
   } catch (ex) {
     res.send(ex);
@@ -78,7 +77,7 @@ router.post('/', async function (req, res, next) {
     secondaryPermissions,
     provenances,
     authorisedConnection, users,
-    groupedAction 
+    groupedAction,
 } = req.body;
      
    let {tarif , 
@@ -154,7 +153,7 @@ router.put('/',/*auth,  admin],*/ async (req, res) => {
       res.send({ error: error["message"] });
     } else {
 
-      const { name, email, lastname, mobile, company, habilitation, permissions, secondaryPermissions, provenances, users, authorisedConnection, groupedAction } = req.body;
+      const { name, email, lastname, mobile, company, habilitation, permissions, secondaryPermissions, provenances, users, authorisedConnection, groupedAction,tarif,typeTarif } = req.body;
 
       let olduser = await User.findOne({ email: email });
       if (!olduser) {

@@ -87,6 +87,12 @@ router.post("/", async (req, res) => {
             avisPasserelle,
             avisExplication,
             suggestions,
+            pedagogieCoach,
+            ecouteCoach,
+            claireteCoach,
+            adj1,
+            adj2,
+            adj3,
           } = req.body;
 
           try {
@@ -100,8 +106,16 @@ router.post("/", async (req, res) => {
               avisPasserelle,
               avisExplication,
               suggestions,
+              pedagogieCoach,
+              ecouteCoach,
+              claireteCoach,
+              adj1,
+              adj2,
+              adj3,
+
             });
             const evaluationResults = await evaluation.save();
+            
             evaluationId = evaluationResults["_id"];
             if (evaluationResults) {
               const {
@@ -201,13 +215,13 @@ router.post("/", async (req, res) => {
                         performedAppointments,
                         appointmentsObservation,
                       } = req.body;
+                      console.log("body",req.body)
                       try {
                         const client = clientId;
                         const preEvaluation = preEvaluationId;
                         const evaluation = evaluationId;
                         const crCoach = crCoachId;
                         const facturation = facturationId;
-
                         const dossier = new Dossier({
                           status,
                           type,
@@ -240,7 +254,6 @@ router.post("/", async (req, res) => {
                           crCoach,
                           facturation,
                         });
-
                         const results = await dossier.save();
                         res.status(200).send(results);
                       } catch (e) {
@@ -324,6 +337,51 @@ router.post("/email", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const results = await Dossier.find({});
+    res.send(results);
+  } catch (ex) {
+    res.send(ex);
+  }
+});
+router.get("/client/:id", async (req, res) => {
+  const {id}=req.params;
+  try {
+    const results = await Client.find({ "_id":id });
+    res.send(results);
+  } catch (ex) {
+    res.send(ex);
+  }
+});
+router.get("/preval/:id", async (req, res) => {
+  const {id}=req.params;
+  try {
+    const results = await PreEvaluation.find({ "_id":id });
+    res.send(results);
+  } catch (ex) {
+    res.send(ex);
+  }
+});
+router.get("/eval/:id", async (req, res) => {
+  const {id}=req.params;
+  try {
+    const results = await Evaluation.find({ "_id":id });
+    res.send(results);
+  } catch (ex) {
+    res.send(ex);
+  }
+});
+router.get("/crcoach/:id", async (req, res) => {
+  const {id}=req.params;
+  try {
+    const results = await CRCoach.find({ "_id":id });
+    res.send(results);
+  } catch (ex) {
+    res.send(ex);
+  }
+});
+router.get("/facturation/:id", async (req, res) => {
+  const {id}=req.params;
+  try {
+    const results = await Facturation.find({ "_id":id });
     res.send(results);
   } catch (ex) {
     res.send(ex);
@@ -418,6 +476,12 @@ router.put("/", async (req, res) => {
             avisPasserelle,
             avisExplication,
             suggestions,
+            pedagogieCoach,
+            ecouteCoach,
+            claireteCoach,
+            adj1,
+            adj2,
+            adj3,
           } = req.body;
           try {
             updateev = {
@@ -430,6 +494,12 @@ router.put("/", async (req, res) => {
               avisPasserelle,
               avisExplication,
               suggestions,
+              pedagogieCoach,
+              ecouteCoach,
+              claireteCoach,
+              adj1,
+              adj2,
+              adj3,
             };
             evaluationid = dossier["evaluation"];
             filterEvaluation = { _id: evaluationid };
@@ -614,7 +684,7 @@ router.put("/", async (req, res) => {
                             new: true,
                           }
                         );
-                        res.send("okk");
+                        res.send(dossiers);
                         console.log("done");
                       } catch (e) {
                         res.status(201).send(e);

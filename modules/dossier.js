@@ -24,7 +24,7 @@ const dossierSchema = new mongoose.Schema({
   entreprise: {
     type: String,
   },
-  numeroEDOF: {
+  numeroEdOF: {
     type: String,
   },
   rappelGestionnaire: {

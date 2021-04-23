@@ -10,11 +10,12 @@ const bodyParser = require("body-parser");
 const dossiers = require("./routes/dossiers");
 const auth = require("./routes/authentication");
 const uploads = require("./routes/uploads");
-const app = express();
 const egg = require('./routes/embededSignature') ; 
+const app = express();
 
 
-/*app.use(express.json());*/
+
+app.use(express.json());
 app.use(
   bodyParser.urlencoded({
     limit: "50mb",
@@ -45,7 +46,7 @@ app.use("/workshop", workshops);
 app.use("/provenance", provenances);
 app.use("/user", users);
 app.use("/auth", auth); 
-app.use('/signature',egg) ; 
+app.use("/signature",egg) ; 
 app.use("/dossier", dossiers);
 app.use("/uploads", uploads);
 //choose the backend port
