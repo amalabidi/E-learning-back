@@ -187,7 +187,7 @@ router.post("/", async (req, res) => {
       provenance: (provenance) => {
         if (provenances == null) {
           return true;
-        } else if (provenance.provenance.includes(provenances)) {
+        } else if (provenances.includes(provenance.provenance)) {
           return true;
         }
         return false;
@@ -209,7 +209,7 @@ router.post("/", async (req, res) => {
         if (workshops == null) {
           return true;
         } else {
-          if (workshop.intitule.includes(workshops)) return true;
+          if (workshops.includes(workshop.intitule)) return true;
         }
         return false;
       },
