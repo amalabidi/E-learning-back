@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const FacturationSchema = new mongoose.Schema({
   MontantFacture: {
-    type: String,
+    type: Number,
   },
   CoutElearning: {
     type: String,
