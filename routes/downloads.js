@@ -14,7 +14,7 @@ router.post("/", function (req, res) {
   }
   var outputpath = Date.now() + "dossier.zip";
   fs.writeFileSync(outputpath, zp.toBuffer());
-  console.log("2");
+  
   res.download(outputpath, (err) => {
     if (err) {
       res.send("error in downloading");

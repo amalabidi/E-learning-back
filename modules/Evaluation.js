@@ -29,6 +29,24 @@ const EvaluationSchema = new mongoose.Schema({
   suggestions: {
     type: String,
   },
+  pedagogieCoach: {
+    type: String,
+  },
+  ecouteCoach: {
+    type: String,
+  },
+  claireteCoach: {
+    type: String,
+  },
+  adj1: {
+    type: String,
+  },
+  adj2: {
+    type: String,
+  },
+  adj3: {
+    type: String,
+  },
 });
 
 const Evaluation = mongoose.model("Evaluation", EvaluationSchema);

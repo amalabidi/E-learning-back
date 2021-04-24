@@ -12,6 +12,7 @@ const clientSchema = new mongoose.Schema({
   },
   dateOfBirth: {
     type: Date,
+
   },
   email: {
     type: String,

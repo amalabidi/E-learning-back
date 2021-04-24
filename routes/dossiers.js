@@ -2,206 +2,218 @@ var express = require("express");
 var router = express.Router();
 var { Dossier } = require("../modules/dossier");
 var { Client } = require("../modules/client");
+var { Fichier } = require("../modules/fichier");
 const { PreEvaluation } = require("../modules/PreEvaluation");
 const { Evaluation } = require("../modules/Evaluation");
 const { CRCoach } = require("../modules/CRCoach");
 const { Facturation } = require("../modules/Facturation");
-const {Provenance} = require("../modules/provenance");
-const  {User} = require("../modules/user");
+const { Provenance } = require("../modules/provenance");
+const { User } = require("../modules/user");
 const nodemailer = require("nodemailer");
 
-
-
-async function  getFactureAmount(id) {
-  try{
-
-    const Facture =  await Facturation.findOne({_id:id}) ; 
-    return Facture.MontantFacture ; 
-
-  } catch (e){
-  }
+async function getFactureAmount(id) {
+  try {
+    const Facture = await Facturation.findOne({ _id: id });
+    return Facture.MontantFacture;
+  } catch (e) {}
 }
 
-
 async function getVendeurName(id) {
-  try{
+  try {
+    const user = await User.findOne({ _id: id });
 
-    const user =  await User.findOne({_id:id}) ; 
-    
-    return user.name +" "+ user.lastname ; 
-
-  } catch (e){
-  }
+    return user.name + " " + user.lastname;
+  } catch (e) {}
 }
 
 async function getProvenanceName(id) {
-  try{
-
-    const provenance =  await Provenance.findOne({_id:id}) ; 
-    return provenance.provenance ; 
-
-  } catch (e){
-  }
+  try {
+    const provenance = await Provenance.findOne({ _id: id });
+    return provenance.provenance;
+  } catch (e) {}
 }
 
+router.get("/totalsByStatus", async function (req, res) {
+  const status = req.body["status"];
+  try {
+    const results = await Dossier.find({ status: status }).populate(
+      "facturation"
+    );
 
-router.get('/totalsByStatus',  async function (req,res) {
-  const status = req.body["status"]  ;
-  try{
-  const results = await Dossier.find({status:status}).populate("facturation") ; 
-  
-  var total=0.0  ;
-   
-  for (var i=0 ; i<results.length ; i++){ 
-    if(results[i].facturation){
-     try{
-       total+= results[i].facturation.MontantFacture ;    
-      } catch(e) {
-      res.status(408).send("erreur dans le dossier "+results[i]._id) 
-     }
-     
+    var total = 0.0;
+
+    for (var i = 0; i < results.length; i++) {
+      if (results[i].facturation) {
+        try {
+          total += results[i].facturation.MontantFacture;
+        } catch (e) {
+          res.status(408).send("erreur dans le dossier " + results[i]._id);
+        }
+      }
     }
-  }  res.send({"total":total}) ; 
- }catch (e){
-    res.status(409).send("erreur dans le dossier" + e )   }
-})
+    res.send({ total: total });
+  } catch (e) {
+    res.status(409).send("erreur dans le dossier" + e);
+  }
+});
 
+router.get("/totalsByDateVendeur", async function (req, res) {
+  const beginDate = req.body["beginDate"];
+  const endDate = req.body["endDate"];
 
-router.get('/totalsByDateVendeur',  async function (req,res) {
-  const beginDate = req.body["beginDate"]  ;
-  const endDate = req.body["endDate"] ; 
-  
-  try{
+  try {
     // get all the folders created in  that periode
-  const results = await Dossier.aggregate([
-    {
-      $match : { "createdAt": { $gte: new Date(beginDate), $lte: new Date(endDate) } }
-    } ,
-    {$group:{"_id":"$_id","vendeur":{"$first":"$vendeur"},"facture":{"$first":"$facturation"}}},]);
-         
-     var lt = {}
-     var totalamount2 = 0.0 ;  
-     for (i = 0 ; i< results.length ; i++){
-        const vendeur = results[i]["vendeur"] ;
-        const ammount = await getFactureAmount( results[i]["facture"]);
-        totalamount2+= ammount ;
-        if( lt[vendeur]!=null){
-          
-          lt[vendeur]["nbdossiers"]++ ; 
-          lt[vendeur]["totalamount"]+=ammount;
-        
-        }else{
-         
-          lt[vendeur]={ "vendeur":vendeur,"nbdossiers":1,"totalamount": ammount };
+    const results = await Dossier.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: new Date(beginDate), $lte: new Date(endDate) },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          vendeur: { $first: "$vendeur" },
+          facture: { $first: "$facturation" },
+        },
+      },
+    ]);
 
-     }}
+    var lt = {};
+    var totalamount2 = 0.0;
+    for (i = 0; i < results.length; i++) {
+      const vendeur = results[i]["vendeur"];
+      const ammount = await getFactureAmount(results[i]["facture"]);
+      totalamount2 += ammount;
+      if (lt[vendeur] != null) {
+        lt[vendeur]["nbdossiers"]++;
+        lt[vendeur]["totalamount"] += ammount;
+      } else {
+        lt[vendeur] = { vendeur: vendeur, nbdossiers: 1, totalamount: ammount };
+      }
+    }
 
-        for(const j in lt ){  
-          //console.log(await getVendeurName(lt[j]["vendeur"]) ) ;      
-          lt[j]["vendeur"] = await getVendeurName(lt[j]["vendeur"]) ;
-        }  
-          res.send({"result":lt , "finalnbdossier":results.length , "finaltotalamount":totalamount2});     
-}
-  catch(e) {
-
+    for (const j in lt) {
+      //console.log(await getVendeurName(lt[j]["vendeur"]) ) ;
+      lt[j]["vendeur"] = await getVendeurName(lt[j]["vendeur"]);
+    }
+    res.send({
+      result: lt,
+      finalnbdossier: results.length,
+      finaltotalamount: totalamount2,
+    });
+  } catch (e) {
     res.send(e);
   }
+});
 
-})
+router.get("/totalsByDateProvenance", async function (req, res) {
+  const beginDate = req.body["beginDate"];
+  const endDate = req.body["endDate"];
 
-
-
-
-router.get('/totalsByDateProvenance',  async function (req,res) {
-  const beginDate = req.body["beginDate"]  ;
-  const endDate = req.body["endDate"] ; 
-  
-  try{
+  try {
     // get all the folders created in  that periode
-  const results = await Dossier.aggregate([
-    {
-      $match : { "createdAt": { $gte: new Date(beginDate), $lte: new Date(endDate) } }
-    } ,
-    {$group:{"_id":"$_id","provenance":{"$first":"$provenance"},"facture":{"$first":"$facturation"}}},]);
-         
-     var lt = {}
-     var totalamount2 = 0.0 ;  
+    const results = await Dossier.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: new Date(beginDate), $lte: new Date(endDate) },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          provenance: { $first: "$provenance" },
+          facture: { $first: "$facturation" },
+        },
+      },
+    ]);
 
-     for (i = 0 ; i< results.length ; i++){ 
-        const provenance = results[i]["provenance"] ;
-        const ammount = await getFactureAmount( results[i]["facture"]);
-        totalamount2+= ammount ;
-        if( lt[provenance]!=null){
-          
-          lt[provenance]["nbdossiers"]++ ; 
-          lt[provenance]["totalamount"]+=ammount;
-        
-        }else{
-         
-          lt[provenance]={"provenance":provenance,"nbdossiers":1,"totalamount": ammount };
+    var lt = {};
+    var totalamount2 = 0.0;
 
-     }}
-      
-    for(const j in lt ){       
-      lt[j]["provenance"] = await getProvenanceName(lt[j]["provenance"]) ;
-    } 
+    for (i = 0; i < results.length; i++) {
+      const provenance = results[i]["provenance"];
+      const ammount = await getFactureAmount(results[i]["facture"]);
+      totalamount2 += ammount;
+      if (lt[provenance] != null) {
+        lt[provenance]["nbdossiers"]++;
+        lt[provenance]["totalamount"] += ammount;
+      } else {
+        lt[provenance] = {
+          provenance: provenance,
+          nbdossiers: 1,
+          totalamount: ammount,
+        };
+      }
+    }
 
-          res.send({"result":lt , "finalnbdossier":results.length , "finaltotalamount":totalamount2});     
-}
-  catch(e) {
+    for (const j in lt) {
+      lt[j]["provenance"] = await getProvenanceName(lt[j]["provenance"]);
+    }
 
+    res.send({
+      result: lt,
+      finalnbdossier: results.length,
+      finaltotalamount: totalamount2,
+    });
+  } catch (e) {
     res.send(e);
   }
+});
 
-})
+router.get("/totalsByDateProFor", async function (req, res) {
+  const beginDate = req.body["beginDate"];
+  const endDate = req.body["endDate"];
 
-
-
-router.get('/totalsByDateProFor',  async function (req,res) {
-  const beginDate = req.body["beginDate"]  ;
-  const endDate = req.body["endDate"] ; 
-  
-  try{
+  try {
     // get all the folders created in  that periode
-  const results = await Dossier.aggregate([
-    {
-      $match : { "createdAt": { $gte: new Date(beginDate), $lte: new Date(endDate) } , "status":"En Formation" }
-    } ,
-    {$group:{"_id":"$_id","provenance":{"$first":"$provenance"},"facture":{"$first":"$facturation"}}},]);
-         
-     var lt = {}
-     var totalamount2 = 0.0 ;  
+    const results = await Dossier.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: new Date(beginDate), $lte: new Date(endDate) },
+          status: "En Formation",
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          provenance: { $first: "$provenance" },
+          facture: { $first: "$facturation" },
+        },
+      },
+    ]);
 
-     for (i = 0 ; i< results.length ; i++){ 
-        const provenance = results[i]["provenance"] ;
-        const ammount = await getFactureAmount( results[i]["facture"]);
-        totalamount2+= ammount ;
-        if( lt[provenance]!=null){
-          
-          lt[provenance]["nbdossiers"]++ ; 
-          lt[provenance]["totalamount"]+=ammount;
-        
-        }else{
-         
-          lt[provenance]={"provenance":provenance,"nbdossiers":1,"totalamount": ammount };
+    var lt = {};
+    var totalamount2 = 0.0;
 
-     }}
-      
-    for(const j in lt ){       
-      lt[j]["provenance"] = await getProvenanceName(lt[j]["provenance"]) ;
-    } 
+    for (i = 0; i < results.length; i++) {
+      const provenance = results[i]["provenance"];
+      const ammount = await getFactureAmount(results[i]["facture"]);
+      totalamount2 += ammount;
+      if (lt[provenance] != null) {
+        lt[provenance]["nbdossiers"]++;
+        lt[provenance]["totalamount"] += ammount;
+      } else {
+        lt[provenance] = {
+          provenance: provenance,
+          nbdossiers: 1,
+          totalamount: ammount,
+        };
+      }
+    }
 
-          res.send({"result":lt , "finalnbdossier":results.length , "finaltotalamount":totalamount2});     
-}
-  catch(e) {
+    for (const j in lt) {
+      lt[j]["provenance"] = await getProvenanceName(lt[j]["provenance"]);
+    }
 
+    res.send({
+      result: lt,
+      finalnbdossier: results.length,
+      finaltotalamount: totalamount2,
+    });
+  } catch (e) {
     res.send(e);
   }
-
-})
-
-
-
+});
 
 /* créer un nouveau dossier  */
 
@@ -283,6 +295,12 @@ router.post("/", async (req, res) => {
             avisPasserelle,
             avisExplication,
             suggestions,
+            pedagogieCoach,
+            ecouteCoach,
+            claireteCoach,
+            adj1,
+            adj2,
+            adj3,
           } = req.body;
 
           try {
@@ -296,8 +314,15 @@ router.post("/", async (req, res) => {
               avisPasserelle,
               avisExplication,
               suggestions,
+              pedagogieCoach,
+              ecouteCoach,
+              claireteCoach,
+              adj1,
+              adj2,
+              adj3,
             });
             const evaluationResults = await evaluation.save();
+
             evaluationId = evaluationResults["_id"];
             if (evaluationResults) {
               const {
@@ -397,13 +422,13 @@ router.post("/", async (req, res) => {
                         performedAppointments,
                         appointmentsObservation,
                       } = req.body;
+                      console.log("body", req.body);
                       try {
                         const client = clientId;
                         const preEvaluation = preEvaluationId;
                         const evaluation = evaluationId;
                         const crCoach = crCoachId;
                         const facturation = facturationId;
-
                         const dossier = new Dossier({
                           status,
                           type,
@@ -436,10 +461,8 @@ router.post("/", async (req, res) => {
                           crCoach,
                           facturation,
                         });
-
                         const results = await dossier.save();
-                       
-                       
+
                         res.status(200).send(results);
                       } catch (e) {
                         res.status(201).send(e);
@@ -527,7 +550,6 @@ router.get("/", async (req, res) => {
     res.send(ex);
   }
 });
-
 
 router.put("/coutElearning", async (req, res) => {
   const { _id, cout } = req.body;
@@ -633,6 +655,7 @@ router.put("/vendeur", async (req, res) => {
   const { _id, vendeur } = req.body;
 
   try {
+    console.log(_id);
     var result = await Dossier.findByIdAndUpdate(
       { _id: _id },
       {
@@ -640,6 +663,7 @@ router.put("/vendeur", async (req, res) => {
       },
       { new: true }
     );
+    console.log("okk");
     res.send(result);
   } catch (e) {
     res.send(e);
@@ -690,7 +714,6 @@ router.delete("/:id", async (req, res) => {
   const types = await Type.findByIdAndDelete(req.params.id).exec();
   res.send("success");
 });
-
 
 router.put("/", async (req, res) => {
   try {
@@ -781,6 +804,12 @@ router.put("/", async (req, res) => {
             avisPasserelle,
             avisExplication,
             suggestions,
+            pedagogieCoach,
+            ecouteCoach,
+            claireteCoach,
+            adj1,
+            adj2,
+            adj3,
           } = req.body;
           try {
             updateev = {
@@ -793,6 +822,12 @@ router.put("/", async (req, res) => {
               avisPasserelle,
               avisExplication,
               suggestions,
+              pedagogieCoach,
+              ecouteCoach,
+              claireteCoach,
+              adj1,
+              adj2,
+              adj3,
             };
             evaluationid = dossier["evaluation"];
             filterEvaluation = { _id: evaluationid };
@@ -977,7 +1012,7 @@ router.put("/", async (req, res) => {
                             new: true,
                           }
                         );
-                        res.send("okk");
+                        res.send(dossiers);
                         console.log("done");
                       } catch (e) {
                         res.status(201).send(e);
@@ -1015,8 +1050,30 @@ router.put("/", async (req, res) => {
 });
 router.get("/uploads/:id", async (req, res) => {
   try {
-    const dossier = await Dossier.find({ _id: req.params.id });
-    const results = dossier[0]["files"];
+    var dossier = await Dossier.findOne({ _id: req.params.id });
+    console.log(dossier.files);
+    var resultArray = await Fichier.find({ _id: { $in: dossier.files } });
+
+    console.log(resultArray);
+    res.send(resultArray);
+  } catch (ex) {
+    res.send(ex);
+  }
+});
+//delete a file from the uploads
+router.post("/uploads", async (req, res) => {
+  const { file, _id } = req.body;
+
+  try {
+    const fich = await Fichier.findOne({ name: file });
+    const idfichier = fich["_id"];
+    const results = await Dossier.update(
+      {
+        _id,
+      },
+      { $pull: { files: idfichier } }
+    );
+
     res.send(results);
   } catch (ex) {
     res.send(ex);
