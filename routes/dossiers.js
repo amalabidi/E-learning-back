@@ -8,6 +8,7 @@ const { CRCoach } = require("../modules/CRCoach");
 const { Facturation } = require("../modules/Facturation");
 const {Provenance} = require("../modules/provenance");
 const  {User} = require("../modules/user");
+const {Modification}= require("../modules/modification") ; 
 const nodemailer = require("nodemailer");
 
 
@@ -206,7 +207,6 @@ router.get('/totalsByDateProFor',  async function (req,res) {
 /* créer un nouveau dossier  */
 
 router.post("/", async (req, res) => {
-  console.log(req.body);
   var clientId = "";
   var preEvaluationId = "";
   var evaluationId = "";
@@ -436,11 +436,22 @@ router.post("/", async (req, res) => {
                           crCoach,
                           facturation,
                         });
-
+                             
+                        
                         const results = await dossier.save();
+                        
+                        const operation = "Création";
+                        const user = req.body.userId;    //req.user._id; after adding jwt token 
+
+                        const clientName=firstName +" "+lastName ;
+                        const newStatus = status ; 
+                        const modif = new Modification({clientName,operation,user,newStatus}) ; 
+                        const result2= modif.save() ; 
                        
-                       
+                          
+
                         res.status(200).send(results);
+
                       } catch (e) {
                         res.status(201).send(e);
                       }
@@ -475,6 +486,8 @@ router.post("/", async (req, res) => {
     res.status(211).send(e);
   }
 });
+
+
 
 router.post("/email", async (req, res) => {
   const {
@@ -613,9 +626,9 @@ router.put("/coutCoach", async (req, res) => {
     res.send(e);
   }
 });
-router.put("/statut", async (req, res) => {
+router.put("/statutcall", async (req, res) => {
   const { _id, statut } = req.body;
-
+  
   try {
     var result = await Dossier.findByIdAndUpdate(
       { _id: _id },
@@ -629,6 +642,35 @@ router.put("/statut", async (req, res) => {
     res.send(e);
   }
 });
+
+router.put("/statutdossier", async (req, res) => {
+  const { _id, status } = req.body;
+  try {
+    var result = await Dossier.findByIdAndUpdate(
+      { _id: _id },
+      {
+        status: status,
+      },
+      { new: false }
+    );
+
+    if(status.localeCompare(result["status"])){
+      const operation = "Chgt statut";
+      const user = req.body.userId;    //req.user._id; after adding jwt token 
+      const clientName=result["firstName"] +" "+result["lastName"] ;
+      const newStatus = status ; 
+      const previousStatus = result["status"];
+      result["status"]=status ; 
+      const modif = new Modification({clientName,operation,user,newStatus,previousStatus}) ; 
+      const result2= modif.save() ; 
+    }
+    res.send(result);
+
+  } catch (e) {
+    res.status(400).send(e);
+  }
+});
+
 router.put("/vendeur", async (req, res) => {
   const { _id, vendeur } = req.body;
 
@@ -969,6 +1011,10 @@ router.put("/", async (req, res) => {
                           appointmentsObservation,
                         };
 
+                        
+
+
+
                         filterdossier = { _id: req.body._id };
                         let dossiers = await Dossier.findByIdAndUpdate(
                           filterdossier,
@@ -977,7 +1023,21 @@ router.put("/", async (req, res) => {
                             new: true,
                           }
                         );
-                        res.send("okk");
+                        
+                        if(status.localeCompare(dossier["status"])){
+                          const operation = "Chgt statut";
+                          const user = req.body.userId;    //req.user._id; after adding jwt token 
+  
+                          const clientName=firstName +" "+lastName ;
+                          const newStatus = status ; 
+                          const previousStatus = dossier["status"];
+                          const modif = new Modification({clientName,operation,user,newStatus,previousStatus}) ; 
+                          const result2= modif.save() ; 
+                          
+                        }
+                        
+
+                        res.send(dossiers);
                         console.log("done");
                       } catch (e) {
                         res.status(201).send(e);
@@ -1013,6 +1073,7 @@ router.put("/", async (req, res) => {
     res.status(211).send(e);
   }
 });
+
 router.get("/uploads/:id", async (req, res) => {
   try {
     const dossier = await Dossier.find({ _id: req.params.id });

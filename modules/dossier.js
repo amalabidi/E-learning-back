@@ -116,11 +116,15 @@ const dossierSchema = new mongoose.Schema({
    type: Schema.Types.ObjectId,
    ref:"Facturation"
   },
+
   files: {
     type: [String],
     default: [],
   },
-},{ timestamps: true });
+
+}
+,
+{ timestamps: true });
 
 const Dossier = mongoose.model("Dossier", dossierSchema);
 
