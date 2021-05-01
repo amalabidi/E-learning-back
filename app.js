@@ -11,6 +11,8 @@ const dossiers = require("./routes/dossiers");
 const auth = require("./routes/authentication");
 const uploads = require("./routes/uploads");
 const downloads = require("./routes/downloads");
+const modifications= require("./routes/modifications") ;
+const cout = require('./routes/cout')  ;  
 const sig = require('./routes/embededSignature') ; 
 const exp = require('./routes/export'); 
 const app = express();
@@ -50,10 +52,10 @@ app.use("/auth", auth);
 app.use('/signature',sig) ; 
 app.use("/dossier", dossiers);
 app.use("/uploads", uploads);
-
+app.use("/modifications",modifications) ; 
 app.use("/downloads", downloads);
-
 app.use("/export", exp);
+app.use("/cout/",cout) ;
 
 //choose the backend port
 const port = process.env.PORT || 3001;

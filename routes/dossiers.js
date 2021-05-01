@@ -122,7 +122,7 @@ router.get('/totalsByDateProvenance',  async function (req,res) {
   const results = await Dossier.aggregate([
     {
       $match : { "createdAt": { $gte: new Date(beginDate), $lte: new Date(endDate) } }
-    } ,
+    },
     {$group:{"_id":"$_id","provenance":{"$first":"$provenance"},"facture":{"$first":"$facturation"}}},]);
          
      var lt = {}
@@ -439,13 +439,10 @@ router.post("/", async (req, res) => {
                              
                         
                         const results = await dossier.save();
-                        
                         const operation = "Création";
                         const user = req.body.userId;    //req.user._id; after adding jwt token 
-
-                        const clientName=firstName +" "+lastName ;
                         const newStatus = status ; 
-                        const modif = new Modification({clientName,operation,user,newStatus}) ; 
+                        const modif = new Modification({client,operation,user,newStatus}) ; 
                         const result2= modif.save() ; 
                        
                           
@@ -569,6 +566,7 @@ router.put("/coutElearning", async (req, res) => {
     res.send(e);
   }
 });
+
 router.put("/coutCertification", async (req, res) => {
   const { _id, cout } = req.body;
 
@@ -626,6 +624,7 @@ router.put("/coutCoach", async (req, res) => {
     res.send(e);
   }
 });
+
 router.put("/statutcall", async (req, res) => {
   const { _id, statut } = req.body;
   
@@ -652,16 +651,18 @@ router.put("/statutdossier", async (req, res) => {
         status: status,
       },
       { new: false }
-    );
+    ).populate("client");
 
+ // creating modification
     if(status.localeCompare(result["status"])){
       const operation = "Chgt statut";
       const user = req.body.userId;    //req.user._id; after adding jwt token 
-      const clientName=result["firstName"] +" "+result["lastName"] ;
       const newStatus = status ; 
       const previousStatus = result["status"];
+      const client = result["client"]["_id"] ;
+
       result["status"]=status ; 
-      const modif = new Modification({clientName,operation,user,newStatus,previousStatus}) ; 
+      const modif = new Modification({client,operation,user,newStatus,previousStatus}) ; 
       const result2= modif.save() ; 
     }
     res.send(result);
@@ -1027,11 +1028,9 @@ router.put("/", async (req, res) => {
                         if(status.localeCompare(dossier["status"])){
                           const operation = "Chgt statut";
                           const user = req.body.userId;    //req.user._id; after adding jwt token 
-  
-                          const clientName=firstName +" "+lastName ;
                           const newStatus = status ; 
                           const previousStatus = dossier["status"];
-                          const modif = new Modification({clientName,operation,user,newStatus,previousStatus}) ; 
+                          const modif = new Modification({client,operation,user,newStatus,previousStatus}) ; 
                           const result2= modif.save() ; 
                           
                         }

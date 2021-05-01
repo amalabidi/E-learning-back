@@ -2,8 +2,10 @@ const mongoose = require("mongoose");
 var Schema = mongoose.Schema;
 const ModificationSchema = new mongoose.Schema({
 
-    clientName :  {
-        type:String
+    client :  {
+        type:Schema.Types.ObjectId , 
+        ref:"Client" ,
+        required:true
     } ,
     operation : {
         type:String ,

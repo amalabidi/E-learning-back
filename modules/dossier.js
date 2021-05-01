@@ -103,6 +103,10 @@ const dossierSchema = new mongoose.Schema({
   appointmentsObservation: {
     type: [String],
   },
+  journalAppel:{
+     type:[Schema.Types.ObjectId] ,
+     ref:"JournalAppel"
+  },
   preEvaluation: {
     type: String,
   },
