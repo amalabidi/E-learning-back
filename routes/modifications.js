@@ -1,6 +1,7 @@
 var express = require("express");
 const { Modification } = require("../modules/modification");
 var router = express.Router();
+var { Client } = require("../modules/client");
 
 
 router.get("/",async (req,res)=>{
@@ -50,7 +51,7 @@ router.get("/filter",async (req,res)=>{
         if (users == null) {
           return true;
         } else {
-          if (users.includes(user.lastname +" "+user.name)) {
+          if (users.includes(user.lastname+" "+user.name )) {
             return true;
           }
         }
@@ -106,15 +107,17 @@ router.get("/filter",async (req,res)=>{
     }
 })
 
-
+/*
 router.get("/search/:search", async (req, res) => {
   const { search } = req.params;
+  
   var modifs = [];
   if (search) {
-    Client.aggregate([
-      { $project: { name: { $concat: ["$firstName", " ", "$lastName"] } } },
+    const results =  await Client.aggregate([
+      { $project: { name: { $concat: ["$name"] } } },
       { $match: { name: { $regex: search, $options: "i" } } },
-    ]).exec(async function (err, results) {
+    ]) ; 
+      
       console.log(results);
       for (i = 0; i < results.length; i++) {
         const clientid = results[i]["_id"];
@@ -123,12 +126,12 @@ router.get("/search/:search", async (req, res) => {
           modifs.push(modification[k]);
         }
       }
-      res.send(dossiers);
-    });
+      res.send(modifs);
+    
 
   } else {
     res.send("no search");
   }
-});
+}); */
 
 module.exports = router;
