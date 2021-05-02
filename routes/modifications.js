@@ -21,7 +21,7 @@ router.get("/",async (req,res)=>{
 
 router.get("/filter",async (req,res)=>{
     try{        
-        const dossiers = await Modification.find({})
+        const modifs = await Modification.find({})
         .populate("user");
       
         const { CreationDateMin , CreationDateMax ,users,actions,ancienstatuts,nouveauxstatuts,payementVendeur,payementCoach,Tarifs}= req.body; 
@@ -90,7 +90,7 @@ router.get("/filter",async (req,res)=>{
     };
     try{
         const filterKeys = Object.keys(filters);
-        const result= dossiers.filter(item => {
+        const result= modifs.filter(item => {
           // validates all filter criteria
           return filterKeys.every(key => {
             // ignores non-function predicates
@@ -107,18 +107,15 @@ router.get("/filter",async (req,res)=>{
     }
 })
 
-/*
 router.get("/search/:search", async (req, res) => {
   const { search } = req.params;
-  
   var modifs = [];
   if (search) {
     const results =  await Client.aggregate([
-      { $project: { name: { $concat: ["$name"] } } },
+      { $project: { name: { $concat: ["$lastName"," ","$firstName"] } } },
       { $match: { name: { $regex: search, $options: "i" } } },
-    ]) ; 
-      
-      console.log(results);
+    ]).exec(async function (err, results) {
+        console.log(results);
       for (i = 0; i < results.length; i++) {
         const clientid = results[i]["_id"];
         const modification = await Modification.find({ client: clientid });
@@ -127,11 +124,11 @@ router.get("/search/:search", async (req, res) => {
         }
       }
       res.send(modifs);
-    
+    });
 
   } else {
     res.send("no search");
   }
-}); */
+}); 
 
 module.exports = router;
