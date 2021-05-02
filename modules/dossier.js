@@ -107,7 +107,8 @@ const dossierSchema = new mongoose.Schema({
     type: String,
   },
   evaluation: {
-    type: String,
+    type: Schema.Types.ObjectId,
+    ref:"Evaluation"
   },
   crCoach: {
     type: String,

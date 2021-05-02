@@ -13,6 +13,7 @@ const uploads = require("./routes/uploads");
 const downloads = require("./routes/downloads");
 const sig = require('./routes/embededSignature') ; 
 const exp = require('./routes/export'); 
+const pdf = require('./routes/pdffiller') ; 
 const app = express();
 
 app.use(express.json());
@@ -50,7 +51,7 @@ app.use("/auth", auth);
 app.use('/signature',sig) ; 
 app.use("/dossier", dossiers);
 app.use("/uploads", uploads);
-
+app.use("/pdf",pdf) ; 
 app.use("/downloads", downloads);
 
 app.use("/export", exp);
