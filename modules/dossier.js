@@ -96,9 +96,9 @@ const dossierSchema = new mongoose.Schema({
   },
   performedAppointments: {
     type: [Boolean],
-    required: function () {
+   /* required: function () {
       return this.performedAppointments.length < 3;
-    },
+    },*/
   },
   appointmentsObservation: {
     type: [String],

@@ -63,6 +63,7 @@ router.post("/", async (req, res) => {
     const results = await workshop.save();
     res.send(results);
   } catch (ex) {
+    console.log(ex)
     res.send(ex);
   }
 });
@@ -77,7 +78,7 @@ router.get("/", async (req, res) => {
 });
 router.delete("/:id", async (req, res) => {
   const workshop = await Workshop.findByIdAndDelete(req.params.id).exec();
-  res.send("success");
+  res.send({suc:"success"});
 });
 
 router.put("/", async (req, res) => {

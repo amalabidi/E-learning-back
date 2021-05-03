@@ -461,10 +461,12 @@ router.post("/", async (req, res) => {
                           crCoach,
                           facturation,
                         });
+                        
                         const results = await dossier.save();
-
+                        console.log("ok")
                         res.status(200).send(results);
                       } catch (e) {
+                        console.log(e)
                         res.status(201).send(e);
                       }
                     } else {
@@ -711,8 +713,34 @@ router.get("/search/:search", async (req, res) => {
 });
 
 router.delete("/:id", async (req, res) => {
-  const types = await Type.findByIdAndDelete(req.params.id).exec();
-  res.send("success");
+  const dossier = await Dossier.findOne({ _id: req.params.id });
+  if (dossier != null) {
+    const clientid = dossier["client"];
+    const facturationid = dossier["facturation"];
+    const evaluationid = dossier["evaluation"];
+    const preevaluationid = dossier["preEvaluation"];
+    const crcoachid = dossier["crCoach"];
+    try {
+      const dossiers = await Dossier.findByIdAndDelete(req.params.id).exec();
+      const clients = await Client.findByIdAndDelete(clientid).exec();
+      const facturations = await Facturation.findByIdAndDelete(
+        facturationid
+      ).exec();
+      const evaluations = await Evaluation.findByIdAndDelete(
+        evaluationid
+      ).exec();
+      const preevaluations = await PreEvaluation.findByIdAndDelete(
+        preevaluationid
+      ).exec();
+      const crcoachs = await CRCoach.findByIdAndDelete(crcoachid).exec();
+      res.send("success");
+    } catch (e) {
+      res.send(e);
+    }
+  } else {
+   
+    res.send("dossier n'existe pas ");
+  }
 });
 
 router.put("/", async (req, res) => {
@@ -1051,10 +1079,10 @@ router.put("/", async (req, res) => {
 router.get("/uploads/:id", async (req, res) => {
   try {
     var dossier = await Dossier.findOne({ _id: req.params.id });
-    console.log(dossier.files);
+    //console.log(dossier.files);
     var resultArray = await Fichier.find({ _id: { $in: dossier.files } });
 
-    console.log(resultArray);
+    //console.log(resultArray);
     res.send(resultArray);
   } catch (ex) {
     res.send(ex);
@@ -1062,18 +1090,65 @@ router.get("/uploads/:id", async (req, res) => {
 });
 //delete a file from the uploads
 router.post("/uploads", async (req, res) => {
-  const { file, _id } = req.body;
+  const { file_id,file, _id } = req.body;
 
   try {
-    const fich = await Fichier.findOne({ name: file });
+    const fich = await Fichier.findOne({ name: file,_id:file_id });
+    console.log(fich)
     const idfichier = fich["_id"];
-    const results = await Dossier.update(
+    const results = await Dossier.updateOne(
       {
         _id,
       },
       { $pull: { files: idfichier } }
     );
 
+    res.send(results);
+    console.log("deleted")
+  } catch (ex) {
+    res.send(ex);
+  }
+});
+router.get("/client/:id", async (req, res) => {
+  const {id}=req.params;
+  try {
+    const results = await Client.find({ "_id":id });
+    res.send(results);
+  } catch (ex) {
+    res.send(ex);
+  }
+});
+router.get("/preval/:id", async (req, res) => {
+  const {id}=req.params;
+  try {
+    const results = await PreEvaluation.find({ "_id":id });
+    res.send(results);
+  } catch (ex) {
+    res.send(ex);
+  }
+});
+router.get("/eval/:id", async (req, res) => {
+  const {id}=req.params;
+  try {
+    const results = await Evaluation.find({ "_id":id });
+    res.send(results);
+  } catch (ex) {
+    res.send(ex);
+  }
+});
+router.get("/crcoach/:id", async (req, res) => {
+  const {id}=req.params;
+  try {
+    const results = await CRCoach.find({ "_id":id });
+    res.send(results);
+  } catch (ex) {
+    res.send(ex);
+  }
+});
+router.get("/facturation/:id", async (req, res) => {
+  const {id}=req.params;
+  try {
+    const results = await Facturation.find({ "_id":id });
     res.send(results);
   } catch (ex) {
     res.send(ex);
