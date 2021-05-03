@@ -13,6 +13,8 @@ const auth = require("./routes/authentication");
 const uploads = require("./routes/uploads");
 const parametres = require("./routes/parameters");
 const downloads = require("./routes/downloads");
+const modifications = require("./routes/modifications");
+const cout = require("./routes/cout");
 const sig = require("./routes/embededSignature");
 const exp = require("./routes/export");
 
@@ -55,14 +57,17 @@ app.use("/auth", auth);
 app.use("/signature", sig);
 app.use("/dossier", dossiers);
 app.use("/uploads", uploads);
+
 app.use("/filters", filters);
 app.use("/relances", relances);
 app.use("/relances", relances);
 app.use("/reset", reset);
 
-app.use("/downloads", downloads);
+app.use("/modifications", modifications);
 
+app.use("/downloads", downloads);
 app.use("/export", exp);
+app.use("/cout/", cout);
 
 //choose the backend port
 const port = process.env.PORT || 3001;

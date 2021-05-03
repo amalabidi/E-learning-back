@@ -118,9 +118,14 @@ const dossierSchema = new mongoose.Schema(
       type: Schema.Types.ObjectId,
       ref: "Facturation",
     },
+
     files: {
       type: [String],
       default: [],
+    },
+    journalAppel: {
+      type: [Schema.Types.ObjectId],
+      ref: "JournalAppel",
     },
   },
   { timestamps: true }
