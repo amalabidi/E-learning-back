@@ -51,6 +51,15 @@ router.put("/", async (req, res) => {
     res.send(ex);
   }
 });
+router.get("/:id", async (req, res) => {
+  const{id}=req.params
+  try{
+    const results = await Provenance.find({"_id":id});
+    res.send(results);
+  }catch(ex){
+    res.send(ex)
+  }
+});
 
 router.delete("/:id", async (req, res) => {
 

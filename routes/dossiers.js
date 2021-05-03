@@ -7,12 +7,11 @@ const { PreEvaluation } = require("../modules/PreEvaluation");
 const { Evaluation } = require("../modules/Evaluation");
 const { CRCoach } = require("../modules/CRCoach");
 const { Facturation } = require("../modules/Facturation");
-const {Provenance} = require("../modules/provenance");
-const  {User} = require("../modules/user");
-const {Modification}= require("../modules/modification") ; 
+const { Provenance } = require("../modules/provenance");
+const { User } = require("../modules/user");
+const { Modification } = require("../modules/modification");
 const nodemailer = require("nodemailer");
 const { getMaxListeners } = require("../app");
-
 
 async function getFactureAmount(id) {
   try {
@@ -115,37 +114,43 @@ router.get("/totalsByDateProvenance", async function (req, res) {
 
   try {
     // get all the folders created in  that periode
-  const results = await Dossier.aggregate([
-    {
-      $match : { "createdAt": { $gte: new Date(beginDate), $lte: new Date(endDate) } }
-    },
-    {$group:{"_id":"$_id","provenance":{"$first":"$provenance"},"facture":{"$first":"$facturation"}}},]);
-         
-     var lt = {}
-     var totalamount2 = 0.0 ;  
+    const results = await Dossier.aggregate([
+      {
+        $match: {
+          createdAt: { $gte: new Date(beginDate), $lte: new Date(endDate) },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          provenance: { $first: "$provenance" },
+          facture: { $first: "$facturation" },
+        },
+      },
+    ]);
 
-     for (i = 0 ; i< results.length ; i++){ 
-        const provenance = results[i]["provenance"] ;
-        const ammount = await getFactureAmount( results[i]["facture"]);
-        totalamount2+= ammount ;
-        if( lt[provenance]!=null){
-          
-          lt[provenance]["nbdossiers"]++ ; 
-          lt[provenance]["totalamount"]+=ammount;
-        
-        }else{
-         
-          lt[provenance]={"provenance":provenance,"nbdossiers":1,"totalamount": ammount };
+    var lt = {};
+    var totalamount2 = 0.0;
 
-     }}
-      
-    for(const j in lt ){       
-      lt[j]["provenance"] = await getProvenanceName(lt[j]["provenance"]) ;
-    } 
+    for (i = 0; i < results.length; i++) {
+      const provenance = results[i]["provenance"];
+      const ammount = await getFactureAmount(results[i]["facture"]);
+      totalamount2 += ammount;
+      if (lt[provenance] != null) {
+        lt[provenance]["nbdossiers"]++;
+        lt[provenance]["totalamount"] += ammount;
+      } else {
+        lt[provenance] = {
+          provenance: provenance,
+          nbdossiers: 1,
+          totalamount: ammount,
+        };
+      }
+    }
 
-          res.send({"result":lt , "finalnbdossier":results.length , "finaltotalamount":totalamount2});     
-}
-  catch(e) {
+    for (const j in lt) {
+      lt[j]["provenance"] = await getProvenanceName(lt[j]["provenance"]);
+    }
 
     res.send({
       result: lt,
@@ -153,7 +158,11 @@ router.get("/totalsByDateProvenance", async function (req, res) {
       finaltotalamount: totalamount2,
     });
   } catch (e) {
-    res.send(e);
+    res.send({
+      result: lt,
+      finalnbdossier: results.length,
+      finaltotalamount: totalamount2,
+    });
   }
 });
 
@@ -457,20 +466,22 @@ router.post("/", async (req, res) => {
                           crCoach,
                           facturation,
                         });
-                             
-                        
+
                         const results = await dossier.save();
                         const operation = "Création";
-                        const user = req.body.userId;    //req.user._id; after adding jwt token 
-                        const newStatus = status ; 
-                        const modif = new Modification({client,operation,user,newStatus}) ; 
-                        const result2= modif.save() ; 
-                       
-                          
+                        const user = req.body.userId; //req.user._id; after adding jwt token
+                        const newStatus = status;
+                        const modif = new Modification({
+                          client,
+                          operation,
+                          user,
+                          newStatus,
+                        });
+                        const result2 = modif.save();
 
                         res.status(200).send(results);
-
                       } catch (e) {
+                        console.log(e);
                         res.status(201).send(e);
                       }
                     } else {
@@ -504,8 +515,6 @@ router.post("/", async (req, res) => {
     res.status(211).send(e);
   }
 });
-
-
 
 router.post("/email", async (req, res) => {
   var attachs = [];
@@ -653,7 +662,7 @@ router.put("/coutCoach", async (req, res) => {
 
 router.put("/statutcall", async (req, res) => {
   const { _id, statut } = req.body;
-  
+
   try {
     var result = await Dossier.findByIdAndUpdate(
       { _id: _id },
@@ -679,20 +688,25 @@ router.put("/statutdossier", async (req, res) => {
       { new: false }
     ).populate("client");
 
- // creating modification
-    if(status.localeCompare(result["status"])){
+    // creating modification
+    if (status.localeCompare(result["status"])) {
       const operation = "Chgt statut";
-      const user = req.body.userId;    //req.user._id; after adding jwt token 
-      const newStatus = status ; 
+      const user = req.body.userId; //req.user._id; after adding jwt token
+      const newStatus = status;
       const previousStatus = result["status"];
-      const client = result["client"]["_id"] ;
+      const client = result["client"]["_id"];
 
-      result["status"]=status ; 
-      const modif = new Modification({client,operation,user,newStatus,previousStatus}) ; 
-      const result2= modif.save() ; 
+      result["status"] = status;
+      const modif = new Modification({
+        client,
+        operation,
+        user,
+        newStatus,
+        previousStatus,
+      });
+      const result2 = modif.save();
     }
     res.send(result);
-
   } catch (e) {
     res.status(400).send(e);
   }
@@ -1076,10 +1090,6 @@ router.put("/", async (req, res) => {
                           appointmentsObservation,
                         };
 
-                        
-
-
-
                         filterdossier = { _id: req.body._id };
                         let dossiers = await Dossier.findByIdAndUpdate(
                           filterdossier,
@@ -1088,17 +1098,21 @@ router.put("/", async (req, res) => {
                             new: true,
                           }
                         );
-                        
-                        if(status.localeCompare(dossier["status"])){
+
+                        if (status.localeCompare(dossier["status"])) {
                           const operation = "Chgt statut";
-                          const user = req.body.userId;    //req.user._id; after adding jwt token 
-                          const newStatus = status ; 
+                          const user = req.body.userId; //req.user._id; after adding jwt token
+                          const newStatus = status;
                           const previousStatus = dossier["status"];
-                          const modif = new Modification({client,operation,user,newStatus,previousStatus}) ; 
-                          const result2= modif.save() ; 
-                          
+                          const modif = new Modification({
+                            client,
+                            operation,
+                            user,
+                            newStatus,
+                            previousStatus,
+                          });
+                          const result2 = modif.save();
                         }
-                        
 
                         res.send(dossiers);
                         console.log("done");
@@ -1145,7 +1159,7 @@ router.get("/uploads/:id", async (req, res) => {
     console.log(dossier.files);
     var resultArray = await Fichier.find({ _id: { $in: dossier.files } });
 
-    console.log(resultArray);
+    //console.log(resultArray);
     res.send(resultArray);
   } catch (ex) {
     res.send(ex);
@@ -1153,16 +1167,62 @@ router.get("/uploads/:id", async (req, res) => {
 });
 //delete a file from the uploads
 router.post("/uploads", async (req, res) => {
-  const { fileid, _id } = req.body;
+  const { file_id, _id } = req.body;
 
   try {
-    const fichs = await Fichier.findByIdAndDelete(fileid).exec();
-    const results = await Dossier.update(
+    const fichs = await Fichier.findByIdAndDelete(file_id).exec();
+    const results = await Dossier.updateOne(
       {
         _id,
       },
       { $pull: { files: fileid } }
     );
+    res.send(results);
+    console.log("deleted");
+  } catch (ex) {
+    res.send(ex);
+  }
+});
+router.get("/client/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const results = await Client.find({ _id: id });
+    res.send(results);
+  } catch (ex) {
+    res.send(ex);
+  }
+});
+router.get("/preval/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const results = await PreEvaluation.find({ _id: id });
+    res.send(results);
+  } catch (ex) {
+    res.send(ex);
+  }
+});
+router.get("/eval/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const results = await Evaluation.find({ _id: id });
+    res.send(results);
+  } catch (ex) {
+    res.send(ex);
+  }
+});
+router.get("/crcoach/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const results = await CRCoach.find({ _id: id });
+    res.send(results);
+  } catch (ex) {
+    res.send(ex);
+  }
+});
+router.get("/facturation/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const results = await Facturation.find({ _id: id });
     res.send(results);
   } catch (ex) {
     res.send(ex);
