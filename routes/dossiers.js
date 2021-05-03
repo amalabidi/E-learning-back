@@ -9,7 +9,9 @@ const { CRCoach } = require("../modules/CRCoach");
 const { Facturation } = require("../modules/Facturation");
 const { Provenance } = require("../modules/provenance");
 const { User } = require("../modules/user");
+const { Modification } = require("../modules/modification");
 const nodemailer = require("nodemailer");
+const { getMaxListeners } = require("../app");
 
 async function getFactureAmount(id) {
   try {
@@ -156,7 +158,11 @@ router.get("/totalsByDateProvenance", async function (req, res) {
       finaltotalamount: totalamount2,
     });
   } catch (e) {
-    res.send(e);
+    res.send({
+      result: lt,
+      finalnbdossier: results.length,
+      finaltotalamount: totalamount2,
+    });
   }
 });
 
@@ -218,7 +224,6 @@ router.get("/totalsByDateProFor", async function (req, res) {
 /* créer un nouveau dossier  */
 
 router.post("/", async (req, res) => {
-  console.log(req.body);
   var clientId = "";
   var preEvaluationId = "";
   var evaluationId = "";
@@ -461,10 +466,22 @@ router.post("/", async (req, res) => {
                           crCoach,
                           facturation,
                         });
+
                         const results = await dossier.save();
+                        const operation = "Création";
+                        const user = req.body.userId; //req.user._id; after adding jwt token
+                        const newStatus = status;
+                        const modif = new Modification({
+                          client,
+                          operation,
+                          user,
+                          newStatus,
+                        });
+                        const result2 = modif.save();
 
                         res.status(200).send(results);
                       } catch (e) {
+                        console.log(e);
                         res.status(201).send(e);
                       }
                     } else {
@@ -500,19 +517,29 @@ router.post("/", async (req, res) => {
 });
 
 router.post("/email", async (req, res) => {
+  var attachs = [];
   const {
     subject,
-    receivermail,
+    receivermails,
     message,
-    path,
     senderEmail,
     senderpassword,
-    filename,
+    filenames,
   } = req.body;
-  var transport = nodemailer.createTransport({
-    host: "smtp.facacademy.fr",
-    secure: false,
 
+  if (typeof filenames !== "undefined") {
+    for (i = 0; i < filenames.length; i++) {
+      attachs.push({
+        filename: filenames[i],
+      });
+    }
+  }
+  console.log(attachs);
+
+  var transport = nodemailer.createTransport({
+    host: "ssl0.ovh.net" /*"smtp.facacademy.fr",*/,
+    port: 587,
+    secure: false,
     auth: {
       user: senderEmail,
       pass: senderpassword,
@@ -524,21 +551,17 @@ router.post("/email", async (req, res) => {
   });
   var mailOptions = {
     from: senderEmail,
-    to: receivermail,
+    to: receivermails,
     subject: subject,
     text: message,
-    attachements: [
-      {
-        filename: filename,
-        path: path,
-      },
-    ],
+    attachments: attachs,
   };
   try {
     let info = await transport.sendMail(mailOptions);
     res.send("email sent successfully");
   } catch (e) {
     res.send(e);
+    console.log(e);
   }
 });
 
@@ -578,6 +601,7 @@ router.put("/coutElearning", async (req, res) => {
     res.send(e);
   }
 });
+
 router.put("/coutCertification", async (req, res) => {
   const { _id, cout } = req.body;
 
@@ -635,7 +659,8 @@ router.put("/coutCoach", async (req, res) => {
     res.send(e);
   }
 });
-router.put("/statut", async (req, res) => {
+
+router.put("/statutcall", async (req, res) => {
   const { _id, statut } = req.body;
 
   try {
@@ -651,6 +676,42 @@ router.put("/statut", async (req, res) => {
     res.send(e);
   }
 });
+
+router.put("/statutdossier", async (req, res) => {
+  const { _id, status } = req.body;
+  try {
+    var result = await Dossier.findByIdAndUpdate(
+      { _id: _id },
+      {
+        status: status,
+      },
+      { new: false }
+    ).populate("client");
+
+    // creating modification
+    if (status.localeCompare(result["status"])) {
+      const operation = "Chgt statut";
+      const user = req.body.userId; //req.user._id; after adding jwt token
+      const newStatus = status;
+      const previousStatus = result["status"];
+      const client = result["client"]["_id"];
+
+      result["status"] = status;
+      const modif = new Modification({
+        client,
+        operation,
+        user,
+        newStatus,
+        previousStatus,
+      });
+      const result2 = modif.save();
+    }
+    res.send(result);
+  } catch (e) {
+    res.status(400).send(e);
+  }
+});
+
 router.put("/vendeur", async (req, res) => {
   const { _id, vendeur } = req.body;
 
@@ -711,8 +772,33 @@ router.get("/search/:search", async (req, res) => {
 });
 
 router.delete("/:id", async (req, res) => {
-  const types = await Type.findByIdAndDelete(req.params.id).exec();
-  res.send("success");
+  const dossier = await Dossier.findOne({ _id: req.params.id });
+  if (dossier != null) {
+    const clientid = dossier["client"];
+    const facturationid = dossier["facturation"];
+    const evaluationid = dossier["evaluation"];
+    const preevaluationid = dossier["preEvaluation"];
+    const crcoachid = dossier["crCoach"];
+    try {
+      const dossiers = await Dossier.findByIdAndDelete(req.params.id).exec();
+      const clients = await Client.findByIdAndDelete(clientid).exec();
+      const facturations = await Facturation.findByIdAndDelete(
+        facturationid
+      ).exec();
+      const evaluations = await Evaluation.findByIdAndDelete(
+        evaluationid
+      ).exec();
+      const preevaluations = await PreEvaluation.findByIdAndDelete(
+        preevaluationid
+      ).exec();
+      const crcoachs = await CRCoach.findByIdAndDelete(crcoachid).exec();
+      res.send("success");
+    } catch (e) {
+      res.send(e);
+    }
+  } else {
+    res.send("dossier n'existe pas ");
+  }
 });
 
 router.put("/", async (req, res) => {
@@ -1012,6 +1098,22 @@ router.put("/", async (req, res) => {
                             new: true,
                           }
                         );
+
+                        if (status.localeCompare(dossier["status"])) {
+                          const operation = "Chgt statut";
+                          const user = req.body.userId; //req.user._id; after adding jwt token
+                          const newStatus = status;
+                          const previousStatus = dossier["status"];
+                          const modif = new Modification({
+                            client,
+                            operation,
+                            user,
+                            newStatus,
+                            previousStatus,
+                          });
+                          const result2 = modif.save();
+                        }
+
                         res.send(dossiers);
                         console.log("done");
                       } catch (e) {
@@ -1048,13 +1150,16 @@ router.put("/", async (req, res) => {
     res.status(211).send(e);
   }
 });
+
 router.get("/uploads/:id", async (req, res) => {
   try {
+    console.log(req.params.id);
     var dossier = await Dossier.findOne({ _id: req.params.id });
+    console.log(dossier);
     console.log(dossier.files);
     var resultArray = await Fichier.find({ _id: { $in: dossier.files } });
 
-    console.log(resultArray);
+    //console.log(resultArray);
     res.send(resultArray);
   } catch (ex) {
     res.send(ex);
@@ -1062,18 +1167,62 @@ router.get("/uploads/:id", async (req, res) => {
 });
 //delete a file from the uploads
 router.post("/uploads", async (req, res) => {
-  const { file, _id } = req.body;
+  const { file_id, _id } = req.body;
 
   try {
-    const fich = await Fichier.findOne({ name: file });
-    const idfichier = fich["_id"];
-    const results = await Dossier.update(
+    const fichs = await Fichier.findByIdAndDelete(file_id).exec();
+    const results = await Dossier.updateOne(
       {
         _id,
       },
-      { $pull: { files: idfichier } }
+      { $pull: { files: fileid } }
     );
-
+    res.send(results);
+    console.log("deleted");
+  } catch (ex) {
+    res.send(ex);
+  }
+});
+router.get("/client/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const results = await Client.find({ _id: id });
+    res.send(results);
+  } catch (ex) {
+    res.send(ex);
+  }
+});
+router.get("/preval/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const results = await PreEvaluation.find({ _id: id });
+    res.send(results);
+  } catch (ex) {
+    res.send(ex);
+  }
+});
+router.get("/eval/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const results = await Evaluation.find({ _id: id });
+    res.send(results);
+  } catch (ex) {
+    res.send(ex);
+  }
+});
+router.get("/crcoach/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const results = await CRCoach.find({ _id: id });
+    res.send(results);
+  } catch (ex) {
+    res.send(ex);
+  }
+});
+router.get("/facturation/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const results = await Facturation.find({ _id: id });
     res.send(results);
   } catch (ex) {
     res.send(ex);

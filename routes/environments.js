@@ -68,7 +68,7 @@ router.get("/search/:search", async (req, res) => {
 });
 router.delete("/:id", async (req, res) => {
   const environments = await Environment.findByIdAndDelete(req.params.id).exec();
-  res.send("success");
+  res.send({suc:"success"});
 });
 
 module.exports = router;

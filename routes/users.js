@@ -16,7 +16,17 @@ router.get('/', async function (req, res, next) {
 
 
 /* GET same type users you need to pass habilitation . */
-router.get('/filter/:habilitation/', async function (req, res, next) {
+router.get('/filter/:habilitation', async function (req, res, next) {
+  try {
+    const {habilitation}=req.params;
+    // Find all Users in the database
+    const results = await User.find({"habilitation":habilitation}); 
+    res.send(results);
+  } catch (ex) {
+    res.send(ex);
+  }
+});
+router.get('/filter/:habilitation', async function (req, res, next) {
   try {
     const {habilitation}=req.params;
     // Find all Users in the database
