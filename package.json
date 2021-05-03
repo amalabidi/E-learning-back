@@ -22,6 +22,7 @@
     "email-templates": "^8.0.4",
     "express": "^4.17.1",
     "fast-csv": "^4.3.6",
+    "fill-pdf": "^1.1.0",
     "fs": "0.0.1-security",
     "fs-extra": "^9.1.0",
     "joi": "^17.3.0",
@@ -35,6 +36,7 @@
     "path": "^0.12.7",
     "pdffiller": "0.0.11",
     "pdfkit": "^0.12.1",
+    "pdftk": "0.0.0-rc.0",
     "signrequest-client": "^1.1.1",
     "validator": "^13.5.2"
   }

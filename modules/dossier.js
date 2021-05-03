@@ -120,6 +120,9 @@ const dossierSchema = new mongoose.Schema({
   files: {
     type: [String],
     default: [],
+  },filledFiles: {
+    type: [String],
+    default: [],
   },
 },{ timestamps: true });
 
