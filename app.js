@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 var cors = require("cors");
 const environments = require("./routes/environments");
 const types = require("./routes/types");
+const reset = require("./routes/ResetPassword");
 const workshops = require("./routes/workshops");
 const provenances = require("./routes/provenances");
 const users = require("./routes/users");
@@ -10,10 +11,13 @@ const bodyParser = require("body-parser");
 const dossiers = require("./routes/dossiers");
 const auth = require("./routes/authentication");
 const uploads = require("./routes/uploads");
+const parametres = require("./routes/parameters");
 const downloads = require("./routes/downloads");
 const sig = require("./routes/embededSignature");
 const exp = require("./routes/export");
+
 const filters = require("./routes/filters");
+const relances = require("./routes/relances");
 const app = express();
 
 app.use(express.json());
@@ -52,6 +56,9 @@ app.use("/signature", sig);
 app.use("/dossier", dossiers);
 app.use("/uploads", uploads);
 app.use("/filters", filters);
+app.use("/relances", relances);
+app.use("/relances", relances);
+app.use("/reset", reset);
 
 app.use("/downloads", downloads);
 

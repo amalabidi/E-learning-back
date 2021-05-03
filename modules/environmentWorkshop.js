@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 
-// Creating a user Schema
 const EnvironmentWorkshopSchema = new mongoose.Schema({
   environment: {
     type: String,

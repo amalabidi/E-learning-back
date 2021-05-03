@@ -10,6 +10,7 @@ const { Facturation } = require("../modules/Facturation");
 const { Provenance } = require("../modules/provenance");
 const { User } = require("../modules/user");
 const nodemailer = require("nodemailer");
+const { getMaxListeners } = require("../app");
 
 async function getFactureAmount(id) {
   try {
@@ -500,19 +501,29 @@ router.post("/", async (req, res) => {
 });
 
 router.post("/email", async (req, res) => {
+  var attachs = [];
   const {
     subject,
-    receivermail,
+    receivermails,
     message,
-    path,
     senderEmail,
     senderpassword,
-    filename,
+    filenames,
   } = req.body;
-  var transport = nodemailer.createTransport({
-    host: "smtp.facacademy.fr",
-    secure: false,
 
+  if (typeof filenames !== "undefined") {
+    for (i = 0; i < filenames.length; i++) {
+      attachs.push({
+        filename: filenames[i],
+      });
+    }
+  }
+  console.log(attachs);
+
+  var transport = nodemailer.createTransport({
+    host: "ssl0.ovh.net" /*"smtp.facacademy.fr",*/,
+    port: 587,
+    secure: false,
     auth: {
       user: senderEmail,
       pass: senderpassword,
@@ -524,21 +535,17 @@ router.post("/email", async (req, res) => {
   });
   var mailOptions = {
     from: senderEmail,
-    to: receivermail,
+    to: receivermails,
     subject: subject,
     text: message,
-    attachements: [
-      {
-        filename: filename,
-        path: path,
-      },
-    ],
+    attachments: attachs,
   };
   try {
     let info = await transport.sendMail(mailOptions);
     res.send("email sent successfully");
   } catch (e) {
     res.send(e);
+    console.log(e);
   }
 });
 
@@ -711,8 +718,33 @@ router.get("/search/:search", async (req, res) => {
 });
 
 router.delete("/:id", async (req, res) => {
-  const types = await Type.findByIdAndDelete(req.params.id).exec();
-  res.send("success");
+  const dossier = await Dossier.findOne({ _id: req.params.id });
+  if (dossier != null) {
+    const clientid = dossier["client"];
+    const facturationid = dossier["facturation"];
+    const evaluationid = dossier["evaluation"];
+    const preevaluationid = dossier["preEvaluation"];
+    const crcoachid = dossier["crCoach"];
+    try {
+      const dossiers = await Dossier.findByIdAndDelete(req.params.id).exec();
+      const clients = await Client.findByIdAndDelete(clientid).exec();
+      const facturations = await Facturation.findByIdAndDelete(
+        facturationid
+      ).exec();
+      const evaluations = await Evaluation.findByIdAndDelete(
+        evaluationid
+      ).exec();
+      const preevaluations = await PreEvaluation.findByIdAndDelete(
+        preevaluationid
+      ).exec();
+      const crcoachs = await CRCoach.findByIdAndDelete(crcoachid).exec();
+      res.send("success");
+    } catch (e) {
+      res.send(e);
+    }
+  } else {
+    res.send("dossier n'existe pas ");
+  }
 });
 
 router.put("/", async (req, res) => {
@@ -1050,7 +1082,9 @@ router.put("/", async (req, res) => {
 });
 router.get("/uploads/:id", async (req, res) => {
   try {
+    console.log(req.params.id);
     var dossier = await Dossier.findOne({ _id: req.params.id });
+    console.log(dossier);
     console.log(dossier.files);
     var resultArray = await Fichier.find({ _id: { $in: dossier.files } });
 
@@ -1062,18 +1096,16 @@ router.get("/uploads/:id", async (req, res) => {
 });
 //delete a file from the uploads
 router.post("/uploads", async (req, res) => {
-  const { file, _id } = req.body;
+  const { fileid, _id } = req.body;
 
   try {
-    const fich = await Fichier.findOne({ name: file });
-    const idfichier = fich["_id"];
+    const fichs = await Fichier.findByIdAndDelete(fileid).exec();
     const results = await Dossier.update(
       {
         _id,
       },
-      { $pull: { files: idfichier } }
+      { $pull: { files: fileid } }
     );
-
     res.send(results);
   } catch (ex) {
     res.send(ex);

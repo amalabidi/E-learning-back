@@ -52,6 +52,7 @@ router.post("/", async (req, res) => {
       vendeurs,
       workshops,
       provenances,
+      coachs,
       statusDossier,
     } = req.body;
     console.log(provenances);
@@ -166,6 +167,14 @@ router.post("/", async (req, res) => {
         if (types == null) {
           return true;
         } else if (types.includes(type)) {
+          return true;
+        }
+        return false;
+      },
+      coach: (coach) => {
+        if (coachs == null) {
+          return true;
+        } else if (coachs.includes(coach)) {
           return true;
         }
         return false;
