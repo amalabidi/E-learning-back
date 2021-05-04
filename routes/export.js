@@ -5,6 +5,8 @@ const PDFDocument = require("pdfkit");
 var csv = require("fast-csv");
 var { Dossier } = require("../modules/dossier");
 const { modele, Modele } = require("../modules/export_modele");
+const admz = require("adm-zip");
+var streamToBuffer = require('stream-to-buffer')
 
 router.post("/modele", async (req, res) => {
   const dossierAttributes = req.body.dossierAttributes;
@@ -26,16 +28,15 @@ router.post("/modele", async (req, res) => {
   }
 });
 
-router.get("/exportdata", async (req, res) => {
+router.post("/exportdata", async (req, res) => {
   // tableau de dossierId
-  const dossierId = req.body.dossierId;
+  const dossierId =  req.body.dossierId;
   const dossierAttributes = req.body.dossierAttributes;
   const clientAttributes = req.body.clientAttributes;
   const factureAttributes = req.body.factureAttributes;
   const workshopAttributes = req.body.workshopAttributes;
   try {
     var liste = new Array();
-
     for (i in dossierId) {
       const dossier = await Dossier.findOne({ _id: dossierId[i] })
         .populate("facturation")
@@ -63,18 +64,31 @@ router.get("/exportdata", async (req, res) => {
 
       liste.push(result);
     }
-
-    console.log(liste);
-
-    var ws = fs.createWriteStream("public/data2.csv");
-
-    csv
+    var middlepath = Date.now() + "file.csv";
+    var ws = fs.createWriteStream("public/"+middlepath); 
+   await csv
       .write(liste, { headers: true })
       .on("finish", function () {})
-      .pipe(ws);
-    res.send(liste);
+      .pipe(ws).on("finish" , function () {
+        var zp = new admz();
+        
+        zp.addLocalFile("./public/"+middlepath);
+    var outputpath = Date.now() + "dossier.zip";
+    fs.writeFileSync(outputpath, zp.toBuffer());
+    res.download(outputpath, (err) => {
+      if (err) {
+        res.send("error in downloading");
+      }
+      fs.unlinkSync(outputpath);
+      fs.unlink("./public/"+middlepath,(err)=>{
+         console.log(err);
+       }); 
+    });
+
+      });
+            
   } catch (e) {
-    res.send(e);
+
   }
 });
 
@@ -123,13 +137,31 @@ router.get("/exportdata/modele", async (req, res) => {
 
       console.log(liste);
 
-      var ws = fs.createWriteStream("public/data2.csv");
+      var middlepath = Date.now() + "file.csv";
+    var ws = fs.createWriteStream("public/"+middlepath); 
+   await csv
+      .write(liste, { headers: true })
+      .on("finish", function () {})
+      .pipe(ws).on("finish" , function () {
+        var zp = new admz();
+        
+        zp.addLocalFile("./public/"+middlepath);
+    var outputpath = Date.now() + "dossier.zip";
+    fs.writeFileSync(outputpath, zp.toBuffer());
+    res.download(outputpath, (err) => {
+      if (err) {
+        res.send("error in downloading");
+      }
+      fs.unlinkSync(outputpath);
+      fs.unlink("./public/"+middlepath,(err)=>{
+         console.log(err);
+       }); 
+    });
 
-      csv
-        .write(liste, { headers: true })
-        .on("finish", function () {})
-        .pipe(ws);
-      res.send(liste);
+      });
+       
+
+
     } catch (e) {
       res.send(e);
     }
@@ -180,13 +212,29 @@ router.get("/exportdataMSC", async (req, res) => {
 
     console.log(liste);
 
-    var ws = fs.createWriteStream("public/data3.csv");
-
-    csv
+    var middlepath = Date.now() + "file.csv";
+    var ws = fs.createWriteStream("public/"+middlepath); 
+   await csv
       .write(liste, { headers: true })
       .on("finish", function () {})
-      .pipe(ws);
-    res.send(liste);
+      .pipe(ws).on("finish" , function () {
+        var zp = new admz();
+        
+        zp.addLocalFile("./public/"+middlepath);
+    var outputpath = Date.now() + "dossier.zip";
+    fs.writeFileSync(outputpath, zp.toBuffer());
+    res.download(outputpath, (err) => {
+      if (err) {
+        res.send("error in downloading");
+      }
+      fs.unlinkSync(outputpath);
+      fs.unlink("./public/"+middlepath,(err)=>{
+         console.log(err);
+       }); 
+    });
+
+      });
+       
   } catch (e) {
     res.send(e);
   }
@@ -236,13 +284,29 @@ router.get("/exportdata/rapportFactor", async (req, res) => {
 
     console.log(liste);
 
-    var ws = fs.createWriteStream("public/data3.csv");
-
-    csv
+    var middlepath = Date.now() + "file.csv";
+    var ws = fs.createWriteStream("public/"+middlepath); 
+   await csv
       .write(liste, { headers: true })
       .on("finish", function () {})
-      .pipe(ws);
-    res.send(liste);
+      .pipe(ws).on("finish" , function () {
+        var zp = new admz();
+        
+        zp.addLocalFile("./public/"+middlepath);
+    var outputpath = Date.now() + "dossier.zip";
+    fs.writeFileSync(outputpath, zp.toBuffer());
+    res.download(outputpath, (err) => {
+      if (err) {
+        res.send("error in downloading");
+      }
+      fs.unlinkSync(outputpath);
+      fs.unlink("./public/"+middlepath,(err)=>{
+         console.log(err);
+       }); 
+    });
+
+      });
+       
   } catch (e) {
     res.send(e);
   }
