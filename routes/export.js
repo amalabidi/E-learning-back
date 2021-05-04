@@ -33,6 +33,7 @@ router.get("/exportdata", async (req, res) => {
   const clientAttributes = req.body.clientAttributes;
   const factureAttributes = req.body.factureAttributes;
   const workshopAttributes = req.body.workshopAttributes;
+  console.log(req)
   try {
     var liste = new Array();
 
@@ -64,7 +65,7 @@ router.get("/exportdata", async (req, res) => {
       liste.push(result);
     }
 
-    console.log(liste);
+    console.log("hhhh",liste);
 
     var ws = fs.createWriteStream("public/data2.csv");
 
@@ -121,7 +122,7 @@ router.get("/exportdata/modele", async (req, res) => {
         liste.push(result);
       }
 
-      console.log(liste);
+      console.log("hhhhhhh",liste);
 
       var ws = fs.createWriteStream("public/data2.csv");
 
