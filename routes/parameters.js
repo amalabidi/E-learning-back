@@ -6,7 +6,7 @@ const multer = require("multer");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "./public/imgs");
+    cb(null, "./public/imgs/");
   },
   filename: function (req, file, cb) {
     const { originalname } = file;
@@ -184,9 +184,9 @@ router.put("/", upload.array("imgs[]", 2), async (req, res) => {
   try {
     const images = req.files;
     const cachet =
-      "http://localhost:3001/public/imgs" + images[0]["originalname"];
+      "http://localhost:3001/public/imgs/" + images[0]["originalname"];
     const logo =
-      "http://localhost:3001/public/imgs" + images[1]["originalname"];
+      "http://localhost:3001/public/imgs/" + images[1]["originalname"];
 
     const {
       portComm,

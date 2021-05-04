@@ -1,12 +1,49 @@
 const router = require("express").Router();
-//var pdfFiller = require("pdffiller");
-
 var { fichier, Fichier } = require("../modules/fichier");
 const { Dossier } = require("../modules/dossier");
+const fs = require("fs");
+const path = require("path");
+const assert = require("assert");
+var pdfFiller = require("pdffiller");
+const { PDFDocument } = require("pdf-lib");
+const multer = require("multer");
 
-/*router.post("/fill", async (req, res) => {
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "./public/logos/");
+  },
+  filename: function (req, file, cb) {
+    const { originalname } = file;
+    filepath = `${originalname}`;
+    cb(null, originalname);
+  },
+});
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === "image/jpeg" ||
+    file.mimetype === "image/png" ||
+    file.mimetype === "image/jpg"
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+
+let upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 1021 * 1021 * 100,
+  },
+  fileFilter: fileFilter,
+});
+
+router.post("/fill", upload.array("imgs[]", 2), async (req, res) => {
+  const images = req.files;
+  const pathTocachet = "./public/logos/" + images[0]["originalname"];
+  const pathToLogo = "./public/logos/" + images[1]["originalname"];
   var sourcePDF2 = "./public/2emeDocumentTemplate.pdf"; //req.body.pdfPath;
-  var namePDF2 = "filledPDF2" +Date.now() + ".pdf";
+  var namePDF2 = "filledPDF2" + Date.now() + ".pdf";
   var destinationPDF2 = "./uploads/filledpdf/" + namePDF2;
 
   const {
@@ -86,15 +123,40 @@ const { Dossier } = require("../modules/dossier");
         const f2 = new Fichier({ name: namePDF2 });
         f2.save();
 
-        var result2 = await Dossier.update(
+        var result2 = await Dossier.updateOne(
           {
             _id: dossier_Id,
           },
           { $push: { filledFiles: f2._id } }
         );
 
+        const pdfDoc = await PDFDocument.load(fs.readFileSync(destinationPDF2));
+        const imglogo = await pdfDoc.embedPng(fs.readFileSync(pathToLogo));
+        const imgcachet = await pdfDoc.embedPng(fs.readFileSync(pathTocachet));
+        const imagePage = pdfDoc.getPages();
+        for (var i = 0; i < imagePage.length; i++) {
+          if (i != 1)
+            imagePage[i].drawImage(imglogo, {
+              x: 300,
+              y: (imagePage[i].getHeight() / 8) * 6.5,
+              width: imagePage[i].getWidth() / 6,
+              height: imagePage[i].getHeight() / 8,
+            });
+
+          imagePage[i].drawImage(imgcachet, {
+            x: (imagePage[i].getWidth() / 6) * 5,
+            y: 300,
+            width: imagePage[i].getWidth() / 6,
+            height: imagePage[i].getHeight() / 8,
+          });
+        }
+
+        const pdfBytes = await pdfDoc.save();
+        const newFilePath = destinationPDF2; //`${path.basename(destinationPDF1, '.pdf')}-result.pdf`;
+        fs.writeFileSync(newFilePath, pdfBytes);
+
         var sourcePDF1 = "./public/1erDocumentTemplate.pdf";
-        var namePDF1 = "filledPDF1"+ Date.now()+ ".pdf";
+        var namePDF1 = "filledPDF1 " + Date.now() + ".pdf";
         var destinationPDF1 = "./uploads/filledpdf/" + namePDF1;
 
         const {
@@ -164,7 +226,7 @@ const { Dossier } = require("../modules/dossier");
               const f1 = new Fichier({ name: namePDF1 });
               f1.save();
 
-              var result1 = await Dossier.update(
+              var result1 = await Dossier.updateOne(
                 {
                   _id: dossier_Id,
                 },
@@ -172,17 +234,47 @@ const { Dossier } = require("../modules/dossier");
               );
 
               if (result1) {
-                res.status(200).send("done");
+                const pdfDoc = await PDFDocument.load(
+                  fs.readFileSync(destinationPDF1)
+                );
+                const imglogo = await pdfDoc.embedPng(
+                  fs.readFileSync(pathToLogo)
+                );
+                const imgcachet = await pdfDoc.embedPng(
+                  fs.readFileSync(pathTocachet)
+                );
+                const imagePage = pdfDoc.getPages();
+                for (var i = 2; i < imagePage.length; i++) {
+                  if (i != 5)
+                    imagePage[i].drawImage(imglogo, {
+                      x: 300,
+                      y: (imagePage[i].getHeight() / 8) * 6.5,
+                      width: imagePage[i].getWidth() / 6,
+                      height: imagePage[i].getHeight() / 8,
+                    });
+                  if (i >= 5)
+                    imagePage[i].drawImage(imgcachet, {
+                      x: (imagePage[i].getWidth() / 6) * 4.5,
+                      y: 250,
+                      width: imagePage[i].getWidth() / 6,
+                      height: imagePage[i].getHeight() / 8,
+                    });
+                }
+
+                const pdfBytes = await pdfDoc.save();
+                const newFilePath = destinationPDF1; //`${path.basename(destinationPDF1, '.pdf')}-result.pdf`;
+                fs.writeFileSync(newFilePath, pdfBytes);
               } else {
               }
             }
           }
         );
       }
+
+      res.status(200).send("done");
     }
   );
-});*/
-
+});
 router.get("/filledPdf/:_id", async (req, res) => {
   var pdfs = [];
   var dossier = await Dossier.findOne({ _id: req.params._id });
