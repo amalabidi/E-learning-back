@@ -127,6 +127,10 @@ const dossierSchema = new mongoose.Schema(
       type: [Schema.Types.ObjectId],
       ref: "JournalAppel",
     },
+    filledFiles: {
+      type: [String],
+      default: [],
+    },
   },
   { timestamps: true }
 );
