@@ -1,19 +1,24 @@
 const router = require("express").Router();
 var pdfFiller   = require('pdffiller');
-var fillPdf = require("fill-pdf");
 var {fichier, Fichier} = require('../modules/fichier') ; 
 const { Dossier } = require("../modules/dossier");
+
+const fs = require('fs');
+const path = require('path');
+const assert = require('assert');
+const { PDFDocument } = require('pdf-lib');
 
 
 
 router.post("/fill", async(req,res)=>{
-
+   
 var sourcePDF2 = "./public/2emeDocumentTemplate.pdf"//req.body.pdfPath;
 var namePDF2= "filledPDF2 "+Date.now()+".pdf"
 var destinationPDF2 =  "./uploads/filledpdf/"+namePDF2;
 
 
-  const  {dossier_Id,
+  const  {dossier_Id,pathToLogo,
+    pathTocachet,
     client,
 intitule,
 region,
@@ -75,23 +80,55 @@ var formData2 = {"client":client,
   "progressionStagiaire":progressionStagiaire,};    
 
  
-pdfFiller.fillForm( sourcePDF2, destinationPDF2, formData2,async function(err,output) {
+ pdfFiller.fillForm( sourcePDF2, destinationPDF2, formData2,async function(err,output) {
     if (err) 
     {console.log(err) ; 
     res.status(502).send(err) ;
     }
     else{
+
       console.log("In callback 1 (we're done).");
 
       const f2 = new Fichier({name : namePDF2}) ;
       f2.save() ;
 
-      var result2 = await Dossier.update(
+      var result2 = await Dossier.updateOne(
         {
           _id:dossier_Id,
         },
         { $push: { filledFiles: f2._id } }
       );
+
+
+
+
+      const pdfDoc = await PDFDocument.load(fs.readFileSync(destinationPDF2));
+              const imglogo = await pdfDoc.embedPng(fs.readFileSync(pathToLogo));
+              const imgcachet = await pdfDoc.embedPng(fs.readFileSync(pathTocachet));
+              const imagePage = pdfDoc.getPages() ;
+              for( var  i=0 ; i<imagePage.length ;i++){
+              if(i!=1)
+                imagePage[i].drawImage(imglogo, {
+                x: 300,
+                y: imagePage[i].getHeight()/8 *6.5,
+                width: imagePage[i].getWidth()/6,
+                height: imagePage[i].getHeight()/8
+              });
+
+              imagePage[i].drawImage(imgcachet, {
+                x: imagePage[i].getWidth()/6*5,
+                y: 300,
+                width: imagePage[i].getWidth()/6,
+                height: imagePage[i].getHeight()/8
+              });
+            
+            }
+            
+              const pdfBytes = await pdfDoc.save();
+              const newFilePath = destinationPDF2 ; //`${path.basename(destinationPDF1, '.pdf')}-result.pdf`;
+              fs.writeFileSync(newFilePath, pdfBytes);
+            
+
 
          
 
@@ -165,7 +202,7 @@ pdfFiller.fillForm( sourcePDF2, destinationPDF2, formData2,async function(err,ou
           const f1 = new Fichier({name : namePDF1}) ;
           f1.save() ;
 
-          var result1 = await Dossier.update(
+          var result1 = await Dossier.updateOne(
             {
               _id:dossier_Id,
             },
@@ -173,7 +210,40 @@ pdfFiller.fillForm( sourcePDF2, destinationPDF2, formData2,async function(err,ou
           );
 
           if(result1){
-            res.status(200).send("done") ; 
+
+            
+            const pdfDoc = await PDFDocument.load(fs.readFileSync(destinationPDF1));
+              const imglogo = await pdfDoc.embedPng(fs.readFileSync(pathToLogo));
+              const imgcachet = await pdfDoc.embedPng(fs.readFileSync(pathTocachet));
+              const imagePage = pdfDoc.getPages() ;
+              for( var  i=2 ; i<imagePage.length ;i++){
+              if(i!=5)
+                imagePage[i].drawImage(imglogo, {
+                x: 300,
+                y: imagePage[i].getHeight()/8 *6.5,
+                width: imagePage[i].getWidth()/6,
+                height: imagePage[i].getHeight()/8
+              });
+            if(i>=5)
+              imagePage[i].drawImage(imgcachet, {
+                x: imagePage[i].getWidth()/6*4.5,
+                y: 250,
+                width: imagePage[i].getWidth()/6,
+                height: imagePage[i].getHeight()/8
+              });
+
+            }
+            
+              const pdfBytes = await pdfDoc.save();
+              const newFilePath = destinationPDF1 ; //`${path.basename(destinationPDF1, '.pdf')}-result.pdf`;
+              fs.writeFileSync(newFilePath, pdfBytes);
+            
+
+
+
+
+
+           
           }else{
 
           }
@@ -181,13 +251,16 @@ pdfFiller.fillForm( sourcePDF2, destinationPDF2, formData2,async function(err,ou
             
          }});
     }
+
+
+
+
+
+
+
+  res.status(200).send("done") ; 
 });
 
-
 });
-
-
-
-
 
 module.exports=router ; 
