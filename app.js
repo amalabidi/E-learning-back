@@ -25,7 +25,7 @@ const app = express();
 app.use(express.json());
 app.use(
   bodyParser.urlencoded({
-    limit: "50mb",
+    limit: "300mb",
     extended: true,
     parameterLimit: 50000,
   })
@@ -60,7 +60,7 @@ app.use("/uploads", uploads);
 
 app.use("/filters", filters);
 app.use("/relances", relances);
-app.use("/relances", relances);
+app.use("/parameters", parametres);
 app.use("/reset", reset);
 
 app.use("/modifications", modifications);
@@ -70,7 +70,7 @@ app.use("/export", exp);
 app.use("/cout/", cout);
 
 //choose the backend port
-const port = process.env.PORT || 3018;
+const port = process.env.PORT || 3001;
 
 app.use("/public", express.static(__dirname + "/public"));
 
