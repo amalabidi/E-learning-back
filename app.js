@@ -17,7 +17,7 @@ const modifications = require("./routes/modifications");
 const cout = require("./routes/cout");
 const sig = require("./routes/embededSignature");
 const exp = require("./routes/export");
-
+const pdf = require("./routes/pdffiller");
 const filters = require("./routes/filters");
 const relances = require("./routes/relances");
 const app = express();
@@ -64,13 +64,13 @@ app.use("/relances", relances);
 app.use("/reset", reset);
 
 app.use("/modifications", modifications);
-
+app.use("/pdf", pdf);
 app.use("/downloads", downloads);
 app.use("/export", exp);
 app.use("/cout/", cout);
 
 //choose the backend port
-const port = process.env.PORT || 3001;
+const port = process.env.PORT || 3018;
 
 app.use("/public", express.static(__dirname + "/public"));
 
