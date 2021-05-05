@@ -478,7 +478,7 @@ router.post("/", async (req, res) => {
                           newStatus,
                         });
                         const result2 = modif.save();
-
+                        console.log(result2);
                         res.status(200).send(results);
                       } catch (e) {
                         console.log(e);

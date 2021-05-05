@@ -3,7 +3,7 @@ var { fichier, Fichier } = require("../modules/fichier");
 const { Dossier } = require("../modules/dossier");
 const { Societe } = require("../modules/societe");
 const fs = require("fs");
-const path = require("path");
+/* const path = require("path");
 const assert = require("assert");
 var pdfFiller = require("pdffiller");
 const { PDFDocument } = require("pdf-lib");
@@ -245,7 +245,7 @@ router.post("/fill", async (req, res) => {
       res.status(200).send("done");
     }
   );
-});
+});*/
 router.get("/filledPdf/:_id", async (req, res) => {
   var pdfs = [];
   var dossier = await Dossier.findOne({ _id: req.params._id });
