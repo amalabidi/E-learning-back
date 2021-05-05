@@ -45,7 +45,6 @@ router.post("/fill", upload.array("imgs[]", 2), async (req, res) => {
   var sourcePDF2 = "./public/2emeDocumentTemplate.pdf"; //req.body.pdfPath;
   var namePDF2 = "filledPDF2" + Date.now() + ".pdf";
   var destinationPDF2 = "./uploads/filledpdf/" + namePDF2;
-
   const {
     dossier_Id,
     client,

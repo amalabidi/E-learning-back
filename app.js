@@ -20,6 +20,7 @@ const exp = require("./routes/export");
 const pdf = require("./routes/pdffiller");
 const filters = require("./routes/filters");
 const relances = require("./routes/relances");
+const dashboard = require("./routes/dashboard");
 const app = express();
 
 app.use(express.json());
@@ -57,6 +58,7 @@ app.use("/auth", auth);
 app.use("/signature", sig);
 app.use("/dossier", dossiers);
 app.use("/uploads", uploads);
+app.use("/dashboard", dashboard);
 
 app.use("/filters", filters);
 app.use("/relances", relances);
