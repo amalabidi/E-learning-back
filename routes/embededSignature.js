@@ -70,6 +70,78 @@ router.get('/documents/notsigned',async(req,res)=>{
 })
 
 
+
+// count signed documents 
+
+
+router.get('/documents/compteurSigned',async(req,res)=>{
+ 
+  var apiInstance = new SignrequestClient.DocumentsSearchApi();
+  
+  var opts = {
+    'status': 'si'
+  };
+  
+  var callback = function(error, data, response) {
+    if (error) {
+      console.error(error);
+    } else {
+  
+      var tab =JSON.parse(response["text"])['results']  ;
+  
+      beginDate = req.body.beginDate ; 
+      endDate =  req.body.endDate ; 
+      const filters = {
+        
+        finished_on: (finished_on) => {
+               
+  
+           if ((new Date(finished_on) >= new Date(beginDate))&&(new Date(finished_on) <= new Date(endDate))) { 
+              
+            return true;
+            }
+    
+            return false;
+          }
+        }
+  
+      try{
+  
+          const filterKeys = Object.keys(filters);
+  
+          const result = tab.filter((item) => {
+            // validates all filter criteria
+            return filterKeys.every((key) => {
+              // ignores non-function predicates
+              if (typeof filters[key] !== "function") return true;
+              return filters[key](item[key]);
+            });
+          });
+  
+          res.status(200).send("Consommation Signature : " + result.length);
+  
+      }catch(e){
+  
+     res.status(400).send(e) ; 
+      }
+      
+    }
+  };
+  
+  apiInstance.documentsSearchList(opts, callback);
+    
+  })
+  
+  
+
+
+
+
+
+
+
+
+
 // retrieve created documents   and return their uuids  
 
 router.get('/documents/uuid',async(req,res)=>{
