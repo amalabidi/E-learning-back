@@ -3,10 +3,10 @@ var { fichier, Fichier } = require("../modules/fichier");
 const { Dossier } = require("../modules/dossier");
 const { Societe } = require("../modules/societe");
 const fs = require("fs");
-/*const path = require("path");
+const path = require("path");
 const assert = require("assert");
 var pdfFiller = require("pdffiller");
-const { PDFDocument } = require("pdf-lib");*/
+const { PDFDocument } = require("pdf-lib");
 
 router.post("/fill", async (req, res) => {
   const parameters = await Societe.find({});
