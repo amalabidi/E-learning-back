@@ -1,48 +1,20 @@
 const router = require("express").Router();
 var { fichier, Fichier } = require("../modules/fichier");
 const { Dossier } = require("../modules/dossier");
+const { Societe } = require("../modules/societe");
 const fs = require("fs");
-const path = require("path");
+/*const path = require("path");
 const assert = require("assert");
 var pdfFiller = require("pdffiller");
-const { PDFDocument } = require("pdf-lib");
-const multer = require("multer");
+const { PDFDocument } = require("pdf-lib");*/
 
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "./public/logos/");
-  },
-  filename: function (req, file, cb) {
-    const { originalname } = file;
-    filepath = `${originalname}`;
-    cb(null, originalname);
-  },
-});
-const fileFilter = (req, file, cb) => {
-  if (
-    file.mimetype === "image/jpeg" ||
-    file.mimetype === "image/png" ||
-    file.mimetype === "image/jpg"
-  ) {
-    cb(null, true);
-  } else {
-    cb(null, false);
-  }
-};
-
-let upload = multer({
-  storage: storage,
-  limits: {
-    fileSize: 1021 * 1021 * 100,
-  },
-  fileFilter: fileFilter,
-});
-
-router.post("/fill", upload.array("imgs[]", 2), async (req, res) => {
-  const images = req.files;
-  const pathTocachet = "./public/logos/" + images[0]["originalname"];
-  const pathToLogo = "./public/logos/" + images[1]["originalname"];
-  var sourcePDF2 = "./public/2emeDocumentTemplate.pdf"; //req.body.pdfPath;
+router.post("/fill", async (req, res) => {
+  const parameters = await Societe.find({});
+  const pathToLogo =
+    "./" + parameters[0].logo.substr(22, parameters[0].logo.length);
+  const pathTocachet =
+    "./" + parameters[0].cachet.substr(22, parameters[0].cachet.length);
+  var sourcePDF2 = "./public/2emeDocumentTemplate.pdf";
   var namePDF2 = "filledPDF2" + Date.now() + ".pdf";
   var destinationPDF2 = "./uploads/filledpdf/" + namePDF2;
   const {
