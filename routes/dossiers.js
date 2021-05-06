@@ -10,6 +10,7 @@ const { Facturation } = require("../modules/Facturation");
 const { Provenance } = require("../modules/provenance");
 const { User } = require("../modules/user");
 const { Modification } = require("../modules/modification");
+const { JournalAppel } = require("../modules/JournalAppel");
 const nodemailer = require("nodemailer");
 const { getMaxListeners } = require("../app");
 
@@ -478,7 +479,7 @@ router.post("/", async (req, res) => {
                           newStatus,
                         });
                         const result2 = modif.save();
-
+                        console.log(result2);
                         res.status(200).send(results);
                       } catch (e) {
                         console.log(e);
@@ -513,55 +514,6 @@ router.post("/", async (req, res) => {
     }
   } catch (e) {
     res.status(211).send(e);
-  }
-});
-
-router.post("/email", async (req, res) => {
-  var attachs = [];
-  const {
-    subject,
-    receivermails,
-    message,
-    senderEmail,
-    senderpassword,
-    filenames,
-  } = req.body;
-
-  if (typeof filenames !== "undefined") {
-    for (i = 0; i < filenames.length; i++) {
-      attachs.push({
-        filename: filenames[i],
-      });
-    }
-  }
-  console.log(attachs);
-
-  var transport = nodemailer.createTransport({
-    host: "ssl0.ovh.net" /*"smtp.facacademy.fr",*/,
-    port: 587,
-    secure: false,
-    auth: {
-      user: senderEmail,
-      pass: senderpassword,
-    },
-    tls: {
-      ciphers: "SSLv3",
-      rejectUnauthorized: false,
-    },
-  });
-  var mailOptions = {
-    from: senderEmail,
-    to: receivermails,
-    subject: subject,
-    text: message,
-    attachments: attachs,
-  };
-  try {
-    let info = await transport.sendMail(mailOptions);
-    res.send("email sent successfully");
-  } catch (e) {
-    res.send(e);
-    console.log(e);
   }
 });
 
@@ -704,7 +656,7 @@ router.put("/statutdossier", async (req, res) => {
         newStatus,
         previousStatus,
       });
-      const result2 = modif.save();
+      const result2 = await modif.save();
     }
     res.send(result);
   } catch (e) {
@@ -1111,7 +1063,7 @@ router.put("/", async (req, res) => {
                             newStatus,
                             previousStatus,
                           });
-                          const result2 = modif.save();
+                          const result2 = await modif.save();
                         }
 
                         res.send(dossiers);

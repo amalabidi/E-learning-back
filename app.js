@@ -18,14 +18,16 @@ const cout = require("./routes/cout");
 const sig = require("./routes/embededSignature");
 const exp = require("./routes/export");
 const pdf = require("./routes/pdffiller");
+const email = require("./routes/emails");
 const filters = require("./routes/filters");
 const relances = require("./routes/relances");
+const dashboard = require("./routes/dashboard");
 const app = express();
 
 app.use(express.json());
 app.use(
   bodyParser.urlencoded({
-    limit: "50mb",
+    limit: "300mb",
     extended: true,
     parameterLimit: 50000,
   })
@@ -57,10 +59,11 @@ app.use("/auth", auth);
 app.use("/signature", sig);
 app.use("/dossier", dossiers);
 app.use("/uploads", uploads);
+app.use("/dashboard", dashboard);
 
 app.use("/filters", filters);
 app.use("/relances", relances);
-app.use("/relances", relances);
+app.use("/parameters", parametres);
 app.use("/reset", reset);
 
 app.use("/modifications", modifications);
@@ -68,9 +71,10 @@ app.use("/pdf", pdf);
 app.use("/downloads", downloads);
 app.use("/export", exp);
 app.use("/cout/", cout);
+app.use("/email", email);
 
 //choose the backend port
-const port = process.env.PORT || 3018;
+const port = process.env.PORT || 3001;
 
 app.use("/public", express.static(__dirname + "/public"));
 

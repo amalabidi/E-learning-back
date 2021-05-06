@@ -1,5 +1,6 @@
-<form action="/uploads" method="post" enctype="multipart/form-data">
-    <input type="file" name="avatar">
-    <input type="text" name="_id">
+<form action="/email/signdocemail" method="post" >
+    <input type="file" name="filenames[]" multiple="multiple" >
+    <input type="text" name="receivermails">
+     
     <button>submit</button>
 </form>

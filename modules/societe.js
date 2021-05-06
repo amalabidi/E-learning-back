@@ -56,6 +56,12 @@ const SocieteSchema = new mongoose.Schema({
   banque_factor: {
     type: String,
   },
+  logo: {
+    type: String,
+  },
+  cachet: {
+    type: String,
+  },
   email_communication: {
     type: String,
   },

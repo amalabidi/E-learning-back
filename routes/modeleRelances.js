@@ -19,6 +19,8 @@ router.post("/mail", async (req, res) => {
     res.send(ex);
   }
 });
+
+
 router.get("/mail", async (req, res) => {
   try {
     const results = await ModeleMailRelance.find({});

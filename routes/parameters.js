@@ -2,10 +2,48 @@ const router = require("express").Router();
 const { Email } = require("../modules/email");
 const { Societe } = require("../modules/societe");
 const { Banque } = require("../modules/banque");
+const multer = require("multer");
 
-router.post("/", async (req, res) => {
-  const { portComm, hostComm, loginComm, passwordComm } = req.body;
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "./public/imgs/");
+  },
+  filename: function (req, file, cb) {
+    const { originalname } = file;
+    filepath = `${originalname}`;
+    cb(null, originalname);
+  },
+});
+const fileFilter = (req, file, cb) => {
+  if (
+    file.mimetype === "image/jpeg" ||
+    file.mimetype === "image/png" ||
+    file.mimetype === "image/jpg"
+  ) {
+    cb(null, true);
+  } else {
+    cb(null, false);
+  }
+};
+
+let upload = multer({
+  storage: storage,
+  limits: {
+    fileSize: 1021 * 1021 * 100,
+  },
+  fileFilter: fileFilter,
+});
+
+/*router.post("/" , upload.array("imgs[]", 2), async (req, res) => {
   try {
+    const images = req.files;
+    const cachet =
+      "http://localhost:3001/public/imgs" + images[0]["originalname"];
+    const logo =
+      "http://localhost:3001/public/imgs" + images[1]["originalname"];
+
+    const { portComm, hostComm, loginComm, passwordComm } = req.body;
+
     const emailsComm = new Email({
       type: "communication",
       port: portComm,
@@ -73,9 +111,12 @@ router.post("/", async (req, res) => {
                     region,
                   } = req.body;
                   try {
+                    console.log("ccccccccccc");
                     const society = new Societe({
                       representant,
                       societe,
+                      logo: "llll",
+                      cachet: "hhhhh",
                       RCS,
                       telephone,
                       mail,
@@ -100,6 +141,7 @@ router.post("/", async (req, res) => {
                     const resulta = await society.save();
                     console.log(resulta);
                     console.log("111");
+                    console.log(resulta.logo);
                     res.send(resulta);
                   } catch (e) {
                     res.status(201).send(e);
@@ -128,7 +170,7 @@ router.post("/", async (req, res) => {
   } catch (e) {
     res.status(209).send(e);
   }
-});
+});*/
 
 router.get("/", async (req, res) => {
   try {
@@ -138,8 +180,14 @@ router.get("/", async (req, res) => {
     res.send(ex);
   }
 });
-router.put("/", async (req, res) => {
+router.put("/", upload.array("imgs[]", 2), async (req, res) => {
   try {
+    const images = req.files;
+    const cachet =
+      "http://localhost:3001/public/imgs/" + images[0]["originalname"];
+    const logo =
+      "http://localhost:3001/public/imgs/" + images[1]["originalname"];
+
     const {
       portComm,
       hostComm,
@@ -173,8 +221,9 @@ router.put("/", async (req, res) => {
       region,
     } = req.body;
     const filter = { _id: req.body._id };
-    const society = await Societe.findOne(filter);
 
+    const society = await Societe.findOne(filter);
+    console.log("societe", society);
     const mailComm = society["email_communication"];
     const mailRel = society["email_relance"];
     const banquePrincip = society["banque_principal"];
@@ -246,6 +295,8 @@ router.put("/", async (req, res) => {
       adresse,
       code_postal,
       ville,
+      logo,
+      cachet,
       siret,
       SAS,
       TVA_infra,
@@ -267,11 +318,11 @@ router.put("/", async (req, res) => {
       let results = await Societe.findByIdAndUpdate(filter, update, {
         new: true,
       });
+      res.send(results);
+      console.log("done");
     } catch (e) {
       console.log("e", e);
     }
-
-    res.send(results);
   } catch (ex) {
     res.send(ex);
   }
