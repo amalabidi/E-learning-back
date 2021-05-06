@@ -9,7 +9,7 @@ const JournalAppelSchema = new mongoose.Schema({
     type: String,
   },
   Commentaire: {
-    type: String,
+    type: [String],
   },
 });
 

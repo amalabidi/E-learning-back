@@ -10,6 +10,7 @@ const { Facturation } = require("../modules/Facturation");
 const { Provenance } = require("../modules/provenance");
 const { User } = require("../modules/user");
 const { Modification } = require("../modules/modification");
+const { JournalAppel } = require("../modules/JournalAppel");
 const nodemailer = require("nodemailer");
 const { getMaxListeners } = require("../app");
 
