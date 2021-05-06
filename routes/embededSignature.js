@@ -1,5 +1,9 @@
 var SignrequestClient = require('signrequest-client');
 var express = require('express');
+const { Signature } = require('../modules/signature');
+const { JournalAppel } = require('../modules/JournalAppel');
+const { Dossier } = require('../modules/dossier');
+const { Modification } = require('../modules/modification');
 var router = express.Router();
 var defaultClient = SignrequestClient.ApiClient.instance;
 
@@ -20,7 +24,7 @@ router.get('/documents',async(req,res)=>{
     
     var callback = function(error, data, response) {
       if (error) {
-        console.error(error);
+        res.status(404).send(error) ;
       } else {
         console.log('API called successfully. Returned data: ' + data);
         res.send(JSON.parse(response["text"]));
@@ -44,7 +48,7 @@ router.get('/documents/notsigned',async(req,res)=>{
   
   var callback = function(error, data, response)  {
     if (error) {
-      console.error(error);
+      res.status(404).send(error) ;
     } else {
       console.log('API called successfully. Returned data: ' + data);
       var tab=JSON.parse(response["text"])["results"] ;
@@ -84,7 +88,7 @@ router.get('/documents/compteurSigned',async(req,res)=>{
   
   var callback = function(error, data, response) {
     if (error) {
-      console.error(error);
+      res.status(404).send(error) ;
     } else {
   
       var tab =JSON.parse(response["text"])['results']  ;
@@ -154,7 +158,7 @@ router.get('/documents/uuid',async(req,res)=>{
     
     var callback = function(error, data, response) {
       if (error) {
-        console.error(error);
+        res.status(404).send(error) ;
       } else {
         console.log('API called successfully. Returned data: ' + data);
        var tab = JSON.parse(response["text"])["results"] ;
@@ -179,7 +183,7 @@ var uuid = req.body['uuid'];
 
 var callback = function(error, data, response) {
   if (error) {
-    console.error(error);
+    res.status(404).send(error) ;
   } else {
 
     console.log('API called successfully. Returned data: ' + data);
@@ -211,7 +215,7 @@ data.file_from_url =url ;
 
 var callback = function(error, data, response) {
   if (error) {
-    console.error(error);
+    res.status(404).send(error) ;
   } else {
     console.log("API called successfully. Returned data: " + data);
      
@@ -238,23 +242,104 @@ var data2 = new SignrequestClient.SignRequest();
 var apiInstance = new SignrequestClient.SignrequestsApi();
 var {file_url,signers , from_email,send_reminders} = req.body ;
  
-
+var dossier_Id = req.body.dossier_Id ; 
+var fileName = req.body.fileName ; 
 
 data2.document = file_url;
 data2.signers = signers ; 
 data2.from_email = from_email;
 data2.send_reminders=send_reminders ; 
   
-  var callback = function(error, data2, response) {
+  var callback = async function(error, data2, response) {
     if (error) {
-      console.error(error);
+      
+      res.status(404).send(error) ;
     } else {
-      console.log('API called successfully. Returned data: ' + data2);
-      res.send(response) ;
+      try{
+        const sg = await new Signature({dossier_Id,fileName}) ; 
+        const result1 = await sg.save() ; 
+  
+        if(result1){
+  
+          try{
+  
+            var result2 = await Dossier.updateOne(
+              {
+                _id:dossier_Id,
+              },
+              { $push: { sigantures: sg._id } }
+            );
+  
+            const Sujet = "Document à signer" ; 
+            const Commentaire = fileName ;
+            const Journal = await  new  JournalAppel({Sujet,Commentaire})   ; 
+            const result3 = await Journal.save() ;
+            
+            if(result3){
+  
+              var result4 = await Dossier.updateOne(
+                {
+                  _id:dossier_Id,
+                },
+                { $push: { journalAppel : Journal._id } }
+              );
+            
+          
+              const dossier = await  Dossier.findById(dossier_Id); 
+           if (dossier){
+            
+              const client = dossier["client"]["_id"];
+              
+                      console.log(client);
+             const operation = "Commentaire";
+            
+             const user = req.body.userId; //req.user._id; after adding jwt token
+          
+             const modif = await new Modification({
+                                      client,
+                                      operation,
+                                      user,});
+            
+             const result5 = await modif.save();
+           
+            console.log('API called successfully. Returned data: ' + data);
+            
+            const result6=JSON.parse(response["text"]) ; 
+        
+            res.send(result6)   ;
+             }else{
+               res.send("dossier not found ");
+             }
+            }
+  
+          }catch(e){
+  
+            res.status(403).send(e)
+          }
+  
+  
+        }else {
+          res.status(402).send("siganture not created") ; 
+        }
+  
+      }catch(e){
+  
+        res.status(400).send(e)
+      }
+     
+  
     }
   };
 
-  apiInstance.signrequestsCreate(data2, callback);
+  try{
+
+    apiInstance.signrequestsCreate(data2, callback);
+
+  }catch(e){
+
+    res.send(e) ;
+  }
+  
 
 })
 
@@ -273,6 +358,8 @@ router.post('/quickReq' , async(req,res)=>{
  var apiInstance = new SignrequestClient.SignrequestQuickCreateApi();
 var data = new SignrequestClient.SignRequestQuickCreate();
 var {file_from_url,signers , from_email,send_reminders} = req.body ;
+var dossier_Id = req.body.dossier_Id ; 
+var fileName = req.body.fileName ; 
 
 data.signers = signers ;
 
@@ -281,14 +368,81 @@ data.from_email = from_email;
 data.send_reminders=send_reminders ; 
 
 
-var callback = function(error, data, response) {
+var callback = async function(error, data, response) {
   if (error) {
-    console.error(error);
-  } else {
-    console.log('API called successfully. Returned data: ' + data);
-    const     result=JSON.parse(response["text"]) ; 
+    res.status(404).send(error) ;
+    try{
+      const sg = await new Signature({dossier_Id,fileName}) ; 
+      const result1 = await sg.save() ; 
 
-    res.send(result)   ;
+      if(result1){
+
+        try{
+
+          var result2 = await Dossier.updateOne(
+            {
+              _id:dossier_Id,
+            },
+            { $push: { sigantures: sg._id } }
+          );
+
+          const Sujet = "Document à signer" ; 
+          const Commentaire = fileName ;
+          const Journal = await  new  JournalAppel({Sujet,Commentaire})   ; 
+          const result3 = await Journal.save() ;
+          
+          if(result3){
+
+            var result4 = await Dossier.updateOne(
+              {
+                _id:dossier_Id,
+              },
+              { $push: { journalAppel : Journal._id } }
+            );
+          
+        
+            const dossier = await  Dossier.findById(dossier_Id); 
+         if (dossier){
+          
+            const client = dossier["client"]["_id"];
+            
+                    console.log(client);
+           const operation = "Commentaire";
+          
+           const user = req.body.userId; //req.user._id; after adding jwt token
+        
+           const modif = await new Modification({
+                                    client,
+                                    operation,
+                                    user,});
+          
+           const result5 = await modif.save();
+         
+          console.log('API called successfully. Returned data: ' + data);
+          
+          const result6=JSON.parse(response["text"]) ; 
+      
+          res.send(result6)   ;
+           }else{
+             res.send("dossier not found ");
+           }
+          }
+
+        }catch(e){
+
+          res.status(403).send(e)
+        }
+
+
+      }else {
+        res.status(402).send("siganture not created") ; 
+      }
+
+    }catch(e){
+
+      res.status(400).send(e)
+    }
+   
     
   }
 };
@@ -307,7 +461,7 @@ router.delete('/documents',async(req,res)=>{
     
     var callback = function(error, data, response) {
       if (error) {
-        console.error(error);
+        res.status(404).send(error) ;
       } else {
         console.log('API called successfully.');
            res.send(response) ; 

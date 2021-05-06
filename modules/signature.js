@@ -1,7 +1,15 @@
 const mongoose = require("mongoose");
-
+var Schema = mongoose.Schema;
 const SignatureSchema = new mongoose.Schema({
   
+    dossier_Id : {
+        type : Schema.Types.ObjectId , 
+        ref:"Dossier"
+    },
+
+    fileName : {
+        type:String 
+    }
 
 },{timestamps:true});
 
