@@ -477,7 +477,7 @@ router.post("/", async (req, res) => {
                           user,
                           newStatus,
                         });
-                        const result2 = modif.save();
+                        const result2 = await modif.save();
 
                         res.status(200).send(results);
                       } catch (e) {
@@ -704,7 +704,7 @@ router.put("/statutdossier", async (req, res) => {
         newStatus,
         previousStatus,
       });
-      const result2 = modif.save();
+      const result2 = await modif.save();
     }
     res.send(result);
   } catch (e) {
@@ -1111,7 +1111,7 @@ router.put("/", async (req, res) => {
                             newStatus,
                             previousStatus,
                           });
-                          const result2 = modif.save();
+                          const result2 = await modif.save();
                         }
 
                         res.send(dossiers);

@@ -38,6 +38,7 @@
     "passport": "^0.4.1",
     "path": "^0.12.7",
     "pdffiller": "0.0.11",
+    "pdf-lib": "^1.16.0",
     "pdfkit": "^0.12.1",
     "pdftk": "0.0.0-rc.0",
     "signrequest-client": "^1.1.1",

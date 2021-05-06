@@ -35,7 +35,7 @@ router.post("/exportdata", async (req, res) => {
   const clientAttributes = req.body.clientAttributes;
   const factureAttributes = req.body.factureAttributes;
   const workshopAttributes = req.body.workshopAttributes;
-  console.log(req)
+  console.log("hhhhhhhh",dossierAttributes)
   try {
     var liste = new Array();
     for (i in dossierId) {
@@ -93,7 +93,7 @@ router.post("/exportdata", async (req, res) => {
   }
 });
 
-router.get("/exportdata/modele", async (req, res) => {
+router.post("/exportdata/modele", async (req, res) => {
   const modeleId = req.body.modeleId;
 
   try {
@@ -169,7 +169,7 @@ router.get("/exportdata/modele", async (req, res) => {
   } catch (e) {}
 });
 
-router.get("/exportdataMSC", async (req, res) => {
+router.post("/exportdataMSC", async (req, res) => {
   // tableau de dossierId
   const dossierId = req.body.dossierId;
   const dossierAttributes = [
@@ -241,7 +241,7 @@ router.get("/exportdataMSC", async (req, res) => {
   }
 });
 
-router.get("/exportdata/rapportFactor", async (req, res) => {
+router.post("/exportdata/rapportFactor", async (req, res) => {
   // tableau de dossierId
   const dossierId = req.body.dossierId;
   const dossierAttributes = [

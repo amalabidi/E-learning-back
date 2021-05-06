@@ -68,7 +68,7 @@ app.use("/pdf", pdf);
 app.use("/downloads", downloads);
 app.use("/export", exp);
 app.use("/cout/", cout);
-
+app.use("/parametres",parametres);
 //choose the backend port
 const port = process.env.PORT || 3018;
 
