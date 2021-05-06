@@ -6,7 +6,7 @@ var router = express.Router();
 
 router.get("/",async (req,res)=>{
     try{  
-        const dossier = await Dossier.find().populate("facturation");
+        const dossier = await Dossier.find().populate("facturation").populate("client");
         res.status(200).send(dossier) ; 
     }catch(e){
         res.send(e) ; 
