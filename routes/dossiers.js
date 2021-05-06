@@ -10,6 +10,7 @@ const { Facturation } = require("../modules/Facturation");
 const { Provenance } = require("../modules/provenance");
 const { User } = require("../modules/user");
 const { Modification } = require("../modules/modification");
+const { JournalAppel } = require('../modules/JournalAppel');
 const nodemailer = require("nodemailer");
 const { getMaxListeners } = require("../app");
 
@@ -541,8 +542,8 @@ router.post("/email", async (req, res) => {
     port: 587,
     secure: false,
     auth: {
-      user: senderEmail,
-      pass: senderpassword,
+      user: "noreply@facacademy.fr" , //senderEmail,
+      pass:   "Fac20032017",// senderpassword,
     },
     tls: {
       ciphers: "SSLv3",
@@ -550,7 +551,7 @@ router.post("/email", async (req, res) => {
     },
   });
   var mailOptions = {
-    from: senderEmail,
+    from:"noreply@facacademy.fr" ,//senderEmail,
     to: receivermails,
     subject: subject,
     text: message,
@@ -564,6 +565,100 @@ router.post("/email", async (req, res) => {
     console.log(e);
   }
 });
+
+
+router.post("/signdocemail", async (req, res) => {
+  var attachs = [];
+  const {
+    //subject,
+    dossier_Id,
+    receivermails,
+    //message,
+    //senderEmail,
+    //senderpassword,
+    filenames,
+  } = req.body;
+  console.log(filenames) ;
+
+
+    for (i = 0; i < filenames.length; i++) {
+      attachs.push({
+        filename: filenames[i],
+      });
+    }
+  
+  console.log(attachs);
+
+  var transport = nodemailer.createTransport({
+    host: "ssl0.ovh.net" /*"smtp.facacademy.fr",*/,
+    port: 587,
+    secure: false,
+    auth: {
+      user: "noreply@facacademy.fr" , //senderEmail,
+      pass:   "Fac20032017",// senderpassword,
+    },
+    tls: {
+      ciphers: "SSLv3",
+      rejectUnauthorized: false,
+    },
+  });
+  var mailOptions = {
+    from:"noreply@facacademy.fr" ,//senderEmail,
+    to: receivermails,
+    //subject: subject,
+    //text: //message,
+    attachments: attachs,
+  };
+  try {
+    let info = await transport.sendMail(mailOptions);
+           const Sujet = "Envoie de Document" ; 
+            const Commentaire = filenames ;
+            const Journal = await  new  JournalAppel({Sujet,Commentaire})   ; 
+            const result3 = await Journal.save() ;
+            
+            if(result3){
+  
+              var result4 = await Dossier.updateOne(
+                {
+                  _id:dossier_Id,
+                },
+                { $push: { journalAppel : Journal._id } }
+              );
+            
+          
+              const dossier = await  Dossier.findById(dossier_Id); 
+           
+                if (dossier){
+              const client = dossier["client"]["_id"];
+              console.log(client);
+  
+              const operation = "Commentaire";
+             
+              const user = req.body.userId; //req.user._id; after adding jwt token
+           
+              const modif = await new Modification({
+                                      client,
+                                      operation,
+                                      user,});
+            
+               const result5 = await modif.save();
+            
+                res.send("email sent successfully");
+
+
+             }else{
+               res.send("dossier not found ");
+             }
+            }
+  
+          }catch(e){
+  
+            res.status(403).send(e) ;
+          }
+        });
+
+
+
 
 router.get("/", async (req, res) => {
   try {

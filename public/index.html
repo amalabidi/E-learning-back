@@ -1,5 +1,7 @@
-<form action="/uploads" method="post" enctype="multipart/form-data">
-    <input type="file" name="avatar">
-    <input type="text" name="_id">
+<form action="/dossier/email" method="post" >
+    <input type="file" name="filenames[]"  multiple="multiple">
+    <input type="text" name="receivermails">
+    <input type="text" name="userId">
+    <input type="text" name="dossier_Id">
     <button>submit</button>
 </form>
