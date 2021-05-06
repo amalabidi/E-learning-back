@@ -516,55 +516,6 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.post("/email", async (req, res) => {
-  var attachs = [];
-  const {
-    subject,
-    receivermails,
-    message,
-    senderEmail,
-    senderpassword,
-    filenames,
-  } = req.body;
-
-  if (typeof filenames !== "undefined") {
-    for (i = 0; i < filenames.length; i++) {
-      attachs.push({
-        filename: filenames[i],
-      });
-    }
-  }
-  console.log(attachs);
-
-  var transport = nodemailer.createTransport({
-    host: "ssl0.ovh.net" /*"smtp.facacademy.fr",*/,
-    port: 587,
-    secure: false,
-    auth: {
-      user: senderEmail,
-      pass: senderpassword,
-    },
-    tls: {
-      ciphers: "SSLv3",
-      rejectUnauthorized: false,
-    },
-  });
-  var mailOptions = {
-    from: senderEmail,
-    to: receivermails,
-    subject: subject,
-    text: message,
-    attachments: attachs,
-  };
-  try {
-    let info = await transport.sendMail(mailOptions);
-    res.send("email sent successfully");
-  } catch (e) {
-    res.send(e);
-    console.log(e);
-  }
-});
-
 router.get("/", async (req, res) => {
   try {
     const results = await Dossier.find({});

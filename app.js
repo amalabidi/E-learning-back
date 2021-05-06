@@ -18,6 +18,7 @@ const cout = require("./routes/cout");
 const sig = require("./routes/embededSignature");
 const exp = require("./routes/export");
 const pdf = require("./routes/pdffiller");
+const email = require("./routes/emails");
 const filters = require("./routes/filters");
 const relances = require("./routes/relances");
 const dashboard = require("./routes/dashboard");
@@ -70,6 +71,7 @@ app.use("/pdf", pdf);
 app.use("/downloads", downloads);
 app.use("/export", exp);
 app.use("/cout/", cout);
+app.use("/email", email);
 
 //choose the backend port
 const port = process.env.PORT || 3001;
