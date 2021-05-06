@@ -130,6 +130,10 @@ const dossierSchema = new mongoose.Schema(
     filledFiles: {
       type: [String],
       default: [],
+    },signatures: {
+      type: [Schema.Types.ObjectId],
+      ref: "Signature",
+      default: [],
     },
   },
   { timestamps: true }

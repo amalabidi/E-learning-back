@@ -6,7 +6,7 @@ var { Client } = require("../modules/client");
 
 router.get("/",async (req,res)=>{
     try{
-         const result = await Modification.find({}) ; 
+         const result = await Modification.find({}).populate('user') ; 
          if(result) {
             res.status(200).send(result) ; 
          }else{
