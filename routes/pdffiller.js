@@ -2,18 +2,23 @@ const router = require("express").Router();
 var { fichier, Fichier } = require("../modules/fichier");
 const { Dossier } = require("../modules/dossier");
 const { Societe } = require("../modules/societe");
+const auth = require("../middleware/auth");
 const fs = require("fs");
 const path = require("path");
 const assert = require("assert");
 var pdfFiller = require("pdffiller");
 const { PDFDocument } = require("pdf-lib");
 
-router.post("/fill", async (req, res) => {
+router.post("/fill",auth, async (req, res) => {
   const parameters = await Societe.find({});
   const pathToLogo =
     "./" + parameters[0].logo.substr(22, parameters[0].logo.length);
   const pathTocachet =
     "./" + parameters[0].cachet.substr(22, parameters[0].cachet.length);
+
+    console.log(pathToLogo) ; 
+    console.log(pathTocachet) ;
+    
   var sourcePDF2 = "./public/2emeDocumentTemplate.pdf";
   var namePDF2 = "filledPDF2" + Date.now() + ".pdf";
   var destinationPDF2 = "./uploads/filledpdf/" + namePDF2;
@@ -246,7 +251,7 @@ router.post("/fill", async (req, res) => {
     }
   );
 });
-router.get("/filledPdf/:_id", async (req, res) => {
+router.get("/filledPdf/:_id",auth, async (req, res) => {
   var pdfs = [];
   var dossier = await Dossier.findOne({ _id: req.params._id });
   console.log(dossier);

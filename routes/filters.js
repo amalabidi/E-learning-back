@@ -1,5 +1,6 @@
 var express = require("express");
 const { Dossier } = require("../modules/dossier");
+const auth = require("../middleware/auth");
 var router = express.Router();
 
 /**
@@ -10,11 +11,7 @@ var router = express.Router();
  * @return {Array}
  */
 function filterArray(array, filters) {
-  console.log("//////////////////////////");
-  console.log(array);
-  console.log("//////////////////////////");
-  console.log(filters);
-  console.log("//////////////////////////");
+
   const filterKeys = Object.keys(filters);
   return array.filter((item) => {
     // validates all filter criteria
@@ -26,7 +23,7 @@ function filterArray(array, filters) {
   });
 }
 
-router.post("/", async (req, res) => {
+router.post("/",auth, async (req, res) => {
   try {
     const dossiers = await Dossier.find({})
       .populate("facturation")

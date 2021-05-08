@@ -3,6 +3,7 @@ var express = require('express');
 const { Signature } = require('../modules/signature');
 const { JournalAppel } = require('../modules/JournalAppel');
 const { Dossier } = require('../modules/dossier');
+const auth = require("../middleware/auth");
 const { Modification } = require('../modules/modification');
 var router = express.Router();
 var defaultClient = SignrequestClient.ApiClient.instance;
@@ -148,7 +149,7 @@ router.get('/documents/compteurSigned',async(req,res)=>{
 
 // retrieve created documents   and return their uuids  
 
-router.get('/documents/uuid',async(req,res)=>{
+router.get('/documents/uuid',auth,async(req,res)=>{
     var apiInstance = new SignrequestClient.DocumentsApi();
     var list=new Array() ;
     var opts = {
@@ -176,7 +177,7 @@ router.get('/documents/uuid',async(req,res)=>{
 
 // return the url of a signed document by giving it's uuid 
 
-router.get('/documents/signedUrl',async(req,res)=>{
+router.get('/documents/signedUrl',auth,async(req,res)=>{
    
 var apiInstance = new SignrequestClient.DocumentsApi();
 var uuid = req.body['uuid'];
@@ -205,7 +206,7 @@ apiInstance.documentsRead(uuid, callback);
 // create a document by giving it's url in the cloud  
 //it returns a document object that contains the url of the document  in the api 
 
-router.post('/documents',async(req,res)=>{
+router.post('/documents',auth,async(req,res)=>{
 
 var api = new SignrequestClient.DocumentsApi();
 var data = new SignrequestClient.Document();
@@ -236,7 +237,7 @@ var callback = function(error, data, response) {
 // for sms verification you need to provide "verify_phone_number" for that signer 
 // from_email represents the email of the user that demands the signature 
 
-router.post('/req' , async(req,res)=>{
+router.post('/req' ,auth, async(req,res)=>{
 
 var data2 = new SignrequestClient.SignRequest();
 var apiInstance = new SignrequestClient.SignrequestsApi();
@@ -293,7 +294,7 @@ data2.send_reminders=send_reminders ;
                       console.log(client);
              const operation = "Commentaire";
             
-             const user = req.body.userId; //req.user._id; after adding jwt token
+             const user =req.user._id;// after adding jwt token
           
              const modif = await new Modification({
                                       client,
@@ -353,7 +354,7 @@ data2.send_reminders=send_reminders ;
 
 
 
-router.post('/quickReq' , async(req,res)=>{
+router.post('/quickReq' ,auth, async(req,res)=>{
 
  var apiInstance = new SignrequestClient.SignrequestQuickCreateApi();
 var data = new SignrequestClient.SignRequestQuickCreate();
@@ -409,7 +410,7 @@ var callback = async function(error, data, response) {
                     console.log(client);
            const operation = "Commentaire";
           
-           const user = req.body.userId; //req.user._id; after adding jwt token
+           const user = req.user._id; //after adding jwt token
         
            const modif = await new Modification({
                                     client,
@@ -454,7 +455,7 @@ apiInstance.signrequestQuickCreateCreate(data, callback);
 
 
 // delete a document by providing it's uuid 
-router.delete('/documents',async(req,res)=>{
+router.delete('/documents',auth,async(req,res)=>{
     var apiInstance = new SignrequestClient.DocumentsApi();
 
     var uuid = req.body;
@@ -472,7 +473,7 @@ router.delete('/documents',async(req,res)=>{
 
    
 // delete many documents by providing a table of uuids
- router.delete('/documents/multiple',async(req,res)=>{
+ router.delete('/documents/multiple',auth,async(req,res)=>{
 
         var apiInstance = new SignrequestClient.DocumentsApi();
         

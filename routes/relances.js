@@ -1,7 +1,8 @@
 const router = require("express").Router();
 const { Relance } = require("../modules/relance");
+const auth = require("../middleware/auth");
 
-router.post("/", async (req, res) => {
+router.post("/",auth, async (req, res) => {
   const {
     nom,
     actif,
@@ -31,7 +32,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.get("/", async (req, res) => {
+router.get("/",auth, async (req, res) => {
   try {
     const results = await Relance.find({});
     res.send(results);
@@ -39,7 +40,7 @@ router.get("/", async (req, res) => {
     res.send(ex);
   }
 });
-router.get("/etat", async (req, res) => {
+router.get("/etat",auth, async (req, res) => {
   try {
     const results = await Relance.find({ actif: true });
     res.send(results);
@@ -48,7 +49,7 @@ router.get("/etat", async (req, res) => {
   }
 });
 
-router.put("/", async (req, res) => {
+router.put("/",auth, async (req, res) => {
   try {
     console.log("hh");
     const {
@@ -81,7 +82,7 @@ router.put("/", async (req, res) => {
     res.send(ex);
   }
 });
-router.delete("/:id", async (req, res) => {
+router.delete("/:id",auth, async (req, res) => {
   const relances = await Relance.findByIdAndDelete(req.params.id).exec();
   res.send("success");
 });

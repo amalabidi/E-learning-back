@@ -1,8 +1,9 @@
 const router = require("express").Router();
 const admz = require("adm-zip");
+const auth = require("../middleware/auth");
 const fs = require("fs");
 
-router.post("/", function (req, res) {
+router.post("/",auth, function (req, res) {
   console.log(req.body);
   const { files } = req.body;
 

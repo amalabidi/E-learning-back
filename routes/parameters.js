@@ -2,6 +2,7 @@ const router = require("express").Router();
 const { Email } = require("../modules/email");
 const { Societe } = require("../modules/societe");
 const { Banque } = require("../modules/banque");
+const auth = require("../middleware/auth");
 const multer = require("multer");
 
 const storage = multer.diskStorage({
@@ -34,7 +35,7 @@ let upload = multer({
   fileFilter: fileFilter,
 });
 
-/*router.post("/" , upload.array("imgs[]", 2), async (req, res) => {
+/*router.post("/" ,auth, upload.array("imgs[]", 2), async (req, res) => {
   try {
     const images = req.files;
     const cachet =
@@ -172,7 +173,7 @@ let upload = multer({
   }
 });*/
 
-router.get("/", async (req, res) => {
+router.get("/",auth, async (req, res) => {
   try {
     const results = await Societe.find({});
     res.send(results);
@@ -180,7 +181,7 @@ router.get("/", async (req, res) => {
     res.send(ex);
   }
 });
-router.put("/", upload.array("imgs[]", 2), async (req, res) => {
+router.put("/",auth, upload.array("imgs[]", 2), async (req, res) => {
   try {
     const images = req.files;
     const cachet =
@@ -327,7 +328,7 @@ router.put("/", upload.array("imgs[]", 2), async (req, res) => {
     res.send(ex);
   }
 });
-router.get("/", async (req, res) => {
+router.get("/",auth, async (req, res) => {
   try {
     const results = await Societe.find({});
     res.send(results);
@@ -335,7 +336,7 @@ router.get("/", async (req, res) => {
     res.send(ex);
   }
 });
-router.get("/relance", async (req, res) => {
+router.get("/relance",auth, async (req, res) => {
   try {
     const results = await Email.find({ type: "relance" });
     res.send(results);
@@ -343,7 +344,7 @@ router.get("/relance", async (req, res) => {
     res.send(ex);
   }
 });
-router.get("/communication", async (req, res) => {
+router.get("/communication",auth, async (req, res) => {
   try {
     const results = await Email.find({ type: "communication" });
     res.send(results);
@@ -351,7 +352,7 @@ router.get("/communication", async (req, res) => {
     res.send(ex);
   }
 });
-router.get("/principale", async (req, res) => {
+router.get("/principale",auth, async (req, res) => {
   try {
     const results = await Banque.find({ type: "principale" });
     res.send(results);
@@ -359,7 +360,7 @@ router.get("/principale", async (req, res) => {
     res.send(ex);
   }
 });
-router.get("/factor", async (req, res) => {
+router.get("/factor",auth, async (req, res) => {
   try {
     const results = await Banque.find({ type: "factor" });
     res.send(results);

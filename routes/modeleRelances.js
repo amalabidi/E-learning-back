@@ -1,8 +1,9 @@
 const router = require("express").Router();
 const { ModeleMailRelance } = require("../modules/modeleMailRelance");
 const { ModeleSMSRelance } = require("../modules/modeleSMSRelance");
+const auth = require("../middleware/auth");
 
-router.post("/mail", async (req, res) => {
+router.post("/mail",auth, async (req, res) => {
   const { modele, objet, description } = req.body;
 
   try {
@@ -21,7 +22,7 @@ router.post("/mail", async (req, res) => {
 });
 
 
-router.get("/mail", async (req, res) => {
+router.get("/mail",auth, async (req, res) => {
   try {
     const results = await ModeleMailRelance.find({});
     res.send(results);
@@ -29,7 +30,7 @@ router.get("/mail", async (req, res) => {
     res.send(ex);
   }
 });
-router.get("/mail/:id", async (req, res) => {
+router.get("/mail/:id",auth, async (req, res) => {
   try {
     const results = await ModeleMailRelance.find({ _id: req.params.id });
     res.send(results);
@@ -37,7 +38,7 @@ router.get("/mail/:id", async (req, res) => {
     res.send(ex);
   }
 });
-router.get("/mail/:modele", async (req, res) => {
+router.get("/mail/:modele",auth, async (req, res) => {
   try {
     const results = await ModeleMailRelance.find({ modele: req.params.modele });
     res.send(results);
@@ -46,7 +47,7 @@ router.get("/mail/:modele", async (req, res) => {
   }
 });
 
-router.put("/mail", async (req, res) => {
+router.put("/mail",auth, async (req, res) => {
   try {
     const { objet, modele, description } = req.body;
 
@@ -70,7 +71,7 @@ router.put("/mail", async (req, res) => {
     res.send(ex);
   }
 });
-router.delete("/mail/:id", async (req, res) => {
+router.delete("/mail/:id",auth, async (req, res) => {
   const mailrelances = await ModeleMailRelance.findByIdAndDelete(
     req.params.id
   ).exec();
@@ -78,7 +79,7 @@ router.delete("/mail/:id", async (req, res) => {
 });
 //SMS
 
-router.post("/SMS", async (req, res) => {
+router.post("/SMS",auth, async (req, res) => {
   const { modele, description } = req.body;
 
   try {
@@ -95,7 +96,7 @@ router.post("/SMS", async (req, res) => {
     res.send(ex);
   }
 });
-router.get("/SMS", async (req, res) => {
+router.get("/SMS",auth, async (req, res) => {
   try {
     const results = await ModeleSMSRelance.find({});
     res.send(results);
@@ -103,7 +104,7 @@ router.get("/SMS", async (req, res) => {
     res.send(ex);
   }
 });
-router.get("/SMS/:id", async (req, res) => {
+router.get("/SMS/:id",auth, async (req, res) => {
   try {
     const results = await ModeleSMSRelance.find({ _id: req.params.id });
     res.send(results);
@@ -111,7 +112,7 @@ router.get("/SMS/:id", async (req, res) => {
     res.send(ex);
   }
 });
-router.get("/SMS/:modele", async (req, res) => {
+router.get("/SMS/:modele",auth, async (req, res) => {
   try {
     const results = await ModeleSMSRelance.find({ modele: req.params.modele });
     res.send(results);
@@ -120,7 +121,7 @@ router.get("/SMS/:modele", async (req, res) => {
   }
 });
 
-router.put("/SMS", async (req, res) => {
+router.put("/SMS",auth, async (req, res) => {
   try {
     const { modele, description } = req.body;
 
@@ -139,7 +140,7 @@ router.put("/SMS", async (req, res) => {
     res.send(ex);
   }
 });
-router.delete("/SMS/:id", async (req, res) => {
+router.delete("/SMS/:id",auth, async (req, res) => {
   const smsrelances = await ModeleSMSRelance.findByIdAndDelete(
     req.params.id
   ).exec();

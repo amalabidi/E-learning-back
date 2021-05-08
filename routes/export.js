@@ -5,10 +5,11 @@ const PDFDocument = require("pdfkit");
 var csv = require("fast-csv");
 var { Dossier } = require("../modules/dossier");
 const { modele, Modele } = require("../modules/export_modele");
+const auth = require("../middleware/auth");
 const admz = require("adm-zip");
 var streamToBuffer = require('stream-to-buffer')
 
-router.post("/modele", async (req, res) => {
+router.post("/modele",auth, async (req, res) => {
   const dossierAttributes = req.body.dossierAttributes;
   const clientAttributes = req.body.clientAttributes;
   const factureAttributes = req.body.factureAttributes;
@@ -28,14 +29,14 @@ router.post("/modele", async (req, res) => {
   }
 });
 
-router.post("/exportdata", async (req, res) => {
+router.post("/exportdata",auth, async (req, res) => {
   // tableau de dossierId
   const dossierId =  req.body.dossierId;
   const dossierAttributes = req.body.dossierAttributes;
   const clientAttributes = req.body.clientAttributes;
   const factureAttributes = req.body.factureAttributes;
   const workshopAttributes = req.body.workshopAttributes;
-  console.log("hhhhhhhh",dossierAttributes)
+
   try {
     var liste = new Array();
     for (i in dossierId) {
@@ -93,7 +94,7 @@ router.post("/exportdata", async (req, res) => {
   }
 });
 
-router.post("/exportdata/modele", async (req, res) => {
+router.post("/exportdata/modele",auth, async (req, res) => {
   const modeleId = req.body.modeleId;
 
   try {
@@ -104,7 +105,7 @@ router.post("/exportdata/modele", async (req, res) => {
     const clientAttributes = modele.clientAttributes;
     const factureAttributes = modele.factureAttributes;
     const workshopAttributes = modele.workshopAttributes;
-    console.log(modele);
+    
     try {
       var liste = new Array();
 
@@ -136,7 +137,7 @@ router.post("/exportdata/modele", async (req, res) => {
         liste.push(result);
       }
 
-      console.log("hhhhhhh",liste);
+      
 
       var middlepath = Date.now() + "file.csv";
     var ws = fs.createWriteStream("public/"+middlepath); 
@@ -169,7 +170,7 @@ router.post("/exportdata/modele", async (req, res) => {
   } catch (e) {}
 });
 
-router.post("/exportdataMSC", async (req, res) => {
+router.post("/exportdataMSC",auth, async (req, res) => {
   // tableau de dossierId
   const dossierId = req.body.dossierId;
   const dossierAttributes = [
@@ -241,7 +242,7 @@ router.post("/exportdataMSC", async (req, res) => {
   }
 });
 
-router.post("/exportdata/rapportFactor", async (req, res) => {
+router.post("/exportdata/rapportFactor",auth, async (req, res) => {
   // tableau de dossierId
   const dossierId = req.body.dossierId;
   const dossierAttributes = [
@@ -313,7 +314,7 @@ router.post("/exportdata/rapportFactor", async (req, res) => {
   }
 });
 
-router.get("/exportpdf", async (req, res) => {
+router.get("/exportpdf",auth, async (req, res) => {
   // Add an image, constrain it to a given size, and center it vertically and horizontally
 
   // Add another page

@@ -1,10 +1,11 @@
 var express = require("express");
 const { Modification } = require("../modules/modification");
+const auth = require("../middleware/auth");
 var router = express.Router();
 var { Client } = require("../modules/client");
 
 
-router.get("/",async (req,res)=>{
+router.get("/",auth,async (req,res)=>{
     try{
          const result = await Modification.find({}).populate('user') ; 
          if(result) {
@@ -19,7 +20,7 @@ router.get("/",async (req,res)=>{
 
 
 
-router.get("/filter",async (req,res)=>{
+router.get("/filter",auth,async (req,res)=>{
     try{        
         const modifs = await Modification.find({})
         .populate("user");
@@ -107,7 +108,7 @@ router.get("/filter",async (req,res)=>{
     }
 })
 
-router.get("/search/:search", async (req, res) => {
+router.get("/search/:search",auth, async (req, res) => {
   const { search } = req.params;
   var modifs = [];
   if (search) {

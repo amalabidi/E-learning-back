@@ -1,7 +1,8 @@
 const router = require("express").Router();
 const { Workshop } = require("../modules/workshop");
+const auth = require("../middleware/auth");
 
-router.post("/", async (req, res) => {
+router.post("/",auth, async (req, res) => {
   const {
     certification,
     coutCertification,
@@ -68,7 +69,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.get("/", async (req, res) => {
+router.get("/",auth, async (req, res) => {
   try {
     const results = await Workshop.find({});
     res.send(results);
@@ -76,12 +77,12 @@ router.get("/", async (req, res) => {
     res.send(ex);
   }
 });
-router.delete("/:id", async (req, res) => {
+router.delete("/:id",auth, async (req, res) => {
   const workshop = await Workshop.findByIdAndDelete(req.params.id).exec();
   res.send({suc:"success"});
 });
 
-router.put("/", async (req, res) => {
+router.put("/",auth, async (req, res) => {
   try {
     const {
       certification,
@@ -151,7 +152,7 @@ router.put("/", async (req, res) => {
     res.send(ex);
   }
 });
-router.get("/etat", async (req, res) => {
+router.get("/etat",auth, async (req, res) => {
   try {
     const results = await Workshop.find({ "etat": true });
     res.send(results);
@@ -159,7 +160,7 @@ router.get("/etat", async (req, res) => {
     res.send(ex);
   }
 });
-router.get("/:id", async (req, res) => {
+router.get("/:id",auth, async (req, res) => {
   const {id}=req.params;
   try {
     const results = await Workshop.find({ "_id":id });
@@ -170,7 +171,7 @@ router.get("/:id", async (req, res) => {
 });
 
 //making search functionality
-router.get("/search/:search", async (req, res) => {
+router.get("/search/:search", auth,async (req, res) => {
   const { search } = req.params;
   console.log(search);
   if (search) {

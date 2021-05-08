@@ -1,6 +1,7 @@
 var express = require("express");
 const { Signature } = require("../modules/signature");
 const { route } = require("./embededSignature");
+const auth = require("../middleware/auth");
 var router = express.Router();
 
 
@@ -10,7 +11,7 @@ var router = express.Router();
 
 
 
-router.get("/", async (req , res)=>{
+router.get("/",auth, async (req , res)=>{
 
 
     const beginDate = req.body["beginDate"];

@@ -1,9 +1,10 @@
 var express = require("express");
 const { Dossier } = require("../modules/dossier");
 const { Workshop } = require("../modules/workshop");
+const auth = require("../middleware/auth");
 var router = express.Router();
 
-router.get("/", async (req, res) => {
+router.get("/",auth, async (req, res) => {
   try {
     const resultats = [];
     const dossiers = await Dossier.find({}).populate("idWorkshop");

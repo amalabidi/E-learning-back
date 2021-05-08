@@ -1,7 +1,8 @@
 const router = require("express").Router();
 const { Type } = require("../modules/typeWorkshop");
+const auth = require("../middleware/auth");
 
-router.post("/", async (req, res) => {
+router.post("/",auth, async (req, res) => {
   const { type, actif } = req.body;
   try {
     const types = new Type({ type, actif });
@@ -14,7 +15,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.get("/", async (req, res) => {
+router.get("/",auth, async (req, res) => {
   try {
     const results = await Type.find({});
     res.send(results);
@@ -22,7 +23,7 @@ router.get("/", async (req, res) => {
     res.send(ex);
   }
 });
-router.get("/etat", async (req, res) => {
+router.get("/etat",auth, async (req, res) => {
   try {
     const results = await Type.find({ actif: true });
     res.send(results);
@@ -31,7 +32,7 @@ router.get("/etat", async (req, res) => {
   }
 });
 
-router.put("/", async (req, res) => {
+router.put("/",auth, async (req, res) => {
   try {
     const { actif, type } = req.body;
     const filter = { _id: req.body._id };
@@ -46,7 +47,7 @@ router.put("/", async (req, res) => {
   }
 });
 //making search functionality
-router.get("/search/:search", async (req, res) => {
+router.get("/search/:search",auth, async (req, res) => {
   const { search } = req.params;
   if (search) {
     const types = await Type.find({ type: { $regex: search, $options: "i" } });
@@ -55,7 +56,7 @@ router.get("/search/:search", async (req, res) => {
     res.send("no type");
   }
 });
-router.delete("/:id", async (req, res) => {
+router.delete("/:id",auth, async (req, res) => {
   const types = await Type.findByIdAndDelete(req.params.id).exec();
   res.send({suc:"success"});
 });

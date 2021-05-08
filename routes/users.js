@@ -1,10 +1,11 @@
 var express = require('express');
 var router = express.Router();
 const { User } = require('../modules/user');
+const auth = require("../middleware/auth");
 const bcrypt = require("bcrypt");
 
 /* GET users listing. */
-router.get('/', async function (req, res, next) {
+router.get('/',auth, async function (req, res, next) {
   try {
     // Find all Users in the database
     const results = await User.find({});
@@ -16,7 +17,7 @@ router.get('/', async function (req, res, next) {
 
 
 /* GET same type users you need to pass habilitation . */
-router.get('/filter/:habilitation', async function (req, res, next) {
+router.get('/filter/:habilitation',auth, async function (req, res, next) {
   try {
     const {habilitation}=req.params;
     // Find all Users in the database
@@ -26,7 +27,7 @@ router.get('/filter/:habilitation', async function (req, res, next) {
     res.send(ex);
   }
 });
-router.get('/filter/:habilitation', async function (req, res, next) {
+router.get('/filter/:habilitation',auth, async function (req, res, next) {
   try {
     const {habilitation}=req.params;
     // Find all Users in the database
@@ -40,7 +41,7 @@ router.get('/filter/:habilitation', async function (req, res, next) {
 
 /*Get user permissions */
 
-router.get('/permissions', async function (req, res, next) {
+router.get('/permissions',auth, async function (req, res, next) {
 
   try {
     const id = req.body.userId;
@@ -120,7 +121,7 @@ router.post('/', async function (req, res, next) {
 
 
 /* User Duplicat */
-router.post('/duplicate', async function (req, res, next) {
+router.post('/duplicate',auth, async function (req, res, next) {
   const { userId, name, email, lastname, password, mobile } = req.body;
   try {
     const oldUser = await User.findOne({ _id: userId });
@@ -148,13 +149,13 @@ router.post('/duplicate', async function (req, res, next) {
   }
 })
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id",auth, async (req, res) => {
   const user = await User.findByIdAndDelete(req.params.id).exec();
   res.send("success");
 });
 
 //  updating a user 
-router.put('/',/*auth,  admin],*/ async (req, res) => {
+router.put('/',auth,/*  admin],*/ async (req, res) => {
   try {
 
     //const{error}=joiSchema.updateSchema.validate({username:name,email:email});

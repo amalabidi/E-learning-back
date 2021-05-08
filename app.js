@@ -1,6 +1,7 @@
 var express = require("express");
 const mongoose = require("mongoose");
 var cors = require("cors");
+const config = require("config") ;
 const environments = require("./routes/environments");
 const types = require("./routes/types");
 const reset = require("./routes/ResetPassword");
@@ -24,6 +25,7 @@ const relances = require("./routes/relances");
 const dashboard = require("./routes/dashboard");
 const app = express();
 
+
 app.use(express.json());
 app.use(
   bodyParser.urlencoded({
@@ -34,6 +36,7 @@ app.use(
 );
 
 app.use(express.static("public"));
+require('dotenv').config() ;
 app.use(cors({ origin: "http://localhost:4200" }));
 
 // connecting to mongodb

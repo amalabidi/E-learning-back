@@ -3,6 +3,7 @@ const { User } = require("../modules/user");
 const { ResetToken } = require("../modules/reset_token");
 const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
+const auth = require("../middleware/auth");
 const Crypto = require("crypto");
 
 router.post("/reset", async (req, res) => {

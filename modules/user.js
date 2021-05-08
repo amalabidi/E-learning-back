@@ -1,6 +1,6 @@
 var mongoose = require('mongoose') 
 const {JsonWebTokenError} = require('jsonwebtoken');
-//const config = require('config');
+const config = require('config');
 const jwt = require('jsonwebtoken');
 
 const userSchema = new mongoose.Schema({
@@ -74,7 +74,7 @@ const userSchema = new mongoose.Schema({
     })
 
      userSchema.methods.generateToken = function () {
-        return jwt.sign({_id: this._id, name: this.name, email: this.email, lastname: this.lastname}, "jwtPrivateKey");
+        return jwt.sign({_id: this._id, name: this.name, email: this.email, lastname: this.lastname}, process.env.ACCESS_TOKEN_SECRET);
     }
 
 const User = mongoose.model('User',userSchema) ; 

@@ -1,7 +1,8 @@
 const router = require("express").Router();
 const { Provenance } = require("../modules/provenance");
+const auth = require("../middleware/auth");
 
-router.post("/", async (req, res) => {
+router.post("/",auth, async (req, res) => {
   const { provenance, actif, user } = req.body;
 
   try {
@@ -17,7 +18,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.get("/", async (req, res) => {
+router.get("/",auth, async (req, res) => {
   try {
     const results = await Provenance.find({});
     res.send(results);
@@ -25,7 +26,7 @@ router.get("/", async (req, res) => {
     res.send(ex);
   }
 });
-router.get("/etat", async (req, res) => {
+router.get("/etat",auth, async (req, res) => {
   try {
     const results = await Provenance.find({ actif: true });
     res.send(results);
@@ -34,7 +35,7 @@ router.get("/etat", async (req, res) => {
   }
 });
 
-router.put("/", async (req, res) => {
+router.put("/",auth, async (req, res) => {
   try {
     const { actif, provenance } = req.body;
     const filter = { _id: req.body._id };
@@ -51,7 +52,7 @@ router.put("/", async (req, res) => {
     res.send(ex);
   }
 });
-router.get("/:id", async (req, res) => {
+router.get("/:id",auth, async (req, res) => {
   const{id}=req.params
   try{
     const results = await Provenance.find({"_id":id});
@@ -61,7 +62,7 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id",auth, async (req, res) => {
 
   const provenance = await Provenance.findByIdAndDelete(req.params.id).exec();
 
@@ -69,7 +70,7 @@ router.delete("/:id", async (req, res) => {
 });
 
 //making search functionality
-router.get("/search/:search", async (req, res) => {
+router.get("/search/:search",auth, async (req, res) => {
   const { search } = req.params;
   if (search) {
     const types = await Provenance.find({

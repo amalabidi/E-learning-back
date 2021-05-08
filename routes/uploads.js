@@ -3,6 +3,7 @@ const path = require("path");
 const router = require("express").Router();
 const { Dossier } = require("../modules/dossier");
 const { Fichier } = require("../modules/fichier");
+const auth = require("../middleware/auth");
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -21,7 +22,7 @@ const storage = multer.diskStorage({
 
 let upload = multer({ storage: storage });
 
-router.post("/", upload.single("avatar"), async (req, res) => {
+router.post("/",auth, upload.single("avatar"), async (req, res) => {
   const { avatar, _id, taille } = req.body;
   console.log(_id);
   console.log(avatar);

@@ -4,8 +4,9 @@ const multer = require("multer");
 const { Modification } = require("../modules/modification");
 const { Dossier } = require("../modules/dossier");
 const { JournalAppel } = require("../modules/JournalAppel");
+const auth = require("../middleware/auth");
 const nodemailer = require("nodemailer");
-router.post("/text", async (req, res) => {
+router.post("/text",auth, async (req, res) => {
   const {
     subject,
     receivermails,
@@ -42,7 +43,7 @@ router.post("/text", async (req, res) => {
   }
 });
 
-router.post("/signdocemail", async (req, res) => {
+router.post("/signdocemail",auth, async (req, res) => {
   var attachs = [];
   const {
     dossier_Id,
@@ -105,7 +106,7 @@ router.post("/signdocemail", async (req, res) => {
 
         const operation = "Commentaire";
 
-        const user = userId; //req.user._id; after adding jwt token
+        const user = req.user._id; //after adding jwt token
 
         const modif = await new Modification({
           client,
@@ -143,7 +144,7 @@ let upload = multer({
   },
 });
 
-router.post("/fichiers", upload.array("docs[]", 3), async (req, res) => {
+router.post("/fichiers",auth, upload.array("docs[]", 3), async (req, res) => {
   var attachs = [];
   const filenames = req.files;
   console.log(filenames);

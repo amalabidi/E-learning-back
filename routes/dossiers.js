@@ -10,6 +10,7 @@ const { Facturation } = require("../modules/Facturation");
 const { Provenance } = require("../modules/provenance");
 const { User } = require("../modules/user");
 const { Modification } = require("../modules/modification");
+const auth = require("../middleware/auth");
 const { JournalAppel } = require("../modules/JournalAppel");
 const nodemailer = require("nodemailer");
 const { getMaxListeners } = require("../app");
@@ -36,7 +37,7 @@ async function getProvenanceName(id) {
   } catch (e) {}
 }
 
-router.get("/totalsByStatus", async function (req, res) {
+router.get("/totalsByStatus",auth, async function (req, res) {
   const status = req.body["status"];
   try {
     const results = await Dossier.find({ status: status }).populate(
@@ -60,7 +61,7 @@ router.get("/totalsByStatus", async function (req, res) {
   }
 });
 
-router.get("/totalsByDateVendeur", async function (req, res) {
+router.get("/totalsByDateVendeur",auth, async function (req, res) {
   const beginDate = req.body["beginDate"];
   const endDate = req.body["endDate"];
 
@@ -109,7 +110,7 @@ router.get("/totalsByDateVendeur", async function (req, res) {
   }
 });
 
-router.get("/totalsByDateProvenance", async function (req, res) {
+router.get("/totalsByDateProvenance",auth, async function (req, res) {
   const beginDate = req.body["beginDate"];
   const endDate = req.body["endDate"];
 
@@ -167,7 +168,7 @@ router.get("/totalsByDateProvenance", async function (req, res) {
   }
 });
 
-router.get("/totalsByDateProFor", async function (req, res) {
+router.get("/totalsByDateProFor",auth, async function (req, res) {
   const beginDate = req.body["beginDate"];
   const endDate = req.body["endDate"];
 
@@ -470,7 +471,7 @@ router.post("/", async (req, res) => {
 
                         const results = await dossier.save();
                         const operation = "Création";
-                        const user = req.body.userId; //req.user._id; after adding jwt token
+                        const user = req.user._id; //after adding jwt token
                         const newStatus = status;
                         const modif = new Modification({
                           client,
@@ -517,7 +518,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-router.get("/", async (req, res) => {
+router.get("/",auth, async (req, res) => {
   try {
     const results = await Dossier.find({});
     res.send(results);
@@ -526,7 +527,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-router.put("/coutElearning", async (req, res) => {
+router.put("/coutElearning",auth, async (req, res) => {
   const { _id, cout } = req.body;
 
   try {
@@ -554,7 +555,7 @@ router.put("/coutElearning", async (req, res) => {
   }
 });
 
-router.put("/coutCertification", async (req, res) => {
+router.put("/coutCertification",auth, async (req, res) => {
   const { _id, cout } = req.body;
 
   try {
@@ -573,7 +574,7 @@ router.put("/coutCertification", async (req, res) => {
     res.send(e);
   }
 });
-router.put("/coutVendeur", async (req, res) => {
+router.put("/coutVendeur",auth, async (req, res) => {
   const { _id, cout } = req.body;
 
   try {
@@ -591,7 +592,7 @@ router.put("/coutVendeur", async (req, res) => {
     res.send(e);
   }
 });
-router.put("/coutCoach", async (req, res) => {
+router.put("/coutCoach",auth, async (req, res) => {
   const { _id, cout } = req.body;
 
   try {
@@ -612,7 +613,7 @@ router.put("/coutCoach", async (req, res) => {
   }
 });
 
-router.put("/statutcall", async (req, res) => {
+router.put("/statutcall",auth, async (req, res) => {
   const { _id, statut } = req.body;
 
   try {
@@ -629,7 +630,7 @@ router.put("/statutcall", async (req, res) => {
   }
 });
 
-router.put("/statutdossier", async (req, res) => {
+router.put("/statutdossier",auth, async (req, res) => {
   const { _id, status } = req.body;
   try {
     var result = await Dossier.findByIdAndUpdate(
@@ -643,7 +644,7 @@ router.put("/statutdossier", async (req, res) => {
     // creating modification
     if (status.localeCompare(result["status"])) {
       const operation = "Chgt statut";
-      const user = req.body.userId; //req.user._id; after adding jwt token
+      const user = req.user._id; //after adding jwt token
       const newStatus = status;
       const previousStatus = result["status"];
       const client = result["client"]["_id"];
@@ -664,7 +665,7 @@ router.put("/statutdossier", async (req, res) => {
   }
 });
 
-router.put("/vendeur", async (req, res) => {
+router.put("/vendeur",auth, async (req, res) => {
   const { _id, vendeur } = req.body;
 
   try {
@@ -682,7 +683,7 @@ router.put("/vendeur", async (req, res) => {
     res.send(e);
   }
 });
-router.put("/provenance", async (req, res) => {
+router.put("/provenance",auth, async (req, res) => {
   const { _id, provenance } = req.body;
 
   try {
@@ -699,7 +700,7 @@ router.put("/provenance", async (req, res) => {
   }
 });
 
-router.get("/search/:search", async (req, res) => {
+router.get("/search/:search",auth, async (req, res) => {
   const { search } = req.params;
 
   var dossiers = [];
@@ -723,7 +724,7 @@ router.get("/search/:search", async (req, res) => {
   }
 });
 
-router.delete("/:id", async (req, res) => {
+router.delete("/:id",auth, async (req, res) => {
   const dossier = await Dossier.findOne({ _id: req.params.id });
   if (dossier != null) {
     const clientid = dossier["client"];
@@ -753,7 +754,7 @@ router.delete("/:id", async (req, res) => {
   }
 });
 
-router.put("/", async (req, res) => {
+router.put("/",auth, async (req, res) => {
   try {
     const {
       civility,
@@ -1053,7 +1054,7 @@ router.put("/", async (req, res) => {
 
                         if (status.localeCompare(dossier["status"])) {
                           const operation = "Chgt statut";
-                          const user = req.body.userId; //req.user._id; after adding jwt token
+                          const user = req.user._id; //after adding jwt token
                           const newStatus = status;
                           const previousStatus = dossier["status"];
                           const modif = new Modification({
@@ -1103,7 +1104,7 @@ router.put("/", async (req, res) => {
   }
 });
 
-router.get("/uploads/:id", async (req, res) => {
+router.get("/uploads/:id",auth, async (req, res) => {
   try {
     console.log(req.params.id);
     var dossier = await Dossier.findOne({ _id: req.params.id });
@@ -1118,7 +1119,7 @@ router.get("/uploads/:id", async (req, res) => {
   }
 });
 //delete a file from the uploads
-router.post("/uploads", async (req, res) => {
+router.post("/uploads",auth, async (req, res) => {
   const { file_id, _id } = req.body;
 
   try {
@@ -1135,7 +1136,7 @@ router.post("/uploads", async (req, res) => {
     res.send(ex);
   }
 });
-router.get("/client/:id", async (req, res) => {
+router.get("/client/:id",auth, async (req, res) => {
   const { id } = req.params;
   try {
     const results = await Client.find({ _id: id });
@@ -1153,7 +1154,7 @@ router.get("/preval/:id", async (req, res) => {
     res.send(ex);
   }
 });
-router.get("/eval/:id", async (req, res) => {
+router.get("/eval/:id",auth, async (req, res) => {
   const { id } = req.params;
   try {
     const results = await Evaluation.find({ _id: id });
@@ -1162,7 +1163,7 @@ router.get("/eval/:id", async (req, res) => {
     res.send(ex);
   }
 });
-router.get("/crcoach/:id", async (req, res) => {
+router.get("/crcoach/:id",auth, async (req, res) => {
   const { id } = req.params;
   try {
     const results = await CRCoach.find({ _id: id });
@@ -1171,7 +1172,7 @@ router.get("/crcoach/:id", async (req, res) => {
     res.send(ex);
   }
 });
-router.get("/facturation/:id", async (req, res) => {
+router.get("/facturation/:id",auth, async (req, res) => {
   const { id } = req.params;
   try {
     const results = await Facturation.find({ _id: id });
