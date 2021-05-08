@@ -34,6 +34,7 @@ router.post("/text", async (req, res) => {
     text: message,
   };
   try {
+    console.log("mailOptions",mailOptions)
     let info = await transport.sendMail(mailOptions);
     res.send("email sent successfully");
   } catch (e) {
@@ -61,7 +62,6 @@ router.post("/signdocemail", async (req, res) => {
     });
   }
 
-  console.log(attachs);
 
   var transport = nodemailer.createTransport({
     host: "ssl0.ovh.net",
@@ -81,7 +81,7 @@ router.post("/signdocemail", async (req, res) => {
     to: receivermails,
     attachments: attachs,
   };
-
+console.log("mail option",mailOptions)
   try {
     let info = await transport.sendMail(mailOptions);
     const Sujet = "Envoie de Document";

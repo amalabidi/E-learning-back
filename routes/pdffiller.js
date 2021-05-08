@@ -16,7 +16,7 @@ router.post("/fill", async (req, res) => {
     "./" + parameters[0].cachet.substr(22, parameters[0].cachet.length);
   var sourcePDF2 = "./public/2emeDocumentTemplate.pdf";
   var namePDF2 = "filledPDF2" + Date.now() + ".pdf";
-  var destinationPDF2 = "./uploads/filledpdf/" + namePDF2;
+  var destinationPDF2 = './uploads/filledpdf/' + namePDF2;
   const {
     dossier_Id,
     client,
@@ -79,7 +79,7 @@ router.post("/fill", async (req, res) => {
     programmeVu: programmeVu,
     progressionStagiaire: progressionStagiaire,
   };
-
+  console.log(formData2)
   pdfFiller.fillForm(
     sourcePDF2,
     destinationPDF2,
@@ -127,7 +127,7 @@ router.post("/fill", async (req, res) => {
         fs.writeFileSync(newFilePath, pdfBytes);
 
         var sourcePDF1 = "./public/1erDocumentTemplate.pdf";
-        var namePDF1 = "filledPDF1 " + Date.now() + ".pdf";
+        var namePDF1 = "filledPDF1" + Date.now() + ".pdf";
         var destinationPDF1 = "./uploads/filledpdf/" + namePDF1;
 
         const {
@@ -184,7 +184,6 @@ router.post("/fill", async (req, res) => {
           date_valence: Date.now(),
           directeur: directeur,
         };
-
         pdfFiller.fillForm(
           sourcePDF1,
           destinationPDF1,
@@ -243,6 +242,7 @@ router.post("/fill", async (req, res) => {
       }
 
       res.status(200).send("done");
+
     }
   );
 });
@@ -251,7 +251,7 @@ router.get("/filledPdf/:_id", async (req, res) => {
   var dossier = await Dossier.findOne({ _id: req.params._id });
   console.log(dossier);
   console.log(dossier.filledFiles);
-  var resultArray = await Fichier.find({ _id: { $in: dossier.files } });
+  var resultArray = await Fichier.find({ _id: { $in: dossier.filledFiles } });
   console.log(resultArray);
   resultArray.forEach(function (fich) {
     pdfs.push("http://localhost:3001/uploads/filledpdf/" + fich["name"]);

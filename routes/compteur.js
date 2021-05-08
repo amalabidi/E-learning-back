@@ -10,7 +10,7 @@ var router = express.Router();
 
 
 
-router.get("/", async (req , res)=>{
+router.post("/", async (req , res)=>{
 
 
     const beginDate = req.body["beginDate"];

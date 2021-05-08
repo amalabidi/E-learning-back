@@ -1117,6 +1117,20 @@ router.get("/uploads/:id", async (req, res) => {
     res.send(ex);
   }
 });
+router.get("/filledFiles/:id", async (req, res) => {
+  try {
+    console.log(req.params.id);
+    var dossier = await Dossier.findOne({ _id: req.params.id });
+    console.log(dossier);
+    console.log(dossier.files);
+    var resultArray = await Fichier.find({ _id: { $in: dossier.filledFiles } });
+
+    //console.log(resultArray);
+    res.send(resultArray);
+  } catch (ex) {
+    res.send(ex);
+  }
+});
 //delete a file from the uploads
 router.post("/uploads", async (req, res) => {
   const { file_id, _id } = req.body;
@@ -1175,6 +1189,15 @@ router.get("/facturation/:id", async (req, res) => {
   const { id } = req.params;
   try {
     const results = await Facturation.find({ _id: id });
+    res.send(results);
+  } catch (ex) {
+    res.send(ex);
+  }
+});
+router.get("/journalAppel/:id", async (req, res) => {
+  const { id } = req.params;
+  try {
+    const results = await JournalAppel.find({ _id: id });
     res.send(results);
   } catch (ex) {
     res.send(ex);

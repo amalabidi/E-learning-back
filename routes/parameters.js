@@ -180,13 +180,13 @@ router.get("/", async (req, res) => {
     res.send(ex);
   }
 });
-router.put("/", upload.array("imgs[]", 2), async (req, res) => {
+router.put("/", /*upload.array("imgs[]", 2),*/ async (req, res) => {
   try {
-    const images = req.files;
+    /*const images = req.files;
     const cachet =
       "http://localhost:3001/public/imgs/" + images[0]["originalname"];
     const logo =
-      "http://localhost:3001/public/imgs/" + images[1]["originalname"];
+      "http://localhost:3001/public/imgs/" + images[1]["originalname"];*/
 
     const {
       portComm,
@@ -220,14 +220,14 @@ router.put("/", upload.array("imgs[]", 2), async (req, res) => {
       forme_juridique,
       region,
     } = req.body;
+    console.log(req.body.passwordComm)
     const filter = { _id: req.body._id };
-
+    console.log(filter)
     const society = await Societe.findOne(filter);
     console.log("societe", society);
     const mailComm = society["email_communication"];
     const mailRel = society["email_relance"];
     const banquePrincip = society["banque_principal"];
-
     const banquefactor = society["banque_factor"];
 
     const updateComm = {
@@ -254,9 +254,13 @@ router.put("/", upload.array("imgs[]", 2), async (req, res) => {
       login: loginRel,
       password: passwordRel,
     };
-    let mailsRel = await Email.findByIdAndUpdate({ _id: mailRel }, updateRel, {
-      new: true,
-    });
+    try{
+      let mailsRel = await Email.findByIdAndUpdate({ _id: mailRel }, updateRel, {
+        new: true,
+      });
+    } catch(e) {
+      console.log(e)
+    }
 
     const updatePrincipale = {
       type: "principale",
@@ -271,6 +275,8 @@ router.put("/", upload.array("imgs[]", 2), async (req, res) => {
         updatePrincipale,
         { new: true }
       );
+      
+      
     } catch (e) {
       console.log("e", e);
     }
@@ -289,14 +295,13 @@ router.put("/", upload.array("imgs[]", 2), async (req, res) => {
     } catch (e) {
       console.log("e", e);
     }
-
     const update = {
       url,
       adresse,
       code_postal,
       ville,
-      logo,
-      cachet,
+      //logo,
+      //cachet,
       siret,
       SAS,
       TVA_infra,
@@ -315,9 +320,11 @@ router.put("/", upload.array("imgs[]", 2), async (req, res) => {
       banque_factor: banquefactor,
     };
     try {
+      console.log("updated",update)
       let results = await Societe.findByIdAndUpdate(filter, update, {
         new: true,
       });
+      
       res.send(results);
       console.log("done");
     } catch (e) {
