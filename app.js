@@ -34,7 +34,7 @@ app.use(
 );
 
 app.use(express.static("public"));
-app.use(cors({ origin: "http://localhost:4200" }));
+app.use(cors({ origin: "http://fac-academy.ureachus.com/" }));
 
 // connecting to mongodb
 
