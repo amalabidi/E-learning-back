@@ -428,7 +428,6 @@ router.post("/", async (req, res) => {
                         performedAppointments,
                         appointmentsObservation,
                       } = req.body;
-                      console.log("body", req.body);
                       try {
                         const client = clientId;
                         const preEvaluation = preEvaluationId;
@@ -479,7 +478,6 @@ router.post("/", async (req, res) => {
                           newStatus,
                         });
                         const result2 = modif.save();
-                        console.log(result2);
                         res.status(200).send(results);
                       } catch (e) {
                         console.log(e);
@@ -530,13 +528,9 @@ router.put("/coutElearning", async (req, res) => {
   const { _id, cout } = req.body;
 
   try {
-    console.log(_id);
-    console.log(cout);
     let dossier = await Dossier.findById(_id);
-    console.log(dossier);
     let idfacture = dossier["facturation"];
     let a = await Facturation.findById(idfacture);
-    console.log(idfacture);
 
     var result = await Facturation.findByIdAndUpdate(
       { _id: idfacture },
@@ -547,8 +541,6 @@ router.put("/coutElearning", async (req, res) => {
     );
     res.send(result);
 
-    console.log("done");
-    console.log(a);
   } catch (e) {
     res.send(e);
   }
@@ -668,7 +660,6 @@ router.put("/vendeur", async (req, res) => {
   const { _id, vendeur } = req.body;
 
   try {
-    console.log(_id);
     var result = await Dossier.findByIdAndUpdate(
       { _id: _id },
       {
@@ -676,7 +667,6 @@ router.put("/vendeur", async (req, res) => {
       },
       { new: true }
     );
-    console.log("okk");
     res.send(result);
   } catch (e) {
     res.send(e);
@@ -708,7 +698,6 @@ router.get("/search/:search", async (req, res) => {
       { $project: { name: { $concat: ["$firstName", " ", "$lastName"] } } },
       { $match: { name: { $regex: search, $options: "i" } } },
     ]).exec(async function (err, results) {
-      console.log(results);
       for (i = 0; i < results.length; i++) {
         const clientid = results[i]["_id"];
         const dossier = await Dossier.find({ client: clientid });
@@ -829,7 +818,6 @@ router.put("/", async (req, res) => {
             new: true,
           }
         );
-        console.log("preevaluation");
 
         if (preEvaluations) {
           const {
@@ -876,7 +864,6 @@ router.put("/", async (req, res) => {
                 new: true,
               }
             );
-            console.log("evaluation");
 
             if (Evaluations) {
               const {
@@ -906,7 +893,6 @@ router.put("/", async (req, res) => {
                   }
                 );
 
-                console.log("crcoach");
 
                 if (crCoachs) {
                   const {
@@ -964,7 +950,6 @@ router.put("/", async (req, res) => {
                     };
 
                     factureid = dossier["facturation"];
-                    console.log(factureid);
                     filterfacture = { _id: factureid };
                     let facturations = await Facturation.findByIdAndUpdate(
                       filterfacture,
@@ -973,7 +958,7 @@ router.put("/", async (req, res) => {
                         new: true,
                       }
                     );
-                    console.log("facturation");
+       
 
                     if (facturations) {
                       const {
@@ -1105,10 +1090,7 @@ router.put("/", async (req, res) => {
 
 router.get("/uploads/:id", async (req, res) => {
   try {
-    console.log(req.params.id);
     var dossier = await Dossier.findOne({ _id: req.params.id });
-    console.log(dossier);
-    console.log(dossier.files);
     var resultArray = await Fichier.find({ _id: { $in: dossier.files } });
 
     //console.log(resultArray);
@@ -1119,10 +1101,7 @@ router.get("/uploads/:id", async (req, res) => {
 });
 router.get("/filledFiles/:id", async (req, res) => {
   try {
-    console.log(req.params.id);
     var dossier = await Dossier.findOne({ _id: req.params.id });
-    console.log(dossier);
-    console.log(dossier.files);
     var resultArray = await Fichier.find({ _id: { $in: dossier.filledFiles } });
 
     //console.log(resultArray);
@@ -1195,10 +1174,12 @@ router.get("/facturation/:id", async (req, res) => {
   }
 });
 router.get("/journalAppel/:id", async (req, res) => {
-  const { id } = req.params;
   try {
-    const results = await JournalAppel.find({ _id: id });
-    res.send(results);
+    var dossier = await Dossier.findOne({ _id: req.params.id });
+    var resultArray = await JournalAppel.find({ _id: { $in: dossier.journalAppel} });
+
+    //console.log(resultArray);
+    res.send(resultArray);
   } catch (ex) {
     res.send(ex);
   }
