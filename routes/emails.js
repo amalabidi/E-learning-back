@@ -79,6 +79,7 @@ router.post("/signdocemail", async (req, res) => {
   var mailOptions = {
     from: senderEmail,
     to: receivermails,
+    subject: "Envoie de Document",
     attachments: attachs,
   };
 console.log("mail option",mailOptions)
