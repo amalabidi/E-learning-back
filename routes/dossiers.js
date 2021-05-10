@@ -328,7 +328,6 @@ router.post("/", async (req, res) => {
               adj3,
             });
             const evaluationResults = await evaluation.save();
-
             evaluationId = evaluationResults["_id"];
             if (evaluationResults) {
               const {
@@ -479,6 +478,7 @@ router.post("/", async (req, res) => {
                         });
                         const result2 = modif.save();
                         res.status(200).send(results);
+                        console.log("done")
                       } catch (e) {
                         console.log(e);
                         res.status(201).send(e);
@@ -762,7 +762,6 @@ router.put("/", async (req, res) => {
       rechercheEmploi,
       _id,
     } = req.body;
-
     let dossier = await Dossier.findById(_id);
 
     let idclient = dossier["client"];
@@ -788,7 +787,6 @@ router.put("/", async (req, res) => {
     let clients = await Client.findByIdAndUpdate(filter, update, {
       new: true,
     });
-
     if (clients) {
       const {
         langue,
@@ -855,6 +853,7 @@ router.put("/", async (req, res) => {
               adj2,
               adj3,
             };
+            
             evaluationid = dossier["evaluation"];
             filterEvaluation = { _id: evaluationid };
             let Evaluations = await Evaluation.findByIdAndUpdate(
@@ -864,7 +863,6 @@ router.put("/", async (req, res) => {
                 new: true,
               }
             );
-
             if (Evaluations) {
               const {
                 connaissance,

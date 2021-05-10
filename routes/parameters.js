@@ -38,9 +38,9 @@ let upload = multer({
   try {
     const images = req.files;
     const cachet =
-      "http://localhost:3001/public/imgs" + images[0]["originalname"];
+      "https://crmforyou.herokuapp.com/public/imgs" + images[0]["originalname"];
     const logo =
-      "http://localhost:3001/public/imgs" + images[1]["originalname"];
+      "https://crmforyou.herokuapp.com/public/imgs" + images[1]["originalname"];
 
     const { portComm, hostComm, loginComm, passwordComm } = req.body;
 
@@ -184,9 +184,9 @@ router.put("/", /*upload.array("imgs[]", 2),*/ async (req, res) => {
   try {
     /*const images = req.files;
     const cachet =
-      "http://localhost:3001/public/imgs/" + images[0]["originalname"];
+      "https://crmforyou.herokuapp.com/public/imgs/" + images[0]["originalname"];
     const logo =
-      "http://localhost:3001/public/imgs/" + images[1]["originalname"];*/
+      "https://crmforyou.herokuapp.com/public/imgs/" + images[1]["originalname"];*/
 
     const {
       portComm,

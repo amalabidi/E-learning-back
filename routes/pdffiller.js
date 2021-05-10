@@ -10,13 +10,12 @@ const { PDFDocument } = require("pdf-lib");
 
 router.post("/fill", async (req, res) => {
   const parameters = await Societe.find({});
+  console.log(parameters)
   const pathToLogo =
     "./" + parameters[0].logo.substr(22, parameters[0].logo.length);
   const pathTocachet =
     "./" + parameters[0].cachet.substr(22, parameters[0].cachet.length);
-  var sourcePDF2 = "./public/2emeDocumentTemplate.pdf";
-  var namePDF2 = "filledPDF2" + Date.now() + ".pdf";
-  var destinationPDF2 = './uploads/filledpdf/' + namePDF2;
+
   const {
     dossier_Id,
     client,
@@ -49,6 +48,12 @@ router.post("/fill", async (req, res) => {
     progressionStagiaire,
   } = req.body;
 
+  const id=req.body.dossier_Id
+
+  var sourcePDF2 = "./public/2emeDocumentTemplate.pdf";
+  var namePDF2 = "filledPDF2" + id + ".pdf";
+  var destinationPDF2 = './uploads/filledpdf/' + namePDF2;
+
   var formData2 = {
     client: client,
     intitule: intitule,
@@ -79,7 +84,7 @@ router.post("/fill", async (req, res) => {
     programmeVu: programmeVu,
     progressionStagiaire: progressionStagiaire,
   };
-  console.log(formData2)
+
   pdfFiller.fillForm(
     sourcePDF2,
     destinationPDF2,
@@ -127,7 +132,7 @@ router.post("/fill", async (req, res) => {
         fs.writeFileSync(newFilePath, pdfBytes);
 
         var sourcePDF1 = "./public/1erDocumentTemplate.pdf";
-        var namePDF1 = "filledPDF1" + Date.now() + ".pdf";
+        var namePDF1 = "filledPDF1" + id + ".pdf";
         var destinationPDF1 = "./uploads/filledpdf/" + namePDF1;
 
         const {
@@ -247,17 +252,23 @@ router.post("/fill", async (req, res) => {
   );
 });
 router.get("/filledPdf/:_id", async (req, res) => {
-  var pdfs = [];
-  var dossier = await Dossier.findOne({ _id: req.params._id });
-  console.log(dossier);
-  console.log(dossier.filledFiles);
-  var resultArray = await Fichier.find({ _id: { $in: dossier.filledFiles } });
-  console.log(resultArray);
-  resultArray.forEach(function (fich) {
-    pdfs.push("http://localhost:3001/uploads/filledpdf/" + fich["name"]);
-    console.log(pdfs);
+  console.log(req.params._id)
+  var filePath = './uploads/filledpdf/' + req.params._id+".pdf";
+  var stat = fs.statSync(filePath);
+  res.writeHead(200, {
+    'Content-Type': 'pdf',
+    'Content-Length': stat.size,
+    'Content-Disposition': 'attachment; Document'
   });
-  res.send(pdfs);
+  var readStream = fs.createReadStream(filePath);
+  readStream.on('open', function() {
+    // This just pipes the read stream to the response object (which goes to the client)
+    readStream.pipe(res);
+  });
+  readStream.on('error', function(err) {
+    res.end(err);
+  });
+  //res.send(pdfs);
 });
 
 module.exports = router;
