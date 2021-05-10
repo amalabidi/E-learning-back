@@ -58,7 +58,7 @@ router.get("/", async (req, res) => {
       }
       total = 0;
       const EnFormation = await Dossier.find({
-        status: "En formation",
+        status: "En Formation",
       }).populate("idWorkshop");
       if (EnFormation.length != 0) {
         EnFormation.forEach(function (dossier) {
