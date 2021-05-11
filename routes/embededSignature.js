@@ -433,7 +433,6 @@ var callback = async function(error, data, response) {
           res.status(403).send(e)
         }
 
-
       }else {
         res.status(402).send("siganture not created") ; 
       }
@@ -451,6 +450,38 @@ apiInstance.signrequestQuickCreateCreate(data, callback);
  })
     
 
+
+ router.get('/dossierSign' , async (req,res) => {
+
+
+  const dossier_Id = req.body.dossier_Id ; 
+
+    try{
+
+      const result = await Signature.find({dossier_Id:dossier_Id}) ; 
+
+      if(result){
+
+       var tab = new Array() ;
+
+       result.forEach(element=> tab.push(element.fileName)) ;
+
+        res.status(200).send(tab) ; 
+      }else{
+
+        res.send("no signature found") ;
+      }
+      
+
+    }catch(e){
+
+      res.status(400).send(e) ; 
+    }
+
+
+
+
+ }) ;
 
 
 // delete a document by providing it's uuid 
