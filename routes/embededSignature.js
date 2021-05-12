@@ -373,7 +373,7 @@ var callback = async function(error, data, response) {
     console.log(error)
     res.status(404).send(error) ;
     try{
-      console.log("hhhhhhhh")
+      
       const sg = await new Signature({dossier_Id,fileName}) ; 
       const result1 = await sg.save() ; 
       if(result1){
