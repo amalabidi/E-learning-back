@@ -12,9 +12,9 @@ router.post("/fill", async (req, res) => {
   const parameters = await Societe.find({});
   console.log(parameters)
   const pathToLogo =
-    "./" + parameters[0].logo.substr(22, parameters[0].logo.length);
+    "./" + parameters[0].logo.substr(32, parameters[0].logo.length);
   const pathTocachet =
-    "./" + parameters[0].cachet.substr(22, parameters[0].cachet.length);
+    "./" + parameters[0].cachet.substr(32, parameters[0].cachet.length);
 
   const {
     dossier_Id,
