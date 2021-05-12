@@ -365,16 +365,17 @@ data.signers = signers ;
 
 data.file_from_url = file_from_url;
 data.from_email = from_email;
-data.send_reminders=send_reminders ; 
+//data.send_reminders=send_reminders ; 
 
 
 var callback = async function(error, data, response) {
   if (error) {
+    console.log(error)
     res.status(404).send(error) ;
     try{
+      console.log("hhhhhhhh")
       const sg = await new Signature({dossier_Id,fileName}) ; 
       const result1 = await sg.save() ; 
-
       if(result1){
 
         try{
@@ -389,7 +390,7 @@ var callback = async function(error, data, response) {
           const Sujet = "Document à signer" ; 
           const Commentaire = fileName ;
           const Journal = await  new  JournalAppel({Sujet,Commentaire})   ; 
-          const result3 = await Journal.save() ;
+          const result3 = await Journal.save();
           
           if(result3){
 
@@ -422,7 +423,7 @@ var callback = async function(error, data, response) {
           
           const result6=JSON.parse(response["text"]) ; 
       
-          res.send(result6)   ;
+          res.send(result6);
            }else{
              res.send("dossier not found ");
            }
@@ -439,7 +440,6 @@ var callback = async function(error, data, response) {
       }
 
     }catch(e){
-
       res.status(400).send(e)
     }
    

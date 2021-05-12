@@ -186,7 +186,7 @@ router.post("/fill", async (req, res) => {
           intitule: intitule,
           date_debut: DateDebut,
           prix_action: prixAction,
-          date_valence: Date.now(),
+          date_valence: today,
           directeur: directeur,
         };
         pdfFiller.fillForm(

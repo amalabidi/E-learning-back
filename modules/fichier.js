@@ -11,6 +11,9 @@ const FichierSchema = new mongoose.Schema({
   name: {
     type: String,
   },
+  type: {
+    type: String,
+  },
 });
 
 const Fichier = mongoose.model("Fichier ", FichierSchema);
