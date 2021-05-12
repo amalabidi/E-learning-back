@@ -76,11 +76,11 @@ app.use("/cout/", cout);
 app.use("/email", email);
 
 //choose the backend port
-const port = process.env.PORT || 3001;
+//const port = process.env.PORT || 3001;
 
 app.use("/public", express.static(__dirname + "/public"));
 
 //starting the backend server
-app.listen(port, () => console.log("listening on port:" + port));
+//app.listen(port, () => console.log("listening on port:" + port));
 
 module.exports = app;
