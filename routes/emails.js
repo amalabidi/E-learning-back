@@ -86,9 +86,9 @@ router.post("/signdocemail", async (req, res) => {
 
     const Sujet = "Envoie de Document";
     const Commentaire = filenames;
-    const userId = userName
+    const userName = req.body.userName
 
-    const Journal = await new JournalAppel({ userId , Sujet, Commentaire });
+    const Journal = await new JournalAppel({ userName , Sujet, Commentaire });
     const result3 = await Journal.save();
 
     if (result3) {

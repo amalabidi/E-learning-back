@@ -22,6 +22,7 @@ const FacturationSchema = new mongoose.Schema({
   },
   CertifPaye: {
     type: Boolean,
+    default: false
   },
   AutreCout1: {
     type: String,
@@ -37,9 +38,11 @@ const FacturationSchema = new mongoose.Schema({
   },
   Cout1Paye: {
     type: Boolean,
+    default: false
   },
   Cout2Paye: {
     type: Boolean,
+    default: false
   },
   CoutCoach: {
     type: String,
@@ -49,6 +52,7 @@ const FacturationSchema = new mongoose.Schema({
   },
   CoachPaye: {
     type: Boolean,
+    default: false
   },
   CoutVendeur: {
     type: String,
@@ -58,6 +62,7 @@ const FacturationSchema = new mongoose.Schema({
   },
   VendeurPaye: {
     type: Boolean,
+    default: false
   },
   Factor: {
     type: Boolean,

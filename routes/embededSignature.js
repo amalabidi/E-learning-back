@@ -1,5 +1,6 @@
 var SignrequestClient = require('signrequest-client');
 var express = require('express');
+const fs = require("fs");
 const { Signature } = require('../modules/signature');
 const { JournalAppel } = require('../modules/JournalAppel');
 const { Dossier } = require('../modules/dossier');
@@ -176,10 +177,11 @@ router.get('/documents/uuid',async(req,res)=>{
 
 // return the url of a signed document by giving it's uuid 
 
-router.get('/documents/signedUrl',async(req,res)=>{
+router.post('/documents/signedUrl',async(req,res)=>{
    
 var apiInstance = new SignrequestClient.DocumentsApi();
 var uuid = req.body['uuid'];
+
 
 var callback = function(error, data, response) {
   if (error) {
@@ -356,23 +358,26 @@ data2.send_reminders=send_reminders ;
 router.post('/quickReq' , async(req,res)=>{
 
  var apiInstance = new SignrequestClient.SignrequestQuickCreateApi();
+ const buffer = Buffer.from("./public/2emeDocumentTemplate.pdf", "binary");
+ const dataFile = fs.readFileSync(buffer);
+ const document_base64 = dataFile.toString("base64");
 var data = new SignrequestClient.SignRequestQuickCreate();
-var {file_from_url,signers , from_email,send_reminders} = req.body ;
-var dossier_Id = req.body.dossier_Id ; 
-var fileName = req.body.fileName ; 
+const {signers , from_email,send_reminders} = req.body ;
+const dossier_Id = req.body.dossier_Id ; 
+const fileName = req.body.fileName ;
 
 data.signers = signers ;
-
-data.file_from_url = file_from_url;
+data.file_from_content = document_base64;
+data.file_from_content_name = "2emeDocumentTemplate.pdf",
 data.from_email = from_email;
 //data.send_reminders=send_reminders ; 
 
-
 var callback = async function(error, data, response) {
   if (error) {
-    console.log(error)
+
     res.status(404).send(error) ;
     try{
+      
       
       const sg = await new Signature({dossier_Id,fileName}) ; 
       const result1 = await sg.save() ; 
@@ -387,9 +392,10 @@ var callback = async function(error, data, response) {
             { $push: { sigantures: sg._id } }
           );
 
-          const Sujet = "Document à signer" ; 
-          const Commentaire = fileName ;
-          const Journal = await  new  JournalAppel({Sujet,Commentaire})   ; 
+          const Sujet = "Document à signer" ;
+          const userName =req.body.userName
+          const Commentaire = req.body.fileName ;
+          const Journal = await  new  JournalAppel({userName , Sujet, Commentaire})   ; 
           const result3 = await Journal.save();
           
           if(result3){
@@ -430,7 +436,7 @@ var callback = async function(error, data, response) {
           }
 
         }catch(e){
-
+          
           res.status(403).send(e)
         }
 

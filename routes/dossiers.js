@@ -517,7 +517,8 @@ router.post("/", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const results = await Dossier.find({});
+    const results = await Dossier.find({})
+                                          ;
     res.send(results);
   } catch (ex) {
     res.send(ex);

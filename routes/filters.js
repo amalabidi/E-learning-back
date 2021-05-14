@@ -55,7 +55,7 @@ router.post("/", async (req, res) => {
       coachs,
       statusDossier,
     } = req.body;
-    console.log(provenances);
+    console.log(req.body);
     const filters = {
       //size: (size) => size === 50 || size === 70,
       //color: (color) => ['blue', 'black'].includes(color.toLowerCase()),
@@ -197,8 +197,10 @@ router.post("/", async (req, res) => {
         if (provenances == null) {
           return true;
         } else if (provenances.includes(provenance.provenance)) {
+          
           return true;
         }
+        
         return false;
       },
       vendeur: (vendeur) => {
@@ -248,8 +250,8 @@ router.post("/", async (req, res) => {
     };
 
     try {
+      console.log(filters)
       const filterKeys = Object.keys(filters);
-
       const result = dossiers.filter((item) => {
         // validates all filter criteria
         return filterKeys.every((key) => {
