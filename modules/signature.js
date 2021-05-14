@@ -9,6 +9,11 @@ const SignatureSchema = new mongoose.Schema({
 
     fileName : {
         type:String 
+    } , 
+    sigReqUuid:{
+        type:String 
+    },docUuid:{
+        type:String
     }
 
 },{timestamps:true});
