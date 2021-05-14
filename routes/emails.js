@@ -35,6 +35,7 @@ router.post("/text",auth, async (req, res) => {
     text: message,
   };
   try {
+    console.log("mailOptions",mailOptions)
     let info = await transport.sendMail(mailOptions);
     res.send("email sent successfully");
   } catch (e) {
@@ -52,9 +53,8 @@ router.post("/signdocemail",auth, async (req, res) => {
     senderpassword,
     filenames,
     userId,
+    userName
   } = req.body;
-  console.log(filenames);
-
   for (i = 0; i < filenames.length; i++) {
     attachs.push({
       filename: filenames[i],
@@ -62,7 +62,6 @@ router.post("/signdocemail",auth, async (req, res) => {
     });
   }
 
-  console.log(attachs);
 
   var transport = nodemailer.createTransport({
     host: "ssl0.ovh.net",
@@ -80,14 +79,17 @@ router.post("/signdocemail",auth, async (req, res) => {
   var mailOptions = {
     from: senderEmail,
     to: receivermails,
+    subject: "Envoie de Document",
     attachments: attachs,
   };
-
   try {
     let info = await transport.sendMail(mailOptions);
+
     const Sujet = "Envoie de Document";
     const Commentaire = filenames;
-    const Journal = await new JournalAppel({ Sujet, Commentaire });
+    const userId = userName
+
+    const Journal = await new JournalAppel({ userId , Sujet, Commentaire });
     const result3 = await Journal.save();
 
     if (result3) {
@@ -102,7 +104,6 @@ router.post("/signdocemail",auth, async (req, res) => {
 
       if (dossier) {
         const client = dossier["client"]["_id"];
-        console.log(client);
 
         const operation = "Commentaire";
 
@@ -117,11 +118,13 @@ router.post("/signdocemail",auth, async (req, res) => {
         const result5 = await modif.save();
 
         res.send("email sent successfully");
+        console.log('email sent successfully')
       } else {
         res.send("dossier not found ");
       }
     }
   } catch (e) {
+    console.log(e)
     res.status(403).send(e);
   }
 });

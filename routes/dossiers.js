@@ -329,7 +329,6 @@ router.post("/", async (req, res) => {
               adj3,
             });
             const evaluationResults = await evaluation.save();
-
             evaluationId = evaluationResults["_id"];
             if (evaluationResults) {
               const {
@@ -429,7 +428,6 @@ router.post("/", async (req, res) => {
                         performedAppointments,
                         appointmentsObservation,
                       } = req.body;
-                      console.log("body", req.body);
                       try {
                         const client = clientId;
                         const preEvaluation = preEvaluationId;
@@ -480,8 +478,8 @@ router.post("/", async (req, res) => {
                           newStatus,
                         });
                         const result2 = modif.save();
-                        console.log(result2);
                         res.status(200).send(results);
+                        console.log("done")
                       } catch (e) {
                         console.log(e);
                         res.status(201).send(e);
@@ -531,13 +529,9 @@ router.put("/coutElearning",auth, async (req, res) => {
   const { _id, cout } = req.body;
 
   try {
-    console.log(_id);
-    console.log(cout);
     let dossier = await Dossier.findById(_id);
-    console.log(dossier);
     let idfacture = dossier["facturation"];
     let a = await Facturation.findById(idfacture);
-    console.log(idfacture);
 
     var result = await Facturation.findByIdAndUpdate(
       { _id: idfacture },
@@ -548,8 +542,6 @@ router.put("/coutElearning",auth, async (req, res) => {
     );
     res.send(result);
 
-    console.log("done");
-    console.log(a);
   } catch (e) {
     res.send(e);
   }
@@ -669,7 +661,6 @@ router.put("/vendeur",auth, async (req, res) => {
   const { _id, vendeur } = req.body;
 
   try {
-    console.log(_id);
     var result = await Dossier.findByIdAndUpdate(
       { _id: _id },
       {
@@ -677,7 +668,6 @@ router.put("/vendeur",auth, async (req, res) => {
       },
       { new: true }
     );
-    console.log("okk");
     res.send(result);
   } catch (e) {
     res.send(e);
@@ -709,7 +699,6 @@ router.get("/search/:search",auth, async (req, res) => {
       { $project: { name: { $concat: ["$firstName", " ", "$lastName"] } } },
       { $match: { name: { $regex: search, $options: "i" } } },
     ]).exec(async function (err, results) {
-      console.log(results);
       for (i = 0; i < results.length; i++) {
         const clientid = results[i]["_id"];
         const dossier = await Dossier.find({ client: clientid });
@@ -774,7 +763,6 @@ router.put("/",auth, async (req, res) => {
       rechercheEmploi,
       _id,
     } = req.body;
-
     let dossier = await Dossier.findById(_id);
 
     let idclient = dossier["client"];
@@ -800,7 +788,6 @@ router.put("/",auth, async (req, res) => {
     let clients = await Client.findByIdAndUpdate(filter, update, {
       new: true,
     });
-
     if (clients) {
       const {
         langue,
@@ -830,7 +817,6 @@ router.put("/",auth, async (req, res) => {
             new: true,
           }
         );
-        console.log("preevaluation");
 
         if (preEvaluations) {
           const {
@@ -868,6 +854,7 @@ router.put("/",auth, async (req, res) => {
               adj2,
               adj3,
             };
+            
             evaluationid = dossier["evaluation"];
             filterEvaluation = { _id: evaluationid };
             let Evaluations = await Evaluation.findByIdAndUpdate(
@@ -877,8 +864,6 @@ router.put("/",auth, async (req, res) => {
                 new: true,
               }
             );
-            console.log("evaluation");
-
             if (Evaluations) {
               const {
                 connaissance,
@@ -907,7 +892,6 @@ router.put("/",auth, async (req, res) => {
                   }
                 );
 
-                console.log("crcoach");
 
                 if (crCoachs) {
                   const {
@@ -965,7 +949,6 @@ router.put("/",auth, async (req, res) => {
                     };
 
                     factureid = dossier["facturation"];
-                    console.log(factureid);
                     filterfacture = { _id: factureid };
                     let facturations = await Facturation.findByIdAndUpdate(
                       filterfacture,
@@ -974,7 +957,7 @@ router.put("/",auth, async (req, res) => {
                         new: true,
                       }
                     );
-                    console.log("facturation");
+       
 
                     if (facturations) {
                       const {
@@ -1106,11 +1089,19 @@ router.put("/",auth, async (req, res) => {
 
 router.get("/uploads/:id",auth, async (req, res) => {
   try {
-    console.log(req.params.id);
     var dossier = await Dossier.findOne({ _id: req.params.id });
-    console.log(dossier);
-    console.log(dossier.files);
     var resultArray = await Fichier.find({ _id: { $in: dossier.files } });
+
+    //console.log(resultArray);
+    res.send(resultArray);
+  } catch (ex) {
+    res.send(ex);
+  }
+});
+router.get("/filledFiles/:id", async (req, res) => {
+  try {
+    var dossier = await Dossier.findOne({ _id: req.params.id });
+    var resultArray = await Fichier.find({ _id: { $in: dossier.filledFiles } });
 
     //console.log(resultArray);
     res.send(resultArray);
@@ -1177,6 +1168,17 @@ router.get("/facturation/:id",auth, async (req, res) => {
   try {
     const results = await Facturation.find({ _id: id });
     res.send(results);
+  } catch (ex) {
+    res.send(ex);
+  }
+});
+router.get("/journalAppel/:id", async (req, res) => {
+  try {
+    var dossier = await Dossier.findOne({ _id: req.params.id });
+    var resultArray = await JournalAppel.find({ _id: { $in: dossier.journalAppel} });
+
+    //console.log(resultArray);
+    res.send(resultArray);
   } catch (ex) {
     res.send(ex);
   }

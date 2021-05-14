@@ -1,6 +1,9 @@
 const mongoose = require("mongoose");
 
 const JournalAppelSchema = new mongoose.Schema({
+  userId: {
+    type:String,
+  },
   Date: {
     type: Date,
     default: Date.now,

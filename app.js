@@ -37,7 +37,9 @@ app.use(
 
 app.use(express.static("public"));
 require('dotenv').config() ;
-app.use(cors({ origin: "http://localhost:4200" }));
+//app.use(cors({ origin: "http://localhost:4200" }));
+app.use(cors({ origin: "https://fac-academy.ureachus.com" }));
+
 
 // connecting to mongodb
 

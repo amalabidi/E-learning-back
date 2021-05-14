@@ -59,7 +59,7 @@ router.get("/",auth, async (req, res) => {
       }
       total = 0;
       const EnFormation = await Dossier.find({
-        status: "En formation",
+        status: "En Formation",
       }).populate("idWorkshop");
       if (EnFormation.length != 0) {
         EnFormation.forEach(function (dossier) {
@@ -114,12 +114,12 @@ router.get("/",auth, async (req, res) => {
           total += dossier.idWorkshop.tarif - dossier.remise;
         });
         const declare = {
-          nombreTotalDeclaré: Declare.length,
-          totalCoutDeclaré: total,
+          nombreTotalDeclarer: Declare.length,
+          totalCoutDeclarer: total,
         };
         resultats.push(declare);
       } else {
-        resultats.push({ nombreTotalDeclaré: 0, totalCoutDeclaré: 0 });
+        resultats.push({ nombreTotalDeclarer: 0, totalCoutDeclarer: 0 });
       }
       total = 0;
       const Facture = await Dossier.find({ status: "Facturé" }).populate(
@@ -130,12 +130,12 @@ router.get("/",auth, async (req, res) => {
           total += dossier.idWorkshop.tarif - dossier.remise;
         });
         const facturer = {
-          nombreTotalFacturé: Facture.length,
-          totalCoutFacturé: total,
+          nombreTotalFacturer: Facture.length,
+          totalCoutFacturer: total,
         };
         resultats.push(facturer);
       } else {
-        resultats.push({ nombreTotalFacturé: 0, totalCoutFacturé: 0 });
+        resultats.push({ nombreTotalFacturer: 0, totalCoutFacturer: 0 });
       }
       total = 0;
       const Factor = await Dossier.find({ status: "Factor" }).populate(
@@ -163,13 +163,13 @@ router.get("/",auth, async (req, res) => {
           total += dossier.idWorkshop.tarif - dossier.remise;
         });
         const payer = {
-          nombreTotalPayé: Paye.length,
-          totalCoutPayé: total,
+          nombreTotalPayer: Paye.length,
+          totalCoutPayer: total,
         };
 
         resultats.push(payer);
       } else {
-        resultats.push({ nombreTotalPayé: 0, totalCoutPayé: 0 });
+        resultats.push({ nombreTotalPayer: 0, totalCoutPayer: 0 });
       }
     } else {
       resultats.push({ nombreTotalDossiers: 0, totalCoutDossiers: 0 });

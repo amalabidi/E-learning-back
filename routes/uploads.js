@@ -27,12 +27,13 @@ router.post("/",auth, upload.single("avatar"), async (req, res) => {
   console.log(_id);
   console.log(avatar);
   console.log(taille);
+  console.log(type);
   try {
     var file = await Fichier.find({ name: avatar });
     console.log(file);
     if (file.length == 0) {
       console.log("11111111111");
-      var fich = new Fichier({ name: avatar, taille: taille });
+      var fich = new Fichier({ name: avatar, taille: taille,type:type });
       const fichiers = await fich.save();
       const idfichier = fichiers["_id"];
       console.log(idfichier);

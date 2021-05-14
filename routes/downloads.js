@@ -24,5 +24,29 @@ router.post("/",auth, function (req, res) {
     fs.unlinkSync(outputpath);
   });
 });
+router.post("/singleFile/", async (req, res) => {
+  const {
+    name,
+    type,
+  }=req.body
+  console.log(type)
+  console.log(name)
+  var filePath = './uploads/' + name;
+  var stat = fs.statSync(filePath);
+  res.writeHead(200, {
+    'Content-Type': type,
+    'Content-Length': stat.size,
+    'Content-Disposition': 'attachment; Document'
+  });
+  var readStream = fs.createReadStream(filePath);
+  readStream.on('open', function() {
+    // This just pipes the read stream to the response object (which goes to the client)
+    readStream.pipe(res);
+  });
+  readStream.on('error', function(err) {
+    res.end(err);
+  });
+  //res.send(pdfs);
+});
 
 module.exports = router;
