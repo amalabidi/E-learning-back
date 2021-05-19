@@ -64,19 +64,19 @@ router.post("/", async (req, res) => {
           if (CreationDateMax == null) {
             return true;
           }
-          if (createdAt < new Date(CreationDateMax)) {
+          if (createdAt <= new Date(CreationDateMax)) {
             return true;
           }
           return false;
         } else {
           if (CreationDateMax == null) {
-            if (createdAt > new Date(CreationDateMin)) {
+            if (createdAt >= new Date(CreationDateMin)) {
               return true;
             }
           }
           if (
-            createdAt > new Date(CreationDateMin) &&
-            createdAt < new Date(CreationDateMax)
+            createdAt >= new Date(CreationDateMin) &&
+            createdAt <= new Date(CreationDateMax)
           )
             return true;
           return false;
@@ -87,19 +87,19 @@ router.post("/", async (req, res) => {
           if (workshopBeginDateMax == null) {
             return true;
           }
-          if (workshopBeginDate < new Date(workshopBeginDateMax)) {
+          if (workshopBeginDate <= new Date(workshopBeginDateMax)) {
             return true;
           }
           return false;
         } else {
           if (workshopBeginDateMax == null) {
-            if (workshopBeginDate > new Date(workshopBeginDateMin)) {
+            if (workshopBeginDate >= new Date(workshopBeginDateMin)) {
               return true;
             }
           }
           if (
-            workshopBeginDate > new Date(workshopBeginDateMin) &&
-            workshopBeginDate < new Date(workshopBeginDateMax)
+            workshopBeginDate >= new Date(workshopBeginDateMin) &&
+            workshopBeginDate <= new Date(workshopBeginDateMax)
           )
             return true;
           return false;
@@ -111,19 +111,19 @@ router.post("/", async (req, res) => {
           if (workshopEndDateMax == null) {
             return true;
           }
-          if (workshopEndDate < new Date(workshopEndDateMax)) {
+          if (workshopEndDate <= new Date(workshopEndDateMax)) {
             return true;
           }
           return false;
         } else {
           if (workshopEndDateMax == null) {
-            if (workshopEndDate > new Date(workshopEndDateMin)) {
+            if (workshopEndDate >= new Date(workshopEndDateMin)) {
               return true;
             }
           }
           if (
-            workshopEndDate > new Date(workshopEndDateMin) &&
-            workshopEndDate < new Date(workshopEndDateMax)
+            workshopEndDate >= new Date(workshopEndDateMin) &&
+            workshopEndDate <= new Date(workshopEndDateMax)
           )
             return true;
           return false;
@@ -134,19 +134,19 @@ router.post("/", async (req, res) => {
           if (dateFacturationMax == null) {
             return true;
           }
-          if (facturation.DateFacturation < new Date(dateFacturationMax)) {
+          if (facturation.DateFacturation <= new Date(dateFacturationMax)) {
             return true;
           }
           return false;
         } else {
           if (dateFacturationMax == null) {
-            if (facturation.DateFacturation > new Date(dateFacturationMin)) {
+            if (facturation.DateFacturation >= new Date(dateFacturationMin)) {
               return true;
             }
           }
           if (
-            facturation.DateFacturation > new Date(dateFacturationMin) &&
-            facturation.DateFacturation < new Date(dateFacturationMax)
+            facturation.DateFacturation >= new Date(dateFacturationMin) &&
+            facturation.DateFacturation <= new Date(dateFacturationMax)
           )
             return true;
           return false;

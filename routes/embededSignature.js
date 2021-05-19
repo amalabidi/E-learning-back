@@ -1,10 +1,10 @@
 var SignrequestClient = require('signrequest-client');
 var express = require('express');
-const fs = require("fs");
 const { Signature } = require('../modules/signature');
 const { JournalAppel } = require('../modules/JournalAppel');
 const { Dossier } = require('../modules/dossier');
 const { Modification } = require('../modules/modification');
+const fs = require('fs')
 var router = express.Router();
 var defaultClient = SignrequestClient.ApiClient.instance;
 
@@ -178,10 +178,8 @@ router.get('/documents/uuid',async(req,res)=>{
 // return the url of a signed document by giving it's uuid 
 
 router.post('/documents/signedUrl',async(req,res)=>{
-   
 var apiInstance = new SignrequestClient.DocumentsApi();
 var uuid = req.body['uuid'];
-
 
 var callback = function(error, data, response) {
   if (error) {
@@ -240,6 +238,7 @@ var callback = function(error, data, response) {
 
 router.post('/req' , async(req,res)=>{
 
+
 var data2 = new SignrequestClient.SignRequest();
 var apiInstance = new SignrequestClient.SignrequestsApi();
 var {file_url,signers , from_email,send_reminders} = req.body ;
@@ -257,10 +256,16 @@ data2.send_reminders=send_reminders ;
       
       res.status(404).send(error) ;
     } else {
+      console.log("data2 " + data2["uuid"]) ;
+      var sigReqUuid= data2["uuid"] ;
+      var char = data2["document"].substr(data2["document"].lastIndexOf('documents/') + 10);
+      var docUuid  = char.substr(0,char.length-1) ;
+      console.log(docUuid) ;
+
       try{
-        const sg = await new Signature({dossier_Id,fileName}) ; 
+        const sg = await new Signature({dossier_Id,fileName,sigReqUuid,docUuid}) ; 
         const result1 = await sg.save() ; 
-  
+             console.log("signature"+ sg) ;
         if(result1){
   
           try{
@@ -278,7 +283,7 @@ data2.send_reminders=send_reminders ;
             const result3 = await Journal.save() ;
             
             if(result3){
-  
+                       console.log("journal " + Journal) ; 
               var result4 = await Dossier.updateOne(
                 {
                   _id:dossier_Id,
@@ -286,12 +291,11 @@ data2.send_reminders=send_reminders ;
                 { $push: { journalAppel : Journal._id } }
               );
             
-          
+               console.log("dossier_id : "+ dossier_Id) ;
               const dossier = await  Dossier.findById(dossier_Id); 
            if (dossier){
-            
-              const client = dossier["client"]["_id"];
-              
+                   console.log("dossier " + dossier) ;
+              const client = dossier["client"]["_id"]; 
                       console.log(client);
              const operation = "Commentaire";
             
@@ -304,9 +308,23 @@ data2.send_reminders=send_reminders ;
             
              const result5 = await modif.save();
            
-            console.log('API called successfully. Returned data: ' + data);
+            console.log('API called successfully. Returned data: ' + data2);
             
             const result6=JSON.parse(response["text"]) ; 
+
+            try{
+
+              
+       
+          
+            }catch(e){
+        
+          
+              res.send(e) ;
+
+
+          }
+
         
             res.send(result6)   ;
              }else{
@@ -316,6 +334,7 @@ data2.send_reminders=send_reminders ;
   
           }catch(e){
   
+            console.log(e) ; 
             res.status(403).send(e)
           }
   
@@ -325,7 +344,7 @@ data2.send_reminders=send_reminders ;
         }
   
       }catch(e){
-  
+   console.log(e) ;
         res.status(400).send(e)
       }
      
@@ -333,14 +352,8 @@ data2.send_reminders=send_reminders ;
     }
   };
 
-  try{
-
-    apiInstance.signrequestsCreate(data2, callback);
-
-  }catch(e){
-
-    res.send(e) ;
-  }
+  const details = apiInstance.signrequestsCreate(data2, callback);
+   
   
 
 })
@@ -356,123 +369,154 @@ data2.send_reminders=send_reminders ;
 
 
 router.post('/quickReq' , async(req,res)=>{
+  var apiInstance = new SignrequestClient.SignrequestQuickCreateApi();
+ const fileNames = req.body.fileName ;
+  fileNames.forEach(fileName=>{
+  const buffer = Buffer.from("./uploads/filledpdf/"+fileName, "binary");
+  const dataFile = fs.readFileSync(buffer);
+  const document_base64 = dataFile.toString("base64");
+ var data = new SignrequestClient.SignRequestQuickCreate();
+ const {signers , from_email,send_reminders} = req.body ;
+ const dossier_Id = req.body.dossier_Id ; 
+ //const fileName = req.body.fileName ;
+ 
+ data.signers = signers ;
+ data.file_from_content = document_base64;
+ data.file_from_content_name = fileName,
+ data.from_email = from_email;
+ data.send_reminders=send_reminders ; 
 
- var apiInstance = new SignrequestClient.SignrequestQuickCreateApi();
- const buffer = Buffer.from("./public/2emeDocumentTemplate.pdf", "binary");
- const dataFile = fs.readFileSync(buffer);
- const document_base64 = dataFile.toString("base64");
-var data = new SignrequestClient.SignRequestQuickCreate();
-const {signers , from_email,send_reminders} = req.body ;
-const dossier_Id = req.body.dossier_Id ; 
-const fileName = req.body.fileName ;
 
-data.signers = signers ;
-data.file_from_content = document_base64;
-data.file_from_content_name = "2emeDocumentTemplate.pdf",
-data.from_email = from_email;
-//data.send_reminders=send_reminders ; 
+
+
 
 var callback = async function(error, data, response) {
+
   if (error) {
-
+    console.log(error)
     res.status(404).send(error) ;
-    try{
-      
-      
-      const sg = await new Signature({dossier_Id,fileName}) ; 
-      const result1 = await sg.save() ; 
-      if(result1){
+  } else{
+           try{
 
-        try{
+               var sigReqUuid= data["uuid"] ;
+               var char = data["document"].substr(data["document"].lastIndexOf('documents/') + 10);
+               var docUuid  = char.substr(0,char.length-1) ;
+               const clientMail=req.body.clientMail
+               const clientMobile=req.body.clientMobile
+               const sg = await new Signature({clientMail,clientMobile,dossier_Id,fileName,sigReqUuid,docUuid}) ; 
+               const result1 = await sg.save() ; 
+               if(result1){
+                try{
+                  var result2 = await Dossier.updateOne(
+                    {
+                      _id:dossier_Id,
+                    },
+                    { $push: { signatures: sg._id } }
+                    );
 
-          var result2 = await Dossier.updateOne(
-            {
-              _id:dossier_Id,
-            },
-            { $push: { sigantures: sg._id } }
-          );
-
-          const Sujet = "Document à signer" ;
-          const userName =req.body.userName
-          const Commentaire = req.body.fileName ;
-          const Journal = await  new  JournalAppel({userName , Sujet, Commentaire})   ; 
-          const result3 = await Journal.save();
+                    const Sujet = "Document à signer" ; 
+                    const Commentaire = fileName ;
+                    const userName=req.body.userName;
+                    const Journal = await  new  JournalAppel({userName,Sujet,Commentaire})   ; 
+                    const result3 = await Journal.save();
           
-          if(result3){
+                    if(result3){
 
-            var result4 = await Dossier.updateOne(
-              {
-                _id:dossier_Id,
-              },
-              { $push: { journalAppel : Journal._id } }
-            );
+                      var result4 = await Dossier.updateOne(
+                        {
+                          _id:dossier_Id,
+                        },
+                        { $push: { journalAppel : Journal._id } }
+                        );
           
         
-            const dossier = await  Dossier.findById(dossier_Id); 
-         if (dossier){
+                        const dossier = await  Dossier.findById(dossier_Id); 
+                        if (dossier){
           
-            const client = dossier["client"]["_id"];
+                          const client = dossier["client"]["_id"];
             
-                    console.log(client);
-           const operation = "Commentaire";
+                          console.log(client);
+                          const operation = "Commentaire";
           
-           const user = req.body.userId; //req.user._id; after adding jwt token
+                          const user = req.body.userId; //req.user._id; after adding jwt token
         
-           const modif = await new Modification({
+                          const modif = await new Modification({
                                     client,
                                     operation,
                                     user,});
           
-           const result5 = await modif.save();
+                                    const result5 = await modif.save();
          
-          console.log('API called successfully. Returned data: ' + data);
+                                    console.log('API called successfully. Returned data: ' + data);
           
-          const result6=JSON.parse(response["text"]) ; 
+                                    const result6=JSON.parse(response["text"]) ; 
       
-          res.send(result6);
-           }else{
-             res.send("dossier not found ");
-           }
-          }
+                                    res.send(result6);
+                                  }else{
+                                    res.send("dossier not found ");
+                                  }
+                                }else{
+                                  res.send("journal not created ");
+                                }
 
-        }catch(e){
-          
-          res.status(403).send(e)
-        }
+                              }catch(e){
 
-      }else {
-        res.status(402).send("siganture not created") ; 
-      }
+                                  res.status(403).send(e)
+                                }
 
-    }catch(e){
-      res.status(400).send(e)
-    }
+                              }else {
+                                res.status(402).send("siganture not created") ; 
+                              }
+
+                            }catch(e){
+                              res.status(400).send(e)
+                            }
    
-    
+   
   }
 };
 
-apiInstance.signrequestQuickCreateCreate(data, callback);
+console.log("damen") ;
+const details = apiInstance.signrequestQuickCreateCreate(data, callback);
+
+  })
  })
     
 
 
- router.get('/dossierSign' , async (req,res) => {
+
+  async function  getdoc (element,tab ,length,res){ 
+  var apiInstance = new SignrequestClient.DocumentsApi();
+   var callback = function(error, data, response) {
+     if (error) {
+       res.status(404).send(error) ;
+    } else {
+
+      tab.push({"signatureObject":element,"signatureInfo":data});
+      
+          if(length == tab.length) {
+            res.status(200).send(tab) ;
+          }
+    }
+
+  };
+  
+  apiInstance.documentsRead(element["docUuid"], callback);
+
+  }
+  
 
 
-  const dossier_Id = req.body.dossier_Id ; 
 
+ router.post('/dossierSign' , async (req,res) =>{
+  const dossier_Id = req.body.dossier_Id ;   
+  var tab = new Array() ;
     try{
-
-      const result = await Signature.find({dossier_Id:dossier_Id}) ; 
-
+      const result = await Signature.find({dossier_Id:dossier_Id}).populate("dossier_Id").populate('client') ; 
       if(result){
-
-       var tab = new Array() ;
-
-       result.forEach(element=> tab.push(element.fileName)) ;
-
-        res.status(200).send(tab) ; 
+       result.forEach(element=>{
+           getdoc(element , tab,result.length,res) ;
+         }) ;
       }else{
 
         res.send("no signature found") ;

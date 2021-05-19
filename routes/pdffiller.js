@@ -98,13 +98,30 @@ router.post("/fill", async (req, res) => {
 
         const f2 = new Fichier({ name: namePDF2 });
         f2.save();
-
+        const dd= await Dossier.findById(dossier_Id);
+       const ff=dd["filledFiles"];
+       if(ff.length!=0){
+         var re=await Dossier.updateOne({_id: dossier_Id},
+          {
+            filledFiles: []
+          }
+          )
+          var resultt = await Dossier.updateOne(
+            {
+              _id: dossier_Id,
+            },
+            { $push: { filledFiles: f2._id } }
+          );
+       }
+      else{
         var result2 = await Dossier.updateOne(
           {
             _id: dossier_Id,
           },
           { $push: { filledFiles: f2._id } }
         );
+        }
+        //const dossier = await  Dossier.findOne(); 
 
         const pdfDoc = await PDFDocument.load(fs.readFileSync(destinationPDF2));
         const imglogo = await pdfDoc.embedPng(fs.readFileSync(pathToLogo));

@@ -14,6 +14,9 @@ const FichierSchema = new mongoose.Schema({
   type: {
     type: String,
   },
+  dossier_Id:{
+    type:String,
+  }
 });
 
 const Fichier = mongoose.model("Fichier ", FichierSchema);

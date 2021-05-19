@@ -6,11 +6,21 @@ const SignatureSchema = new mongoose.Schema({
         type : Schema.Types.ObjectId , 
         ref:"Dossier"
     },
-
+    clientMail:{
+        type:String 
+    },
+    clientMobile:{
+        type:String 
+    },
     fileName : {
         type:String 
+    },
+    sigReqUuid:{
+        type:String 
+    },docUuid:{
+        type:String
     }
-
+    
 },{timestamps:true});
 
 const Signature = mongoose.model("Signature ", SignatureSchema);

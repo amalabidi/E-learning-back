@@ -1,3 +1,4 @@
+  
 const multer = require("multer");
 const path = require("path");
 const router = require("express").Router();
@@ -22,17 +23,17 @@ const storage = multer.diskStorage({
 let upload = multer({ storage: storage });
 
 router.post("/", upload.single("avatar"), async (req, res) => {
-  const { avatar, _id, taille,type } = req.body;
+  const { avatar, _id, taille,type,name } = req.body;
   console.log(_id);
   console.log(avatar);
   console.log(taille);
   console.log(type);
   try {
-    var file = await Fichier.find({ name: avatar });
+    var file = await Fichier.find({ dossier_Id: _id });
     console.log(file);
     if (file.length == 0) {
       console.log("11111111111");
-      var fich = new Fichier({ name: avatar, taille: taille,type:type });
+      var fich = new Fichier({ dossier_Id:_id,name: name, taille: taille,type:type });
       const fichiers = await fich.save();
       const idfichier = fichiers["_id"];
       console.log(idfichier);
@@ -49,11 +50,11 @@ router.post("/", upload.single("avatar"), async (req, res) => {
       console.log("222222222222222");
       var dossier = await Dossier.findById(_id);
       for (i = 0; i < file.length; i++) {
-        const a = dossier.files.indexOf(file[i]["_id"]);
+        const a = dossier.files.indexOf(file["_id"]);
         console.log(a);
-        if (dossier.files.indexOf(file[i]["_id"]) == -1) {
+        if (dossier.files.indexOf(file["_id"]) == -1) {
           console.log("3333333333333");
-          var fich = new Fichier({ name: avatar, taille: taille });
+          var fich = new Fichier({ name: name, taille: taille,type:type,dossier_Id:_id });
           const fichiers = await fich.save();
           const idfichier = fichiers["_id"];
           console.log(idfichier);

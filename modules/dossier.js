@@ -58,9 +58,9 @@ const dossierSchema = new mongoose.Schema(
       ref: "Workshop",
     },
     priseEnCharge: {
-      type: String,
+      type: [String],
       required: true,
-      default: "CPF",
+      default: ["CPF"],
     },
     remise: {
       type: Number,

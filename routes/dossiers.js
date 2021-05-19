@@ -1119,7 +1119,7 @@ router.post("/uploads", async (req, res) => {
       {
         _id,
       },
-      { $pull: { files: fileid } }
+      { $pull: { files: file_id } }
     );
     res.send(results);
     console.log("deleted");
