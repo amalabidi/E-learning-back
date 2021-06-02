@@ -19,10 +19,9 @@ router.get("/", async (req, res) => {
         totalCoutDossiers: total,
       };
       resultats.push(doss);
+      console.log("1")
       total = 0;
-      const valide = await Dossier.find({ status: "Validé" }).populate(
-        "idWorkshop"
-      );
+      const valide = []
       if (valide.length != 0) {
         valide.forEach(function (dossier) {
           total += dossier.idWorkshop.tarif - dossier.remise;

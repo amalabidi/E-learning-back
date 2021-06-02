@@ -98,47 +98,43 @@ router.post("/fill", async (req, res) => {
 
         const f2 = new Fichier({ name: namePDF2 });
         f2.save();
-        const dd= await Dossier.findById(dossier_Id);
-       const ff=dd["filledFiles"];
-       if(ff.length!=0){
-         var re=await Dossier.updateOne({_id: dossier_Id},
-          {
-            filledFiles: []
-          }
-          )
-          var resultt = await Dossier.updateOne(
-            {
-              _id: dossier_Id,
-            },
-            { $push: { filledFiles: f2._id } }
-          );
-       }
-      else{
+
         var result2 = await Dossier.updateOne(
           {
             _id: dossier_Id,
           },
           { $push: { filledFiles: f2._id } }
         );
-        }
-        //const dossier = await  Dossier.findOne(); 
 
         const pdfDoc = await PDFDocument.load(fs.readFileSync(destinationPDF2));
         const imglogo = await pdfDoc.embedPng(fs.readFileSync(pathToLogo));
         const imgcachet = await pdfDoc.embedPng(fs.readFileSync(pathTocachet));
         const imagePage = pdfDoc.getPages();
+        var cachetx=0 ; 
+        var cachety=250 ;
+
         for (var i = 0; i < imagePage.length; i++) {
           if (i != 1)
             imagePage[i].drawImage(imglogo, {
-              x: 300,
+              x: imagePage[i].getWidth() / 5 *2,
               y: (imagePage[i].getHeight() / 8) * 6.5,
-              width: imagePage[i].getWidth() / 6,
+              width: imagePage[i].getWidth() / 5,
               height: imagePage[i].getHeight() / 8,
             });
+          
+          
+          switch (i ){
+            case 1: cachety=200 ; break ;
+            case 2 : cachety =170 ; break ;
+            case 0 : cachety =280 ; break ;
+            default:cachety =220 ; break ;
+          }
+          
+
 
           imagePage[i].drawImage(imgcachet, {
-            x: (imagePage[i].getWidth() / 6) * 5,
-            y: 300,
+            x: (imagePage[i].getWidth() / 6) * 4,
+            y: cachety,
             width: imagePage[i].getWidth() / 6,
             height: imagePage[i].getHeight() / 8,
           });
@@ -239,15 +235,27 @@ router.post("/fill", async (req, res) => {
                 for (var i = 2; i < imagePage.length; i++) {
                   if (i != 5)
                     imagePage[i].drawImage(imglogo, {
-                      x: 300,
-                      y: (imagePage[i].getHeight() / 8) * 6.5,
-                      width: imagePage[i].getWidth() / 6,
-                      height: imagePage[i].getHeight() / 8,
+                      x: imagePage[i].getWidth() / 5 *2,
+              y: (imagePage[i].getHeight() / 8) * 6.5,
+              width: imagePage[i].getWidth() / 5,
+              height: imagePage[i].getHeight() / 8,
                     });
-                  if (i >= 5)
+
+                           var cachety2=200 ;
+                           var cachetx2=(imagePage[i].getWidth() / 6) * 4 ; 
+
+                    switch (i ){
+                      case 5: cachety2=170 ; break ;
+                      case 6: cachety2 =130 ;cachetx2=(imagePage[i].getWidth() / 6) * 4.5 ; break ;
+                      case 7 : cachety2 =250 ; break ;
+                      
+                    }
+                   
+
+                  if(i>=5)
                     imagePage[i].drawImage(imgcachet, {
-                      x: (imagePage[i].getWidth() / 6) * 4.5,
-                      y: 250,
+                      x: cachetx2,
+                      y: cachety2,
                       width: imagePage[i].getWidth() / 6,
                       height: imagePage[i].getHeight() / 8,
                     });

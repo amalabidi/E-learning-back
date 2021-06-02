@@ -31,10 +31,6 @@ const WorkshopSchema = new mongoose.Schema({
   tarif: {
     type: Number,
   },
-  code_tarif: {
-    type: String,
-    required: true,
-  },
   code_BFP: {
     type: String,
   },
