@@ -21,7 +21,9 @@ const pdf = require("./routes/pdffiller");
 const email = require("./routes/emails");
 const filters = require("./routes/filters");
 const relances = require("./routes/relances");
+const compteur = require("./routes/compteur");
 const dashboard = require("./routes/dashboard");
+const mrelance = require("./routes/modeleRelances")
 const app = express();
 
 app.use(express.json());
@@ -34,8 +36,8 @@ app.use(
 );
 
 app.use(express.static("public"));
-//app.use(cors({ origin: "http://localhost:4200" }));
-app.use(cors({ origin: "https://fac-academy.ureachus.com" }));
+app.use(cors({ origin: "http://localhost:4200" }));
+//app.use(cors({ origin: "https://fac-academy.ureachus.com" }));
 /*app.use(function (req, res, next) {
   //Enabling CORS
   res.header("Access-Control-Allow-Origin", "*");
@@ -77,8 +79,10 @@ app.use("/modifications", modifications);
 app.use("/pdf", pdf);
 app.use("/downloads", downloads);
 app.use("/export", exp);
-app.use("/cout/", cout);
+app.use("/cout", cout);
 app.use("/email", email);
+app.use("/compteur",compteur);
+app.use("/mrelance",mrelance);
 
 //choose the backend port
 const port = process.env.PORT || 3002;

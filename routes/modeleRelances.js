@@ -145,3 +145,5 @@ router.delete("/SMS/:id", async (req, res) => {
   ).exec();
   res.send("success");
 });
+
+module.exports = router;

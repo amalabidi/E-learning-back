@@ -60,6 +60,7 @@ router.post("/signdocemail", async (req, res) => {
       path: "./uploads/filledpdf/" + filenames[i],
     });
   }
+  console.log(filenames)
 
 
   var transport = nodemailer.createTransport({

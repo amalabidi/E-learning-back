@@ -220,7 +220,6 @@ router.put("/", /*upload.array("imgs[]", 2),*/ async (req, res) => {
       forme_juridique,
       region,
     } = req.body;
-    console.log(req.body.passwordComm)
     const filter = { _id: req.body._id };
     console.log(filter)
     const society = await Societe.findOne(filter);

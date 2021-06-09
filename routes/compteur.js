@@ -26,7 +26,7 @@ router.post("/", async (req , res)=>{
         },
       ]);
   
-      res.send("consommation signature  : " + results.length);
+      res.send({consommation:results.length});
     }catch(e){
 
 

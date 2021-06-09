@@ -491,9 +491,9 @@ const details = apiInstance.signrequestQuickCreateCreate(data, callback);
      if (error) {
        res.status(404).send(error) ;
     } else {
-
+      console.log("data",data.file_from_content)
       tab.push({"signatureObject":element,"signatureInfo":data});
-      
+
           if(length == tab.length) {
             res.status(200).send(tab) ;
           }
