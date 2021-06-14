@@ -414,7 +414,9 @@ router.post("/", async (req, res) => {
                         confidentialObservation,
                         idWorkshop,
                         priseEnCharge,
-                        remise,
+                        
+                        
+                        
                         workshopBeginDate,
                         workshopEndDate,
                         workshopDescription,
@@ -448,7 +450,9 @@ router.post("/", async (req, res) => {
                           confidentialObservation,
                           idWorkshop,
                           priseEnCharge,
-                          remise,
+                          
+                          
+                          
                           workshopBeginDate,
                           workshopEndDate,
                           workshopDescription,
@@ -974,7 +978,6 @@ router.put("/", async (req, res) => {
                         confidentialObservation,
                         idWorkshop,
                         priseEnCharge,
-                        remise,
                         workshopBeginDate,
                         workshopEndDate,
                         workshopDescription,
@@ -1012,7 +1015,6 @@ router.put("/", async (req, res) => {
                           confidentialObservation,
                           idWorkshop,
                           priseEnCharge,
-                          remise,
                           workshopBeginDate,
                           workshopEndDate,
                           workshopDescription,

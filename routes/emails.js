@@ -51,6 +51,8 @@ router.post("/signdocemail", async (req, res) => {
     senderEmail,
     senderpassword,
     filenames,
+    host,
+    port,
     userId,
     userName
   } = req.body;
@@ -64,8 +66,8 @@ router.post("/signdocemail", async (req, res) => {
 
 
   var transport = nodemailer.createTransport({
-    host: "ssl0.ovh.net",
-    port: 587,
+    host: host,
+    port: port,
     secure: false,
     auth: {
       user: senderEmail,

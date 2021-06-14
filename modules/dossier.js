@@ -62,9 +62,7 @@ const dossierSchema = new mongoose.Schema(
       required: true,
       default: ["CPF"],
     },
-    remise: {
-      type: Number,
-    },
+
     workshopBeginDate: {
       type: Date,
     },

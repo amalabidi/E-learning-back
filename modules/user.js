@@ -71,7 +71,9 @@ const userSchema = new mongoose.Schema({
     typeTarif:{
         type:String 
     }
-    })
+    },
+    { timestamps: true }
+    )
 
      userSchema.methods.generateToken = function () {
         return jwt.sign({_id: this._id, name: this.name, email: this.email, lastname: this.lastname}, "jwtPrivateKey");
