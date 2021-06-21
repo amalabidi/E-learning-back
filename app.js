@@ -23,7 +23,11 @@ const filters = require("./routes/filters");
 const relances = require("./routes/relances");
 const compteur = require("./routes/compteur");
 const dashboard = require("./routes/dashboard");
-const mrelance = require("./routes/modeleRelances")
+const mrelance = require("./routes/modeleRelances");
+const entreprise = require("./routes/entreprise");
+const participant = require("./routes/participant")
+
+
 const app = express();
 
 app.use(express.json());
@@ -83,7 +87,8 @@ app.use("/cout", cout);
 app.use("/email", email);
 app.use("/compteur",compteur);
 app.use("/mrelance",mrelance);
-
+app.use("/entreprise",entreprise)
+app.use("/participant",participant)
 //choose the backend port
 const port = process.env.PORT || 3002;
 

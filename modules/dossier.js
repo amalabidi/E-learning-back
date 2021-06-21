@@ -78,7 +78,8 @@ const dossierSchema = new mongoose.Schema(
       default: false,
     },
     coach: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: "User",
     },
     certification: {
       type: Boolean,
@@ -104,35 +105,43 @@ const dossierSchema = new mongoose.Schema(
       type: [String],
     },
     preEvaluation: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: "PreEvaluation",
     },
     evaluation: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: "Evaluation",
     },
     crCoach: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: "CRCoach",
     },
     facturation: {
       type: Schema.Types.ObjectId,
       ref: "Facturation",
     },
 
-    files: {
-      type: [String],
+    files: [{
+      type: Schema.Types.ObjectId,
+      ref: "Fichier",
       default: [],
-    },
-    journalAppel: {
-      type: [Schema.Types.ObjectId],
+    }],
+    journalAppel: [{
+      type: Schema.Types.ObjectId,
       ref: "JournalAppel",
-    },
-    filledFiles: {
-      type: [String],
-      default: [],
-    },signatures: {
-      type: [Schema.Types.ObjectId],
+    }],
+    filledFiles: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Fichier",
+        default: [],
+      }
+    ],
+    signatures: [{
+      type: Schema.Types.ObjectId,
       ref: "Signature",
       default: [],
-    },
+    }],
   },
   { timestamps: true }
 );

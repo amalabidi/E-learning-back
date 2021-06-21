@@ -17,6 +17,6 @@ const JournalAppelSchema = new mongoose.Schema({
   },
 });
 
-const JournalAppel = mongoose.model("JournalAppel ", JournalAppelSchema);
+const JournalAppel = mongoose.model("JournalAppel", JournalAppelSchema);
 
 exports.JournalAppel = JournalAppel;

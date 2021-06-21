@@ -450,9 +450,6 @@ router.post("/", async (req, res) => {
                           confidentialObservation,
                           idWorkshop,
                           priseEnCharge,
-                          
-                          
-                          
                           workshopBeginDate,
                           workshopEndDate,
                           workshopDescription,
@@ -469,8 +466,21 @@ router.post("/", async (req, res) => {
                           crCoach,
                           facturation,
                         });
-
-                        const results = await dossier.save();
+                         await dossier.save()
+                         const results=await Dossier.findOne({}, {}, { sort: { 'createdAt' : -1 } }).populate("idWorkshop")
+                                                                                                    .populate("client")
+                                                                                                    .populate("crCoach")
+                                                                                                    .populate("evaluation")
+                                                                                                    .populate("facturation")
+                                                                                                    .populate("preEvaluation")
+                                                                                                    .populate("provenance")
+                                                                                                    .populate("vendeur")
+                                                                                                    .populate("journalAppel")
+                                                                                                    .populate("signatures")
+                                                                                                    .populate("coach")
+                                                                                                    .populate("files")
+                                                                                                    .populate("filledFiles");
+                        res.status(200).send(results);
                         const operation = "Création";
                         const user = req.body.userId; //req.user._id; after adding jwt token
                         const newStatus = status;
@@ -481,7 +491,7 @@ router.post("/", async (req, res) => {
                           newStatus,
                         });
                         const result2 = modif.save();
-                        res.status(200).send(results);
+                        
                         console.log("done")
                       } catch (e) {
                         console.log(e);
@@ -521,7 +531,20 @@ router.post("/", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const results = await Dossier.find({})
+    const results = await Dossier.find({}).populate("idWorkshop")
+                                          .populate("client")
+                                          .populate("crCoach")
+                                          .populate("evaluation")
+                                          .populate("facturation")
+                                          .populate("preEvaluation")
+                                          .populate("provenance")
+                                          .populate("vendeur")
+                                          .populate("journalAppel")
+                                          .populate("signatures")
+                                          .populate("coach")
+                                          .populate("files")
+                                          .populate("filledFiles")
+                                          
                                           ;
     res.send(results);
   } catch (ex) {
@@ -1035,7 +1058,19 @@ router.put("/", async (req, res) => {
                           {
                             new: true,
                           }
-                        );
+                        ).populate("idWorkshop")
+                        .populate("client")
+                        .populate("crCoach")
+                        .populate("evaluation")
+                        .populate("facturation")
+                        .populate("preEvaluation")
+                        .populate("provenance")
+                        .populate("vendeur")
+                        .populate("journalAppel")
+                        .populate("signatures")
+                        .populate("coach")
+                        .populate("files")
+                        .populate("filledFiles");
 
                         if (status.localeCompare(dossier["status"])) {
                           const operation = "Chgt statut";
