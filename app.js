@@ -25,7 +25,10 @@ const compteur = require("./routes/compteur");
 const dashboard = require("./routes/dashboard");
 const mrelance = require("./routes/modeleRelances");
 const entreprise = require("./routes/entreprise");
-const participant = require("./routes/participant")
+const participant = require("./routes/participant");
+const financeur = require("./routes/financeur");
+const bpf = require("./routes/bpf")
+
 
 
 const app = express();
@@ -40,8 +43,8 @@ app.use(
 );
 
 app.use(express.static("public"));
-//app.use(cors({ origin: "http://localhost:4200" }));
-app.use(cors({ origin: "https://fac-academy.ureachus.com" }));
+app.use(cors({ origin: "http://localhost:4200" }));
+//app.use(cors({ origin: "https://fac-academy.ureachus.com" }));
 /*app.use(function (req, res, next) {
   //Enabling CORS
   res.header("Access-Control-Allow-Origin", "*");
@@ -89,6 +92,10 @@ app.use("/compteur",compteur);
 app.use("/mrelance",mrelance);
 app.use("/entreprise",entreprise)
 app.use("/participant",participant)
+app.use("/financeur",financeur)
+app.use("/bpf",bpf)
+
+
 //choose the backend port
 const port = process.env.PORT || 3002;
 

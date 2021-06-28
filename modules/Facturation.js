@@ -4,6 +4,9 @@ const FacturationSchema = new mongoose.Schema({
   MontantFacture: {
     type: Number,
   },
+  payePar:{
+    type:String,
+  },
   CoutElearning: {
     type: String,
   },

@@ -57,11 +57,7 @@ const dossierSchema = new mongoose.Schema(
       type: Schema.Types.ObjectId,
       ref: "Workshop",
     },
-    priseEnCharge: {
-      type: [String],
-      required: true,
-      default: ["CPF"],
-    },
+
 
     workshopBeginDate: {
       type: Date,
@@ -142,6 +138,24 @@ const dossierSchema = new mongoose.Schema(
       ref: "Signature",
       default: [],
     }],
+    cpf:{
+      type:String,
+    },
+    opca:{
+      type:String
+    },
+    financementPerso:{
+      type:String
+    },
+    remise_cpf:{
+      type:Number
+    },
+    remmise_opca:{
+      type:Number
+    },
+    remmise_fp:{
+      type:Number
+    },
   },
   { timestamps: true }
 );

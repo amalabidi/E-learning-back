@@ -353,6 +353,7 @@ router.post("/", async (req, res) => {
                 if (crCoachResults) {
                   const {
                     MontantFacture,
+                    payePar,
                     CoutElearning,
                     DateReglementElearning,
                     CoutCertification,
@@ -376,6 +377,7 @@ router.post("/", async (req, res) => {
                   try {
                     const facturation = new Facturation({
                       MontantFacture,
+                      payePar,
                       CoutElearning,
                       DateReglementElearning,
                       CoutCertification,
@@ -413,10 +415,12 @@ router.post("/", async (req, res) => {
                         numeroEdOF,
                         confidentialObservation,
                         idWorkshop,
-                        priseEnCharge,
-                        
-                        
-                        
+                        cpf,
+                        opca,
+                        financementPerso,
+                        remise_cpf,
+                        remmise_opca,
+                        remmise_fp,
                         workshopBeginDate,
                         workshopEndDate,
                         workshopDescription,
@@ -449,7 +453,12 @@ router.post("/", async (req, res) => {
                           numeroEdOF,
                           confidentialObservation,
                           idWorkshop,
-                          priseEnCharge,
+                          cpf,
+                          opca,
+                          financementPerso,
+                          remise_cpf,
+                          remmise_opca,
+                          remmise_fp,
                           workshopBeginDate,
                           workshopEndDate,
                           workshopDescription,
@@ -923,6 +932,7 @@ router.put("/", async (req, res) => {
                 if (crCoachs) {
                   const {
                     MontantFacture,
+                    payePar,
                     CoutElearning,
                     DateReglementElearning,
                     CoutCertification,
@@ -950,6 +960,7 @@ router.put("/", async (req, res) => {
                   try {
                     updateFacturation = {
                       MontantFacture,
+                      payePar,
                       CoutElearning,
                       DateReglementElearning,
                       CoutCertification,
@@ -1000,7 +1011,12 @@ router.put("/", async (req, res) => {
                         numeroEdOF,
                         confidentialObservation,
                         idWorkshop,
-                        priseEnCharge,
+                        cpf,
+                        opca,
+                        financementPerso,
+                        remise_cpf,
+                        remmise_opca,
+                        remmise_fp,
                         workshopBeginDate,
                         workshopEndDate,
                         workshopDescription,
@@ -1037,7 +1053,12 @@ router.put("/", async (req, res) => {
                           numeroEdOF,
                           confidentialObservation,
                           idWorkshop,
-                          priseEnCharge,
+                          cpf,
+                          opca,
+                          financementPerso,
+                          remise_cpf,
+                          remmise_opca,
+                          remmise_fp,
                           workshopBeginDate,
                           workshopEndDate,
                           workshopDescription,
