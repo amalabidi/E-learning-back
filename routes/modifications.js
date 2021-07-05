@@ -6,8 +6,10 @@ var { Client } = require("../modules/client");
 
 router.get("/",async (req,res)=>{
     try{
-         const result = await Modification.find({}).populate('user') ; 
+         const result = await Modification.find({}).populate('user')
+                                                   .populate('client') ; 
          if(result) {
+
             res.status(200).send(result) ; 
          }else{
             res.status(404).send("No modification found") ; 

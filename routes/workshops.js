@@ -27,6 +27,7 @@ router.post("/", async (req, res) => {
     Url_formation,
     prestataire_Elearning,
     cout_Elearning,
+    niveau_form,
     date_modif,
   } = req.body;
   try {
@@ -55,6 +56,7 @@ router.post("/", async (req, res) => {
       environment: environment,
       prestataire_Elearning: prestataire_Elearning,
       Cout_Elearning: cout_Elearning,
+      niveau_form: niveau_form,
       date_modif:date_modif,
     });
     console.log("workshop",workshop)
@@ -106,6 +108,7 @@ router.put("/", async (req, res) => {
       Url_formation,
       prestataire_Elearning,
       cout_Elearning,
+      niveau_form,
       date_modif,
     } = req.body;
     const filter = { _id: req.body._id };
@@ -135,6 +138,7 @@ router.put("/", async (req, res) => {
       Url_formation,
       prestataire_Elearning,
       cout_Elearning,
+      niveau_form,
       date_modif
     };
     

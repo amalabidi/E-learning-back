@@ -218,6 +218,7 @@ router.put("/", /*upload.array("imgs[]", 2),*/ async (req, res) => {
       NDeclaration_activite,
       code_NAF,
       forme_juridique,
+      qualite,
       region,
     } = req.body;
     const filter = { _id: req.body._id };
@@ -307,6 +308,7 @@ router.put("/", /*upload.array("imgs[]", 2),*/ async (req, res) => {
       NDeclaration_activite,
       code_NAF,
       forme_juridique,
+      qualite,
       region,
       RCS,
       representant,

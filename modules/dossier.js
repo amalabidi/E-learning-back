@@ -7,7 +7,7 @@ const dossierSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      required: true,
+      
     },
     provenance: {
       type: Schema.Types.ObjectId,
@@ -15,16 +15,16 @@ const dossierSchema = new mongoose.Schema(
     },
     statusCall: {
       type: String,
-      required: true,
+      
     },
     vendeur: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: true,
+      
     },
     categorie: {
       type: String,
-      required: true,
+      
     },
     entreprise: {
       type: String,
@@ -41,7 +41,7 @@ const dossierSchema = new mongoose.Schema(
     client: {
       type: Schema.Types.ObjectId,
       ref: "Client",
-      required: true,
+      
     },
     confidentialObservation: {
       type: String,

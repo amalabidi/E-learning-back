@@ -7,6 +7,9 @@ const SocieteSchema = new mongoose.Schema({
   societe: {
     nom: String,
   },
+  qualite:{
+    type:String,
+  },
   telephone: {
     type: String,
   },

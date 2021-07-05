@@ -4,7 +4,6 @@ const mongoose = require("mongoose");
 const WorkshopSchema = new mongoose.Schema({
   etat: {
     type: Boolean,
-    required: true,
   },
   type: {
     type: String,
@@ -88,7 +87,11 @@ const WorkshopSchema = new mongoose.Schema({
   },
   date_modif: {
     type: Date,
+  },
+  niveau_form: {
+    type:String,
   }
+
 });
 
 // Creating a model from a Schema
