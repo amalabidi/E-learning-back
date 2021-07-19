@@ -7,13 +7,13 @@ const Crypto = require("crypto");
 
 router.post("/reset", async (req, res) => {
   if (!req.body.email) {
-    return res.status(500).json({ message: "Email is required" });
+    return res.send({ message: "Email is required" });
   }
   const user = await User.findOne({
     email: req.body.email,
   });
   if (!user) {
-    return res.status(409).json({ message: "Email does not exist" });
+    return res.send({ message: "Email does not exist" });
   }
   var resettoken = new ResetToken({
     userId: user._id,
@@ -52,14 +52,14 @@ router.post("/reset", async (req, res) => {
       text:
         "You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n" +
         "Please click on the following link, or paste this into your browser to complete the process:\n\n" +
-        "http://localhost:4200/reset/" +
+        "https://fac-academy.ureachus.com/reset/" +
         resettoken.resettoken +
         "\n\n" +
         "If you did not request this, please ignore this email and your password will remain unchanged.\n",
     };
     try {
       let info = await transporter.sendMail(mailOptions);
-      res.send("email sent successfully");
+      res.send({msg:"email sent successfully"});
     } catch (e) {
       res.send(e);
       console.log(e);

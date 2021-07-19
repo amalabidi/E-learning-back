@@ -43,8 +43,8 @@ app.use(
 );
 
 app.use(express.static("public"));
-//app.use(cors({ origin: "http://localhost:4200" }));
-app.use(cors({ origin: "https://fac-academy.ureachus.com" }));
+app.use(cors({ origin: "http://localhost:4200" }));
+//app.use(cors({ origin: "https://fac-academy.ureachus.com" }));
 /*app.use(function (req, res, next) {
   //Enabling CORS
   res.header("Access-Control-Allow-Origin", "*");
@@ -80,7 +80,7 @@ app.use("/dashboard", dashboard);
 app.use("/filters", filters);
 app.use("/relances", relances);
 app.use("/parameters", parametres);
-app.use("/reset", reset);
+app.use("/resetPass", reset);
 
 app.use("/modifications", modifications);
 app.use("/pdf", pdf);
