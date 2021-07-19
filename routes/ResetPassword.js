@@ -7,13 +7,13 @@ const Crypto = require("crypto");
 
 router.post("/reset", async (req, res) => {
   if (!req.body.email) {
-    return res.send({ message: "Email is required" });
+    return res.status(500).json({ message: "Email is required" });
   }
   const user = await User.findOne({
     email: req.body.email,
   });
   if (!user) {
-    return res.send({ message: "Email does not exist" });
+    return res.status(409).json({ message: "Email does not exist" });
   }
   var resettoken = new ResetToken({
     userId: user._id,
@@ -50,12 +50,12 @@ router.post("/reset", async (req, res) => {
       from: "noreply@facacademy.fr",
       subject: "Fac academy Password Reset",
       text:
-        "You are receiving this because you (or someone else) have requested the reset of the password for your account.\n\n" +
-        "Please click on the following link, or paste this into your browser to complete the process:\n\n" +
-        "https://fac-academy.ureachus.com/reset/" +
+        "Vous recevez ceci parce que vous (ou quelqu'un d'autre) avez demandé la réinitialisation du mot de passe de votre compte.\n\n" +
+        "Veuillez cliquer sur le lien suivant ou collez-le dans votre navigateur pour terminer le processus :\n\n" +
+        "http://localhost:4200/reset/" +
         resettoken.resettoken +
         "\n\n" +
-        "If you did not request this, please ignore this email and your password will remain unchanged.\n",
+        "Si vous ne l'avez pas demandé, veuillez ignorer cet e-mail et votre mot de passe restera inchangé.\n",
     };
     try {
       let info = await transporter.sendMail(mailOptions);
@@ -116,7 +116,7 @@ router.post("/", async (req, res) => {
         try {
           const results = await userEmail.save();
           console.log(results);
-          res.send("ok");
+          res.send({msg:"ok"});
         } catch (e) {
           res.send(e);
         }
