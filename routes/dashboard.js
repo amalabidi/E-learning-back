@@ -131,7 +131,47 @@ router.get("/", async (req, res) => {
         "facturation"
       );
       if (Facture.length != 0) {
+        var monthP=[0,0,0,0,0,0,0,0,0,0,0,0]
         Facture.forEach(function (dossier) {
+          const m=dossier.workshopBeginDate.getMonth()
+          
+          if(m==0){
+            monthP[0]+=dossier.facturation.MontantFacture
+          }
+          if(m==1){
+            monthP[1]+=dossier.facturation.MontantFacture
+          }
+          if(m==2){
+            monthP[2]+=dossier.facturation.MontantFacture
+          }
+          if(m==3){
+            monthP[3]+=dossier.facturation.MontantFacture
+          }
+          if(m==4){
+            monthP[4]+=dossier.facturation.MontantFacture
+          }
+          if(m==5){
+            monthP[5]+=dossier.facturation.MontantFacture
+          }
+          if(m==6){
+            monthP[6]+=dossier.facturation.MontantFacture
+          }
+          if(m==7){
+            monthP[7]+=dossier.facturation.MontantFacture
+          }
+          if(m==8){
+            monthP[8]+=dossier.facturation.MontantFacture
+          }
+          if(m==9){
+            monthP[9]+=dossier.facturation.MontantFacture
+          }
+          if(m==10){
+            monthP[10]+=dossier.facturation.MontantFacture
+          }
+          if(m==11){
+            monthP[11]+=dossier.facturation.MontantFacture
+          }
+
           total += dossier.facturation.MontantFacture;
         });
         const facturer = {
@@ -162,17 +202,65 @@ router.get("/", async (req, res) => {
       const Paye = await Dossier.find({ status: "Payé" }).populate(
         "facturation"
       );
-
+      var month=[0,0,0,0,0,0,0,0,0,0,0,0]
       if (Paye.length != 0) {
         Paye.forEach(function (dossier) {
+          const m=dossier.workshopBeginDate.getMonth()
+          
+          if(m==0){
+            month[0]+=dossier.facturation.MontantFacture
+          }
+          if(m==1){
+            month[1]+=dossier.facturation.MontantFacture
+          }
+          if(m==2){
+            month[2]+=dossier.facturation.MontantFacture
+          }
+          if(m==3){
+            month[3]+=dossier.facturation.MontantFacture
+          }
+          if(m==4){
+            month[4]+=dossier.facturation.MontantFacture
+          }
+          if(m==5){
+            month[5]+=dossier.facturation.MontantFacture
+          }
+          if(m==6){
+            month[6]+=dossier.facturation.MontantFacture
+          }
+          if(m==7){
+            month[7]+=dossier.facturation.MontantFacture
+          }
+          if(m==8){
+            month[8]+=dossier.facturation.MontantFacture
+          }
+          if(m==9){
+            month[9]+=dossier.facturation.MontantFacture
+          }
+          if(m==10){
+            month[10]+=dossier.facturation.MontantFacture
+          }
+          if(m==11){
+            month[11]+=dossier.facturation.MontantFacture
+          }
+  
           total += dossier.facturation.MontantFacture;
         });
+        const monthPaye ={
+          totalP: month
+        }
+        const monthFact ={
+          totalF: monthP
+        }
         const payer = {
           nombreTotalPayer: Paye.length,
           totalCoutPayer: total,
         };
 
         resultats.push(payer);
+        resultats.push(monthPaye)
+        resultats.push(monthFact)
+
       } else {
         resultats.push({ nombreTotalPayer: 0, totalCoutPayer: 0 });
       }
