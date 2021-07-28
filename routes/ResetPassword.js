@@ -52,7 +52,7 @@ router.post("/reset", async (req, res) => {
       text:
         "Vous recevez ceci parce que vous (ou quelqu'un d'autre) avez demandé la réinitialisation du mot de passe de votre compte.\n\n" +
         "Veuillez cliquer sur le lien suivant ou collez-le dans votre navigateur pour terminer le processus :\n\n" +
-        "https://fac-academy.ureachus.com/reset/" +
+        "https://fac-academy.ureachus.com/login/" +
         resettoken.resettoken +
         "\n\n" +
         "Si vous ne l'avez pas demandé, veuillez ignorer cet e-mail et votre mot de passe restera inchangé.\n",
