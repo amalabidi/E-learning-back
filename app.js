@@ -43,8 +43,8 @@ app.use(
 );
 
 app.use(express.static("public"));
-app.use(cors({ origin: "http://localhost:4200" }));
-//app.use(cors({ origin: "https://fac-academy.ureachus.com" }));
+//app.use(cors({ origin: "http://localhost:4200" }));
+app.use(cors({ origin: "https://fac-academy.ureachus.com" }));
 /*app.use(function (req, res, next) {
   //Enabling CORS
   res.header("Access-Control-Allow-Origin", "*");
